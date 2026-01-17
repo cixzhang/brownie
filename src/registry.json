@@ -1,0 +1,19 @@
+{
+  "components": [
+    {
+      "name": "brow-button",
+      "path": "./components/brow-button.js",
+      "description": "A button component that renders as <button> or <a>"
+    },
+    {
+      "name": "brow-card",
+      "path": "./components/brow-card.js",
+      "description": "Container used for segmenting general content into a visible block."
+    },
+    {
+      "name": "brow-layout",
+      "path": "./components/brow-layout.js",
+      "description": "TODO: Add description"
+    }
+  ]
+}

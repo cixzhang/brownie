@@ -1,0 +1,58 @@
+/**
+ * Brownie Base Styles
+ * 
+ * Base styles work with Brownie's component registration to
+ * prevent the flash of unstyled content while components register.
+ *
+ * We also style base HTML elements to follow the Brownie theme
+ * and update some spacing/box-sizing values to be more predictable.
+ * Opt-into brownie base styling using the brownie-base class.
+ */
+@layer base {
+
+/* Hide body until Brownie is ready */
+html:not(.brownie-ready) body {
+  visibility: hidden;
+}
+
+/* Fade in when ready */
+html.brownie-ready body {
+  visibility: visible;
+  animation: brownie-fade-in 150ms ease;
+}
+
+@keyframes brownie-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.brownie-base {
+  * {
+    box-sizing: border-box;
+  }
+
+  /* Typography */
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-header);
+  }
+
+  code,
+  pre {
+    font-family: var(--font-code);
+  }
+}
+
+}
