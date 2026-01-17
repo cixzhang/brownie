@@ -19,8 +19,12 @@ if [[ ! "$NAME" =~ ^brow- ]]; then
   exit 1
 fi
 
-# Convert to PascalCase for class name (e.g., brow-card -> BrownieCard)
-CLASS_NAME=$(echo "brow-foo" | sed -E 's/(^|-)([a-z])/\U\2/g;s/-//g')
+# Convert to PascalCase for class name (e.g., brow-card -> BrowCard)
+CLASS_NAME=$(
+  echo "$NAME" \
+    | sed 's/^brow-/Brownie-/' \
+    | awk -F- '{for(i=1;i<=NF;i++)$i=toupper(substr($i,1,1)) substr($i,2)}1' OFS=""
+)
 
 COMPONENT_FILE="src/components/${NAME}.js"
 DOC_FILE="docs/components/${NAME}.md"
