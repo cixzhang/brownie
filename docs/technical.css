@@ -5,19 +5,9 @@
  * and a serious, engineering-focused aesthetic.
  */
 
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
 @layer theme {
-
-:root {
-  color-scheme: light dark;
-}
-
-[data-theme="light"] {
-  color-scheme: light;
-}
-
-[data-theme="dark"] {
-  color-scheme: dark;
-}
 
 :root {
   /* ==========================================================================
@@ -74,9 +64,9 @@
      TYPOGRAPHY - Monospace for technical feel
   ========================================================================== */
 
-  --font-body: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Consolas', monospace;
-  --font-header: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Consolas', monospace;
-  --font-code: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  --font-body: 'JetBrains Mono', 'Monaco', 'Consolas', monospace;
+  --font-header: 'JetBrains Mono', 'Monaco', 'Consolas', monospace;
+  --font-code: 'JetBrains Mono', 'Monaco', 'Consolas', monospace;
 
   /* ==========================================================================
      ELEVATION - Subtle, flat

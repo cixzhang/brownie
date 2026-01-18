@@ -18,7 +18,7 @@
     {
       "name": "brow-section",
       "path": "./components/brow-section.js",
-      "description": "TODO: Add description"
+      "description": "A section used with `brow-layout` providing spacing around content and optional background."
     }
   ]
 }

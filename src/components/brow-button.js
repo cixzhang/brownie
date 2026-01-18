@@ -63,7 +63,7 @@ export class BrownieButton extends HTMLElement {
     const isLink = !!this.href;
     const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
 
-    shadow.innerHTML = /*html*/ `
+    shadow.innerHTML = /*html*/`
       <style>
         :host {
           display: inline-block;
@@ -128,6 +128,10 @@ export class BrownieButton extends HTMLElement {
 
         :host([variant="ghost"]) [part="base"]:active {
           background-color: color-mix(in srgb, var(--color-secondary), transparent 20%);
+        }
+
+        .iconOnly {
+          aspect-ratio: 1 / 1;
         }
       </style>
       ${

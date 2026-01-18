@@ -10,6 +10,19 @@
  */
 @layer base {
 
+/* Setup color scheme */
+:root {
+  color-scheme: light dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
 /* Hide body until Brownie is ready */
 html:not(.brownie-ready) body {
   visibility: hidden;
@@ -31,28 +44,32 @@ html.brownie-ready body {
   }
 }
 
-.brownie-base {
-  * {
-    box-sizing: border-box;
-  }
+/* Base resets and typography */
+* {
+  box-sizing: border-box;
+}
 
-  /* Typography */
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100lvh;
   font-family: var(--font-body);
-  font-size: 0.8125rem;
+  color: var(--color-text-primary);
+  background-color: var(--color-page);
+}
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: var(--font-header);
-  }
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-header);
+}
 
-  code,
-  pre {
-    font-family: var(--font-code);
-  }
+code,
+pre {
+  font-family: var(--font-code);
 }
 
 }

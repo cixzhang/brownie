@@ -8,9 +8,6 @@
   <link rel="stylesheet" href="brownie.css" id="theme-link">
   <style>
     body {
-      font-family: var(--font-body);
-      color: var(--color-text-primary);
-      background: var(--color-page);
       max-width: 800px;
       margin: 0 auto;
       padding: var(--space-6);
@@ -87,28 +84,9 @@
       margin-top: var(--space-1);
     }
 
-    .example-section {
-      margin: var(--space-6) 0;
-      padding: var(--space-6);
-      background: var(--color-card);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-container);
-    }
-
-    .example-section h3 {
-      margin-top: 0;
-    }
-
-    .demo {
+    .stack {
       display: flex;
-      flex-direction: column;
-      gap: var(--space-4);
-    }
-    .demo-stack {
-      display: flex;
-      gap: var(--space-4);
-      flex-wrap: wrap;
-      align-items: center;
+      gap: var(--space-3);
     }
   </style>
 </head>
@@ -120,33 +98,30 @@
     </div>
     <div class="controls">
       <select class="theme-select" id="theme-select"></select>
-      <button class="theme-toggle" id="theme-toggle" title="Toggle dark mode">
+      <brow-button variant="ghost" id="theme-toggle" title="Toggle dark mode">
         <span id="theme-icon">☀️</span>
-      </button>
+      </brow-button>
     </div>
   </header>
 
-  <brow-card>
-    <div class="demo">
-      <div class="demo-stack">
-        <brow-button>Default</brow-button>
-        <brow-button variant="primary">Primary</brow-button>
-        <brow-button variant="ghost">Ghost</brow-button>
-        <brow-button disabled>Disabled</brow-button>
-      </div>
-
-      <brow-section height="20rem" variant="muted" slot="start">
-        <brow-layout>
-          <brow-section slot="start" width="12rem">Left</brow-section>
-          <brow-card slot="content" height="100%">
-            <brow-layout>
-              <brow-section slot="content">Content</brow-section>
-              <brow-section slot="end">Right</brow-section>
-            </brow-layout>
-          </brow-card>
-        </brow-layout>
-      </brow-section>
-    </div>
+  <brow-card padding="space-0">
+    <brow-section divider="bottom" class="stack">
+      <brow-button>Default</brow-button>
+      <brow-button variant="primary">Primary</brow-button>
+      <brow-button variant="ghost">Ghost</brow-button>
+      <brow-button disabled>Disabled</brow-button>
+    </brow-section>
+    <brow-section height="20rem" variant="muted">
+      <brow-layout>
+        <brow-section slot="start" width="12rem">Left</brow-section>
+        <brow-card slot="content" height="100%" padding="space-0">
+          <brow-layout>
+            <brow-section slot="content">Content</brow-section>
+            <brow-section slot="end">Right</brow-section>
+          </brow-layout>
+        </brow-card>
+      </brow-layout>
+    </brow-section>
   </brow-card>
 
   <h2>Components</h2>
@@ -203,8 +178,14 @@
       }
     }
 
+    let hasInitializedTheme = false;
     function setTheme(themePath) {
+      if (hasInitializedTheme) {
+        Brownie.unready();
+      }
       themeLink.href = themePath;
+      themeLink.addEventListener('load', () => Brownie.ready(), { once: true });
+      hasInitializedTheme = true;
     }
 
     themeSelect.addEventListener('change', (e) => {

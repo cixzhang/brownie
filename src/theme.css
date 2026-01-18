@@ -12,18 +12,6 @@
 @layer theme {
 
 :root {
-  color-scheme: light dark;
-}
-
-[data-theme="light"] {
-  color-scheme: light;
-}
-
-[data-theme="dark"] {
-  color-scheme: dark;
-}
-
-:root {
   /* ==========================================================================
     SEMANTIC COLORS
   ========================================================================== */
@@ -78,9 +66,9 @@
     TYPOGRAPHY
   ========================================================================== */
 
-  --font-body: 'Inter', 'Source Sans 3', system-ui, sans-serif;
-  --font-header: 'Inter', 'Source Sans 3', system-ui, sans-serif;
-  --font-code: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-body: system-ui, sans-serif;
+  --font-header: system-ui, sans-serif;
+  --font-code: 'Monaco', 'Consolas', monospace;
 
   /* ==========================================================================
     ELEVATION

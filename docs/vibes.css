@@ -5,19 +5,10 @@
  * Good vibes only.
  */
 
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
 @layer theme {
-
-:root {
-  color-scheme: light dark;
-}
-
-[data-theme="light"] {
-  color-scheme: light;
-}
-
-[data-theme="dark"] {
-  color-scheme: dark;
-}
 
 :root {
   /* ==========================================================================
@@ -76,7 +67,7 @@
 
   --font-body: 'Nunito', 'Quicksand', system-ui, sans-serif;
   --font-header: 'Nunito', 'Quicksand', system-ui, sans-serif;
-  --font-code: 'Fira Code', 'JetBrains Mono', monospace;
+  --font-code: 'JetBrains Mono', 'Monaco', 'Consolas', monospace;
 
   /* ==========================================================================
      ELEVATION - Soft glow

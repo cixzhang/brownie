@@ -64,6 +64,10 @@ class BrownieCore {
     return this.#readyPromise;
   }
 
+  unready() {
+    document.documentElement.classList.remove('brownie-ready');
+  }
+
   /**
    * Check if a component is registered.
    * @param {string} tagName - The custom element tag name

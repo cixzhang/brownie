@@ -38,7 +38,7 @@ When `href` is provided, the button renders as an anchor element.
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `variant` | `'primary' \| 'secondary' \| 'ghost'` | `'secondary'` | Visual style variant |
+| `variant` | `'primary' 'secondary' 'ghost'` | `'secondary'` | Visual style variant |
 | `disabled` | `boolean` | `false` | Disables the button |
 | `href` | `string` | - | When set, renders as an anchor element |
 

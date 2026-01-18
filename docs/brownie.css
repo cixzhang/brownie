@@ -6,19 +6,9 @@
  * themes for Brownie.
  */
 
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
 @layer theme {
-
-  :root {
-    color-scheme: light dark;
-  }
-
-  [data-theme="light"] {
-    color-scheme: light;
-  }
-
-  [data-theme="dark"] {
-    color-scheme: dark;
-  }
 
   :root {
     /* ==========================================================================
@@ -75,9 +65,9 @@
     TYPOGRAPHY
   ========================================================================== */
 
-    --font-body: 'Inter', 'Source Sans 3', system-ui, sans-serif;
-    --font-header: 'Inter', 'Source Sans 3', system-ui, sans-serif;
-    --font-code: 'JetBrains Mono', 'Fira Code', monospace;
+    --font-body: 'Lato', system-ui, sans-serif;
+    --font-header: 'Lato', system-ui, sans-serif;
+    --font-code: 'Monaco', 'Consolas', monospace;
 
     /* ==========================================================================
     ELEVATION
@@ -152,30 +142,34 @@
  *     background: linear-gradient(135deg, #6a8a6a, #4a6a4a);
  *   }
  */
+brow-button::part(base) {
+  transition: box-shadow 0ms;
+  font-weight: 500;
+}
 
-  brow-button::part(base):not(:disabled),
-  brow-button[variant="secondary"]::part(base):not(:disabled) {
-    box-shadow: inset 0 3px 0 color-mix(in srgb, var(--color-secondary), white 15%),
-      inset 0 -3px 0 color-mix(in srgb, var(--color-secondary), black 15%);
-  }
-  brow-button:active::part(base):not(:disabled),
-  brow-button[variant="secondary"]:active::part(base):not(:disabled) {
-    box-shadow: inset 0 3px 0 color-mix(in srgb, var(--color-secondary), black 15%);
-    transform: translateY(1px);
-  }
+brow-button::part(base):not(:disabled),
+brow-button[variant="secondary"]::part(base):not(:disabled) {
+  box-shadow: inset 0 3px 0 color-mix(in srgb, var(--color-secondary), white 15%),
+    inset 0 -3px 0 color-mix(in srgb, var(--color-secondary), black 15%);
+}
+brow-button:active::part(base):not(:disabled),
+brow-button[variant="secondary"]:active::part(base):not(:disabled) {
+  box-shadow: inset 0 3px 0 color-mix(in srgb, var(--color-secondary), black 15%);
+  transform: translateY(1px);
+}
 
-  brow-button[variant="primary"]::part(base):not(:disabled) {
-    box-shadow: inset 0 3px 0 color-mix(in srgb, var(--color-accent), white 15%),
-      inset 0 -3px 0 color-mix(in srgb, var(--color-accent), black 15%);
-  }
-  brow-button[variant="primary"]:active::part(base):not(:disabled) {
-    box-shadow: inset 0 3px 0 color-mix(in srgb, var(--color-accent), black 15%);
-  }
+brow-button[variant="primary"]::part(base):not(:disabled) {
+  box-shadow: inset 0 3px 0 color-mix(in srgb, var(--color-accent), white 15%),
+    inset 0 -3px 0 color-mix(in srgb, var(--color-accent), black 15%);
+}
+brow-button[variant="primary"]:active::part(base):not(:disabled) {
+  box-shadow: inset 0 3px 0 color-mix(in srgb, var(--color-accent), black 15%);
+}
 
-  brow-button[variant="ghost"]::part(base):not(:disabled) {
-    box-shadow: none;
-  }
-  brow-button[variant="ghost"]:active::part(base):not(:disabled) {
-    box-shadow: inset 0 3px 0 color-mix(in srgb, var(--color-secondary), transparent 10%);
-  }
+brow-button[variant="ghost"]::part(base):not(:disabled) {
+  box-shadow: none;
+}
+brow-button[variant="ghost"]:active::part(base):not(:disabled) {
+  box-shadow: inset 0 3px 0 color-mix(in srgb, var(--color-secondary), transparent 10%);
+}
 }

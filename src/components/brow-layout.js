@@ -3,10 +3,11 @@ import Brownie from '../core.js';
 /**
  * A composable layout with header, footer, start, end panels and content slots.
  * @element brow-layout
+ * @typedef {'space-0' | 'space-0_5' | 'space-1' | 'space-1_5' | 'space-2' | 'space-2_5' | 'space-3' | 'space-4' | 'space-5' | 'space-6' | 'space-8' | 'space-10' | 'space-12'} BrownieLayoutSpacing
  */
 export class BrownieLayout extends HTMLElement {
   static get observedAttributes() {
-    return ['height', 'width'];
+    return ['height', 'width', 'padding'];
   }
 
   constructor() {
@@ -43,15 +44,29 @@ export class BrownieLayout extends HTMLElement {
     this.setAttribute('width', value);
   }
 
+  /** @returns {BrownieLayoutSpacing} */
+  get padding() {
+    return (
+      /** @type {BrownieLayoutSpacing} */ (this.getAttribute('padding')) ||
+      'space-3'
+    );
+  }
+
+  /** @param {BrownieLayoutSpacing} value */
+  set padding(value) {
+    this.setAttribute('padding', value);
+  }
+
   render() {
     const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
 
-    shadow.innerHTML = /*html*/ `
+    shadow.innerHTML = /*html*/`
       <style>
         :host {
           display: flex;
           height: ${this.height};
           width: ${this.width};
+          --layout-padding: var(--${this.padding});
         }
         .vertical {
           display: flex;
@@ -74,24 +89,25 @@ export class BrownieLayout extends HTMLElement {
           flex-shrink: 1;
           flex-direction: column;
         }
-
-        .fill {
-          height: 100%;
-        }
-        .fill .content {
-          overflow: auto;
-        }
       </style>
       <div class="vertical">
-        <slot name="header"></slot>
+        <div class="header">
+          <slot name="header"></slot>
+        </div>
         <div class="horizontal">
-          <slot name="start"></slot>
+          <div class="start">
+            <slot name="start"></slot>
+          </div>
           <div class="content">
             <slot name="content"></slot>
           </div>
-          <slot name="end"></slot>
+          <div class="end">
+            <slot name="end"></slot>
+          </div>
         </div>
-        <slot name="footer"></slot>
+        <div class="footer">
+          <slot name="footer"></slot>
+        </div>
       </div>
     `;
   }

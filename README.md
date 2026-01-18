@@ -94,19 +94,24 @@ Simple things stay simple. Complex things are possible.
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- Base reset and functional styles for Brownie -->
+  <link rel="stylesheet" href="https://cdn.example.com/brownie@1.0.0/brownie-base.css">
+  <!-- Base theme - replace this with your custom theme! -->
+  <link rel="stylesheet" href="https://cdn.example.com/brownie@1.0.0/brownie-theme.css">
+  <!-- Brownie index includes all components and core -->
   <script src="https://cdn.example.com/brownie@1.0.0/brownie.js"></script>
 </head>
-<body class="brownie-base-reset brownie-font">
+<body>
   <script>
-    const brownie = new Brownie();
+    // Wait for the ready method to clear for component registration and theme injection
+    // before showing the page to avoid the flash of unstyled content.
+    await Brownie.ready();
   </script>
 
   <brow-card>
-    <brow-stack gap="md">
-      <h2>Welcome</h2>
-      <p>Your first Brownie interface.</p>
-      <brow-button variant="primary">Get Started</brow-button>
-    </brow-stack>
+    <h2>Welcome</h2>
+    <p>Your first Brownie interface.</p>
+    <brow-button variant="primary">Get Started</brow-button>
   </brow-card>
 </body>
 </html>
@@ -115,7 +120,7 @@ Simple things stay simple. Complex things are possible.
 
 ## Imports and Plugins
 
-After `brownie/core`, import what you need. We use ES 6 modules to pull in dependencies.
+After `brownie/core`, import what you need. We use ES6 modules to pull in dependencies.
 We can also progressively load behaviors through plugins.
 
 ```html

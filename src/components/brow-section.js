@@ -1,9 +1,8 @@
 import Brownie from '../core.js';
 
 /**
- * TODO: Add component description
+ * A section used with `brow-layout` providing spacing around content and optional background.
  * @element brow-section
- * @csspart base - The main container element
  * @typedef {'muted' | 'surface'} BrownieSectionVariant
  * @typedef {'space-0' | 'space-0_5' | 'space-1' | 'space-1_5' | 'space-2' | 'space-2_5' | 'space-3' | 'space-4' | 'space-5' | 'space-6' | 'space-8' | 'space-10' | 'space-12'} BrownieSectionSpacing
  * @typedef {'all' | 'top' | 'bottom' | 'start' | 'end' | 'inline' | 'block'} BrownieSectionDivider
@@ -44,7 +43,7 @@ export class BrownieSection extends HTMLElement {
   get padding() {
     return (
       /** @type {BrownieSectionSpacing} */ (this.getAttribute('padding')) ||
-      'space-3'
+      'layout-padding'
     );
   }
 
@@ -86,35 +85,34 @@ export class BrownieSection extends HTMLElement {
 
     const paddingSides = this.getValuesForSides(this.padding);
 
-    shadow.innerHTML = /*html*/ `
+    shadow.innerHTML = /*html*/`
       <style>
         :host {
           display: block;
           height: ${this.height};
           width: ${this.width};
+          padding-block-start: var(--${paddingSides.top}, var(--space-3));
+          padding-block-end: var(--${paddingSides.bottom}, var(--space-3));
+          padding-inline-start: var(--${paddingSides.start}, var(--space-3));
+          padding-inline-end: var(--${paddingSides.end}, var(--space-3));
+          ${this.divider === 'all' ? 'border: 1px solid var(--color-border)' : ''}
+          ${this.divider === 'top' ? 'border-block-start: 1px solid var(--color-border)' : ''}
+          ${this.divider === 'bottom' ? 'border-block-end: 1px solid var(--color-border)' : ''}
+          ${this.divider === 'start' ? 'border-inline-start: 1px solid var(--color-border)' : ''}
+          ${this.divider === 'end' ? 'border-inline-end: 1px solid var(--color-border)' : ''}
+          ${this.divider === 'inline' ? 'border-inline: 1px solid var(--color-border)' : ''}
+          ${this.divider === 'block' ? 'border-block: 1px solid var(--color-border)' : ''}
         }
 
-        [part="base"] {
-          box-sizing: border-box;
-          height: 100%;
-          width: 100%;
-          padding-block-start: var(--${paddingSides.top});
-          padding-block-end: var(--${paddingSides.bottom});
-          padding-inline-start: var(--${paddingSides.start});
-          padding-inline-end: var(--${paddingSides.end});
-        }
-
-        :host([variant="muted"]) [part="base"] {
+        :host([variant="muted"]) {
           background-color: var(--color-muted);
         }
 
-        :host([variant="surface"]) [part="base"] {
+        :host([variant="surface"]) {
           background-color: var(--color-card);
         }
       </style>
-      <div part="base" class="sized">
-        <slot></slot>
-      </div>
+      <slot></slot>
     `;
   }
 
@@ -132,10 +130,10 @@ export class BrownieSection extends HTMLElement {
   getValuesForSides(value) {
     const valueList = value.split(' ');
     return {
-      top: valueList[0] ?? '0',
-      end: valueList[1] ?? valueList[0] ?? '0',
-      bottom: valueList[2] ?? valueList[0] ?? '0',
-      start: valueList[3] ?? valueList[1] ?? valueList[0] ?? '0',
+      top: valueList[0] ?? 'layout-padding',
+      end: valueList[1] ?? valueList[0] ?? 'layout-padding',
+      bottom: valueList[2] ?? valueList[0] ?? 'layout-padding',
+      start: valueList[3] ?? valueList[1] ?? valueList[0] ?? 'layout-padding',
     };
   }
 }
