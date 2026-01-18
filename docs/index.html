@@ -138,8 +138,11 @@
         const response = await fetch('../src/registry.json');
         const registry = await response.json();
 
+        // Filter out components that have docs pointing elsewhere
+        const components = registry.components.filter(c => !c.docs);
+
         const list = document.getElementById('component-list');
-        list.innerHTML = registry.components.map(c => `
+        list.innerHTML = components.map(c => `
           <li>
             <a href="component.html?component=${c.name}">
               <span class="component-name">&lt;${c.name}&gt;</span>

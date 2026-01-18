@@ -173,4 +173,51 @@ brow-card::part(base):hover {
     0 0 60px rgba(59, 130, 246, 0.05);
 }
 
+/* Table styling - rainbow glow at boundaries */
+brow-table {
+  --table-cell-padding: var(--space-3) var(--space-4);
+  --table-row-bg-hover: rgba(168, 85, 247, 0.08);
+  --table-row-bg-alt: rgba(168, 85, 247, 0.04);
+}
+
+/* Rainbow border + glow at bottom of header */
+brow-table::part(head) {
+  border-bottom: 1px solid !important;
+  border-image: linear-gradient(90deg,
+    rgba(236, 72, 153, 0.6),
+    rgba(168, 85, 247, 0.6),
+    rgba(59, 130, 246, 0.6),
+    rgba(16, 185, 129, 0.6),
+    rgba(245, 158, 11, 0.6),
+    rgba(236, 72, 153, 0.6)
+  ) 1 !important;
+  /* Glow that tapers at sides and fades to transparent */
+  background: radial-gradient(
+    ellipse 80% 50% at 50% 100%,
+    rgba(168, 85, 247, 0.18) 0%,
+    rgba(236, 72, 153, 0.1) 40%,
+    transparent 60%
+  );
+}
+
+/* Rainbow border + glow at top of footer */
+brow-table::part(foot) {
+  border-top: 1px solid !important;
+  border-image: linear-gradient(90deg,
+    rgba(236, 72, 153, 0.6),
+    rgba(168, 85, 247, 0.6),
+    rgba(59, 130, 246, 0.6),
+    rgba(16, 185, 129, 0.6),
+    rgba(245, 158, 11, 0.6),
+    rgba(236, 72, 153, 0.6)
+  ) 1 !important;
+  /* Glow that tapers at sides and fades to transparent */
+  background: radial-gradient(
+    ellipse 80% 50% at 50% 0%,
+    rgba(168, 85, 247, 0.18) 0%,
+    rgba(236, 72, 153, 0.1) 40%,
+    transparent 60%
+  );
+}
+
 }

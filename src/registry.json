@@ -19,6 +19,41 @@
       "name": "brow-section",
       "path": "./components/brow-section.js",
       "description": "A section used with `brow-layout` providing spacing around content and optional background."
+    },
+    {
+      "name": "brow-table",
+      "path": "./components/brow-table.js",
+      "description": "A data table that renders rows from child elements with support for templates."
+    },
+    {
+      "name": "brow-table-header",
+      "path": "./components/brow-table-header.js",
+      "description": "Defines column headers for a table using data-* attributes.",
+      "docs": "brow-table"
+    },
+    {
+      "name": "brow-table-row",
+      "path": "./components/brow-table-row.js",
+      "description": "A data row for a table using data-* attributes for field values.",
+      "docs": "brow-table"
+    },
+    {
+      "name": "brow-table-column",
+      "path": "./components/brow-table-column.js",
+      "description": "Defines custom rendering for a table column with template support.",
+      "docs": "brow-table"
+    },
+    {
+      "name": "brow-table-footer",
+      "path": "./components/brow-table-footer.js",
+      "description": "A footer row for a table, typically used for totals or summaries.",
+      "docs": "brow-table"
+    },
+    {
+      "name": "brow-table-empty",
+      "path": "./components/brow-table-empty.js",
+      "description": "Empty state content displayed when a table has no rows.",
+      "docs": "brow-table"
     }
   ]
 }

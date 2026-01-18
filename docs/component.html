@@ -80,27 +80,8 @@
       border-radius: var(--radius-element);
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
+    brow-table {
       margin: var(--space-4) 0;
-      font-size: 0.875rem;
-    }
-
-    th, td {
-      padding: var(--space-2) var(--space-3);
-      text-align: left;
-      border-bottom: 1px solid var(--color-border-muted);
-    }
-
-    th {
-      font-weight: 600;
-      color: var(--color-text-secondary);
-      border-bottom-color: var(--color-border);
-    }
-
-    tr:last-child td {
-      border-bottom: none;
     }
 
     #content { display: none; }
@@ -130,7 +111,27 @@
     if (!component) {
       showError('No component specified. Use ?component=brow-button');
     } else {
-      loadComponent(component);
+      initComponent(component);
+    }
+
+    async function initComponent(name) {
+      try {
+        // Check registry for redirects
+        const registryResponse = await fetch('../src/registry.json');
+        const registry = await registryResponse.json();
+        const componentInfo = registry.components.find(c => c.name === name);
+
+        if (componentInfo?.docs) {
+          // Redirect to the parent component's docs
+          window.location.replace(`?component=${componentInfo.docs}`);
+          return;
+        }
+
+        loadComponent(name);
+      } catch (err) {
+        // If registry check fails, try loading directly
+        loadComponent(name);
+      }
     }
 
     async function loadComponent(name) {
@@ -177,6 +178,55 @@
         return `<pre><code>${escaped}</code></pre>`;
       });
 
+      // Tables - render as brow-table (before inline code so backticks are preserved)
+      html = html.replace(/^(\|.+\|)\n(\|[-:\| ]+\|)\n((?:\|.+\|\n?)+)/gm, (_, headerRow, separatorRow, bodyRows) => {
+        const headers = headerRow.split('|').slice(1, -1).map(h => h.trim());
+        const rows = bodyRows.trim().split('\n').map(row =>
+          row.split('|').slice(1, -1).map(cell => cell.trim())
+        );
+
+        // Convert header text to valid data attribute names
+        const toDataAttr = (text) => text.toLowerCase().replace(/\s+/g, '-');
+        // Escape for HTML attribute (browser will decode when reading)
+        const escapeAttr = (text) => text
+          .replace(/&/g, '&amp;')
+          .replace(/"/g, '&quot;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+        // Convert backticks to code tags for cell values
+        const processCell = (text) => {
+          // First escape content inside backticks, then wrap with code tags
+          return text.replace(/`([^`]+)`/g, (_, code) => {
+            const escaped = code
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/\{/g, '&#123;')
+              .replace(/\}/g, '&#125;');
+            return `<code>${escaped}</code>`;
+          });
+        };
+
+        // Build header data attributes
+        const headerAttrs = headers.map(h => `data-${toDataAttr(h)}="${escapeAttr(h)}"`).join(' ');
+
+        // Build column templates with raw HTML rendering
+        const columnsHtml = headers.map(h =>
+          `<brow-table-column field="${toDataAttr(h)}">{{{${toDataAttr(h)}}}}</brow-table-column>`
+        ).join('\n  ');
+
+        // Build rows with data attributes (values have backticks converted to code tags)
+        const rowsHtml = rows.map(row => {
+          const rowAttrs = row.map((cell, i) => `data-${toDataAttr(headers[i])}="${escapeAttr(processCell(cell))}"`).join(' ');
+          return `<brow-table-row ${rowAttrs}></brow-table-row>`;
+        }).join('\n  ');
+
+        return `<brow-table>
+  <brow-table-header ${headerAttrs}></brow-table-header>
+  ${columnsHtml}
+  ${rowsHtml}
+</brow-table>`;
+      });
+
       // Inline code
       html = html.replace(/`([^`]+)`/g, (_, code) => {
         const escaped = code.trim().replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -187,21 +237,6 @@
       html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
       html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
       html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-
-      // Tables
-      html = html.replace(/^(\|.+\|)\n(\|[-:\| ]+\|)\n((?:\|.+\|\n?)+)/gm, (_, headerRow, separatorRow, bodyRows) => {
-        const headers = headerRow.split('|').slice(1, -1).map(h => h.trim());
-        const rows = bodyRows.trim().split('\n').map(row =>
-          row.split('|').slice(1, -1).map(cell => cell.trim())
-        );
-
-        const thead = `<thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>`;
-        const tbody = `<tbody>${rows.map(row =>
-          `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`
-        ).join('')}</tbody>`;
-
-        return `<table>${thead}${tbody}</table>`;
-      });
 
       // Paragraphs (simple approach)
       html = html.replace(/\n\n/g, '</div><div>');
