@@ -8,7 +8,7 @@ import Brownie from '../core.js';
  */
 export class BrownieCard extends HTMLElement {
   static get observedAttributes() {
-    return ['height', 'width'];
+    return ['height', 'width', 'padding'];
   }
 
   constructor() {

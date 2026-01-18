@@ -148,54 +148,35 @@ Plugins register themselves with the core and enable new attributes on existing 
 ## Theming
 
 Themes are pure CSS stylesheets that get injected into every component's shadow DOM.
+To create a new theme, clone the `theme.css` file then make adjustments as necessary.
+Brownie's base theme is kept simple and lightweight since it's intended to be used as
+a starting point to clone and develop your custom theme.
 
-### Creating a Theme
+For more advanced theming, each component's shadow root can also be styled and 
+any named `:part` can be styled as well. Parts are documented for each component.
 
-```javascript
-const theme = new CSSStyleSheet();
-theme.replaceSync(`
-  :host {
-    --brow-bg: #ffffff;
-    --brow-text: #1f2937;
-    --brow-primary: #4f46e5;
-    --brow-border: #e5e7eb;
-    --brow-radius: 6px;
-  }
-  
-  .brow-button {
-    background: var(--brow-primary);
-    color: white;
-    border-radius: var(--brow-radius);
-    padding: 8px 16px;
-  }
-  
-  .brow-button:hover {
-    filter: brightness(1.1);
-  }
-`);
+Here are a few example themes from our documentation:
 
-brownie.injectTheme(theme);
-```
+* `docs/brownie.css`: A more 3-dimensional version of the base theme with additional fonts loaded.
+* `docs/technical.css`: A technical, blueprint-like theme using monospace fonts, high contrast, sharp corners.
+* `docs/vibes.css`: A colorful, friendly theme with additional gradient effects.
 
-### Dark Theme
+### Light/Dark Mode
 
-Just swap the token values:
+Themes use CSS `light-dark` to set colors that switch between light and dark mode.
+The theme control is handled by `base.css` by applying `color-scheme` to `:root`.
+Brownie sets `color-scheme: light dark` to enable OS preference for light and dark modes,
+then the `data-theme` attribute on the `<html>` can be used to control for specific modes.
 
-```javascript
-const darkTheme = new CSSStyleSheet();
-darkTheme.replaceSync(`
-  :host {
-    --color-wash: #111827;
-    --color-text-primary: #f9fafb;
-    --color-accent: #818cf8;
-    --color-border: #374151;
-    --radius-element: 6px;
-  }
-  
-  /* Same component styles, different tokens */
-`);
+```html
+<!-- Use OS preference by default -->
+<html>
 
-brownie.injectTheme(darkTheme);
+<!-- Explicitly set dark theme -->
+<html data-theme="dark">
+
+<!-- Explicitly set light theme -->
+<html data-theme="light">
 ```
 
 ---
@@ -243,10 +224,10 @@ livereload .
 ## Browser Support
 
 Brownie is brand new in 2026 and leverages the latest browser technologies to achieve
-a zero build, zero library core. So it has limited browser support.
+a zero build, zero library core. It has limited browser support.
 
-For example, Brownie use CSS Anchor Positioning for menus and hovercards which are yet to be baseline.
-You may need additional polyfills for these features if you want to support older browsers.
+For example, Brownie uses CSS Anchor Positioning for menus and hovercards which are yet to be baseline.
+You may need additional polyfills for the latest browser features if you want to support older browsers.
 
 ---
 
