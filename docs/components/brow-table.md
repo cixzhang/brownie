@@ -125,6 +125,77 @@ Any `data-*` attribute from the row can be referenced by its camelCase name. For
 </brow-table>
 ```
 
+## Column Width
+
+Use the `width` attribute on `brow-table-column` to set column widths.
+
+```html example
+<brow-table>
+  <brow-table-header data-id="ID" data-name="Name" data-email="Email"></brow-table-header>
+  <brow-table-column field="id" width="60px" align="center"></brow-table-column>
+  <brow-table-column field="name" width="150px"></brow-table-column>
+  <brow-table-row data-id="1" data-name="Alice" data-email="alice@example.com"></brow-table-row>
+  <brow-table-row data-id="2" data-name="Bob" data-email="bob@example.com"></brow-table-row>
+</brow-table>
+```
+
+## Sorting, Selection & Pagination
+
+Plugins extend the table with additional functionality. Import the plugins you need and add them as child elements.
+
+```html example
+<brow-table striped>
+  <brow-table-sort field="name" direction="asc"></brow-table-sort>
+  <brow-table-select mode="multi" key="id" row-click></brow-table-select>
+  <brow-table-paginate page-size="5"></brow-table-paginate>
+  <brow-table-header data-name="Name" data-role="Role" data-joined="Joined"></brow-table-header>
+  <brow-table-column field="name" sortable width="180px"></brow-table-column>
+  <brow-table-column field="role" sortable width="120px"></brow-table-column>
+  <brow-table-column field="joined" sortable="date" width="120px"></brow-table-column>
+  <brow-table-row data-id="1" data-name="Alice Chen" data-role="Engineer" data-joined="2023-01-15"></brow-table-row>
+  <brow-table-row data-id="2" data-name="Bob Smith" data-role="Designer" data-joined="2023-03-22"></brow-table-row>
+  <brow-table-row data-id="3" data-name="Carol Davis" data-role="Manager" data-joined="2022-11-08"></brow-table-row>
+  <brow-table-row data-id="4" data-name="Dan Wilson" data-role="Engineer" data-joined="2023-06-01"></brow-table-row>
+  <brow-table-row data-id="5" data-name="Eve Johnson" data-role="Designer" data-joined="2022-08-17"></brow-table-row>
+  <brow-table-row data-id="6" data-name="Frank Brown" data-role="Engineer" data-joined="2024-01-10"></brow-table-row>
+  <brow-table-row data-id="7" data-name="Grace Lee" data-role="Manager" data-joined="2021-05-20"></brow-table-row>
+</brow-table>
+```
+
+### Plugin Elements
+
+| Element | Description |
+|---------|-------------|
+| `brow-table-sort` | Enables sortable columns with click-to-sort headers |
+| `brow-table-select` | Adds row selection with checkboxes |
+| `brow-table-paginate` | Client-side pagination with navigation controls |
+
+### brow-table-sort
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `field` | `string` | - | Currently sorted field |
+| `direction` | `'asc' \| 'desc'` | `'asc'` | Sort direction |
+
+Add `sortable` to `brow-table-column` to enable sorting. Use `sortable="numeric"` or `sortable="date"` for type-aware sorting.
+
+### brow-table-select
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `mode` | `'single' \| 'multi'` | `'multi'` | Selection mode |
+| `key` | `string` | - | Data attribute for row identifier |
+| `row-click` | `boolean` | `false` | Click anywhere on row to toggle |
+
+Row attributes: `selected` (state), `no-select` (hide checkbox), `select-disabled` (disable checkbox).
+
+### brow-table-paginate
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `page-size` | `number` | `10` | Rows per page |
+| `page` | `number` | `1` | Current page (1-indexed) |
+
 ## Attributes
 
 | Attribute | Type | Default | Description |

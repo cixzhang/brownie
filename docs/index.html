@@ -122,6 +122,47 @@
         </brow-card>
       </brow-layout>
     </brow-section>
+    <brow-section padding="space-0">
+      <brow-table striped>
+        <brow-table-sort field="name" direction="asc"></brow-table-sort>
+        <brow-table-select mode="multi" key="id" row-click></brow-table-select>
+        <brow-table-paginate page-size="5" page="1"></brow-table-paginate>
+      
+        <brow-table-header data-name="Name" data-role="Role" data-status="Status" data-joined="Joined"></brow-table-header>
+      
+        <brow-table-column field="name" sortable></brow-table-column>
+        <brow-table-column field="role" sortable></brow-table-column>
+        <brow-table-column field="status" sortable></brow-table-column>
+        <brow-table-column field="joined" sortable="date"></brow-table-column>
+      
+        <brow-table-row data-id="1" data-name="Alice Chen" data-role="Engineer" data-status="Active"
+          data-joined="2023-01-15"></brow-table-row>
+        <brow-table-row data-id="2" data-name="Bob Smith" data-role="Designer" data-status="Active"
+          data-joined="2023-03-22"></brow-table-row>
+        <brow-table-row data-id="3" data-name="Carol Davis" data-role="Manager" data-status="Away"
+          data-joined="2022-11-08"></brow-table-row>
+        <brow-table-row data-id="4" data-name="Dan Wilson" data-role="Engineer" data-status="Active"
+          data-joined="2023-06-01"></brow-table-row>
+        <brow-table-row data-id="5" data-name="Eve Johnson" data-role="Designer" data-status="Inactive"
+          data-joined="2022-08-17"></brow-table-row>
+        <brow-table-row data-id="6" data-name="Frank Brown" data-role="Engineer" data-status="Active"
+          data-joined="2024-01-10"></brow-table-row>
+        <brow-table-row data-id="7" data-name="Grace Lee" data-role="Manager" data-status="Active"
+          data-joined="2021-05-20"></brow-table-row>
+        <brow-table-row data-id="8" data-name="Henry Zhang" data-role="Designer" data-status="Away"
+          data-joined="2023-09-14"></brow-table-row>
+        <brow-table-row data-id="9" data-name="Ivy Martinez" data-role="Engineer" data-status="Active"
+          data-joined="2024-02-28" no-select></brow-table-row>
+        <brow-table-row data-id="10" data-name="Jack Taylor" data-role="Manager" data-status="Active"
+          data-joined="2022-04-05"></brow-table-row>
+        <brow-table-row data-id="11" data-name="Karen White" data-role="Engineer" data-status="Inactive"
+          data-joined="2023-07-19"></brow-table-row>
+        <brow-table-row data-id="12" data-name="Leo Garcia" data-role="Designer" data-status="Active"
+          data-joined="2024-03-01"></brow-table-row>
+      
+        <brow-table-empty>No team members found.</brow-table-empty>
+      </brow-table>
+    </brow-section>
   </brow-card>
 
   <h2>Components</h2>

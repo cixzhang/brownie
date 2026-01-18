@@ -186,7 +186,7 @@
         );
 
         // Convert header text to valid data attribute names
-        const toDataAttr = (text) => text.toLowerCase().replace(/\s+/g, '-');
+        const toDataAttr = (text) => (text || '').toLowerCase().replace(/\s+/g, '-');
         // Escape for HTML attribute (browser will decode when reading)
         const escapeAttr = (text) => text
           .replace(/&/g, '&amp;')
@@ -216,7 +216,10 @@
 
         // Build rows with data attributes (values have backticks converted to code tags)
         const rowsHtml = rows.map(row => {
-          const rowAttrs = row.map((cell, i) => `data-${toDataAttr(headers[i])}="${escapeAttr(processCell(cell))}"`).join(' ');
+          const rowAttrs = row
+            .map((cell, i) => headers[i] ? `data-${toDataAttr(headers[i])}="${escapeAttr(processCell(cell))}"` : null)
+            .filter(Boolean)
+            .join(' ');
           return `<brow-table-row ${rowAttrs}></brow-table-row>`;
         }).join('\n  ');
 

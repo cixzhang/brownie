@@ -54,6 +54,27 @@
       "path": "./components/brow-table-empty.js",
       "description": "Empty state content displayed when a table has no rows.",
       "docs": "brow-table"
+    },
+    {
+      "name": "brow-table-sort",
+      "path": "./components/brow-table-sort.js",
+      "description": "Plugin that enables sortable columns with click-to-sort headers.",
+      "docs": "brow-table",
+      "plugin": true
+    },
+    {
+      "name": "brow-table-select",
+      "path": "./components/brow-table-select.js",
+      "description": "Plugin that enables row selection with checkboxes.",
+      "docs": "brow-table",
+      "plugin": true
+    },
+    {
+      "name": "brow-table-paginate",
+      "path": "./components/brow-table-paginate.js",
+      "description": "Plugin that enables client-side pagination with navigation controls.",
+      "docs": "brow-table",
+      "plugin": true
     }
   ]
 }

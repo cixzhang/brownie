@@ -11,3 +11,6 @@ export * from './components/brow-table-column.js';
 export * from './components/brow-table-footer.js';
 export * from './components/brow-table-empty.js';
 export * from './components/brow-table.js';
+export * from './components/brow-table-sort.js';
+export * from './components/brow-table-select.js';
+export * from './components/brow-table-paginate.js';

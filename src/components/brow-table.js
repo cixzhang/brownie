@@ -1,8 +1,39 @@
 import Brownie from '../core.js';
 
 /**
+ * @typedef {Object} Column
+ * @property {string} field - The field name
+ * @property {string} label - The display label
+ */
+
+/**
+ * @typedef {Object} Row
+ * @property {Record<string, string>} data - Row data from data-* attributes
+ * @property {boolean} selected - Whether the row is selected
+ * @property {Element} element - Reference to the original row element
+ */
+
+/**
+ * @typedef {Object} RenderContext
+ * @property {BrownieTable} table - The table element
+ * @property {Column[]} columns - Column definitions
+ * @property {Row[]} rows - Row data
+ * @property {Record<string, string> | null} footer - Footer data
+ * @property {TablePlugin[]} plugins - Active plugins
+ */
+
+/**
+ * @typedef {Object} TablePlugin
+ * @property {(context: RenderContext) => void} [onTableRender] - Called before rendering
+ * @property {(columns: Column[], context: RenderContext) => Column[]} [transformColumns] - Transform columns
+ * @property {(rows: Row[], context: RenderContext) => Row[]} [transformRows] - Transform rows
+ * @property {() => string} [getStyles] - Return additional CSS
+ * @property {(table: BrownieTable, shadowRoot: ShadowRoot, context: RenderContext) => void} [onTableReady] - Called after render
+ */
+
+/**
  * A data table component that renders rows from child elements.
- * Supports headers, custom column templates, footers, and empty states.
+ * Supports headers, custom column templates, footers, empty states, and plugins.
  *
  * @element brow-table
  * @csspart base - The table element
@@ -38,6 +69,26 @@ export class BrownieTable extends HTMLElement {
     this.render();
     Brownie.applyThemes(/** @type {ShadowRoot} */ (this.shadowRoot));
     this.#observeChildren();
+    this.#waitForPlugins();
+  }
+
+  /**
+   * Wait for plugin custom elements to be defined, then re-render.
+   */
+  async #waitForPlugins() {
+    const pluginTags = ['brow-table-sort', 'brow-table-select', 'brow-table-paginate'];
+    const hasPlugins = pluginTags.some((tag) => this.querySelector(tag));
+    if (!hasPlugins) return;
+
+    // Wait for all plugin types to be defined
+    await Promise.all(
+      pluginTags
+        .filter((tag) => this.querySelector(tag))
+        .map((tag) => customElements.whenDefined(tag))
+    );
+
+    // Re-render now that plugins are upgraded
+    this.render();
   }
 
   disconnectedCallback() {
@@ -99,6 +150,7 @@ export class BrownieTable extends HTMLElement {
 
   /**
    * Sets up mutation observer to watch for child changes.
+   * Observes row data, selection state, and plugin attribute changes.
    */
   #observeChildren() {
     this.#observer = new MutationObserver(() => {
@@ -109,7 +161,22 @@ export class BrownieTable extends HTMLElement {
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ['data-*', 'selected'],
+      // Observe data attributes, selection state, and common plugin attributes
+      attributeFilter: [
+        'data-*',
+        'selected',
+        // Plugin attributes
+        'field',
+        'direction',
+        'fields',
+        'mode',
+        'key',
+        'page',
+        'page-size',
+        'sortable',
+        'no-select',
+        'select-disabled',
+      ],
     });
   }
 
@@ -195,14 +262,30 @@ export class BrownieTable extends HTMLElement {
 
   /**
    * Gets all row data.
-   * @returns {Array<{data: Record<string, string>, selected: boolean}>}
+   * @returns {Row[]}
    */
   #getRows() {
     const rows = this.querySelectorAll('brow-table-row');
     return Array.from(rows).map((row) => ({
       data: this.#getDataAttributes(row),
       selected: row.hasAttribute('selected'),
+      element: row,
     }));
+  }
+
+  /**
+   * Gets plugin elements from the table's children.
+   * @returns {TablePlugin[]}
+   */
+  #getPlugins() {
+    const pluginSelectors = [
+      'brow-table-sort',
+      'brow-table-select',
+      'brow-table-paginate',
+    ];
+    return /** @type {TablePlugin[]} */ (
+      [...this.querySelectorAll(pluginSelectors.join(', '))]
+    );
   }
 
   /**
@@ -308,33 +391,94 @@ export class BrownieTable extends HTMLElement {
   }
 
   /**
-   * Gets alignment style for a column.
-   * @param {string} field
+   * Generates CSS rules for column styles (width, align, etc).
+   * @param {Array<{field: string, label: string}>} columns
    * @param {Map<string, ColumnTemplate>} templates
    * @returns {string}
    */
-  #getCellAlign(field, templates) {
-    const colTemplate = templates.get(field);
-    if (colTemplate) {
-      const align = colTemplate.align;
-      if (align === 'center') return 'text-align: center;';
-      if (align === 'end') return 'text-align: right;';
+  #getColumnStyles(columns, templates) {
+    const rules = [];
+    for (const col of columns) {
+      const colTemplate = templates.get(col.field);
+      if (!colTemplate) continue;
+
+      const declarations = [];
+
+      // Width
+      if (colTemplate.width && colTemplate.width !== 'auto') {
+        declarations.push(`width: ${colTemplate.width};`);
+      }
+
+      // Alignment
+      if (colTemplate.align === 'center') {
+        declarations.push('text-align: center;');
+      } else if (colTemplate.align === 'end') {
+        declarations.push('text-align: right;');
+      }
+
+      if (declarations.length > 0) {
+        rules.push(`.col-${col.field} { ${declarations.join(' ')} }`);
+      }
     }
-    return '';
+    return rules.join('\n');
   }
 
   render() {
     const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
-    const columns = this.#getColumns();
-    const rows = this.#getRows();
+    let columns = this.#getColumns();
+    let rows = this.#getRows();
     const footer = this.#getFooter();
     const templates = this.#getColumnTemplates();
     const emptyContent = this.#getEmptyContent();
+    const plugins = this.#getPlugins();
+
+    // Create render context for plugins
+    /** @type {RenderContext} */
+    const context = {
+      table: this,
+      columns,
+      rows,
+      footer,
+      plugins,
+    };
+
+    // Call onTableRender for each plugin
+    for (const plugin of plugins) {
+      if (typeof plugin.onTableRender === 'function') {
+        plugin.onTableRender(context);
+      }
+    }
+
+    // Apply plugin column transforms
+    for (const plugin of plugins) {
+      if (typeof plugin.transformColumns === 'function') {
+        columns = plugin.transformColumns(columns, context);
+        context.columns = columns;
+      }
+    }
+
+    // Apply plugin row transforms
+    for (const plugin of plugins) {
+      if (typeof plugin.transformRows === 'function') {
+        rows = plugin.transformRows(rows, context);
+        context.rows = rows;
+      }
+    }
+
+    // Collect plugin styles
+    const pluginStyles = plugins
+      .map((plugin) => (typeof plugin.getStyles === 'function' ? plugin.getStyles() : ''))
+      .filter(Boolean)
+      .join('\n');
+
+    // Generate column styles (width, align, etc)
+    const columnStyles = this.#getColumnStyles(columns, templates);
+
     const hasRows = rows.length > 0;
 
     // Build header row
     const headerCells = columns
-      .map((col) => `<th style="${this.#getCellAlign(col.field, templates)}">${this.#escapeHtml(col.label)}</th>`)
+      .map((col) => `<th class="col-${col.field}">${this.#escapeHtml(col.label)}</th>`)
       .join('');
 
     // Build body rows
@@ -342,7 +486,7 @@ export class BrownieTable extends HTMLElement {
       .map(
         (row) => `
         <tr${row.selected ? ' class="selected"' : ''}>
-          ${columns.map((col) => `<td style="${this.#getCellAlign(col.field, templates)}">${this.#renderCell(col.field, row.data, templates)}</td>`).join('')}
+          ${columns.map((col) => `<td class="col-${col.field}">${this.#renderCell(col.field, row.data, templates)}</td>`).join('')}
         </tr>
       `
       )
@@ -350,7 +494,7 @@ export class BrownieTable extends HTMLElement {
 
     // Build footer row
     const footerRow = footer
-      ? `<tr>${columns.map((col) => `<td style="${this.#getCellAlign(col.field, templates)}">${this.#renderCell(col.field, footer, templates)}</td>`).join('')}</tr>`
+      ? `<tr>${columns.map((col) => `<td class="col-${col.field}">${this.#renderCell(col.field, footer, templates)}</td>`).join('')}</tr>`
       : '';
 
     // Build empty state
@@ -367,8 +511,10 @@ export class BrownieTable extends HTMLElement {
           display: block;
 
           /* Table-specific variables (override in themes via brow-table { --var: value }) */
-          --table-cell-padding: var(--space-2) var(--space-3);
-          --table-cell-padding-compact: var(--space-1) var(--space-2);
+          --table-padding-x: var(--space-3);
+          --table-padding-x-compact: var(--space-2);
+          --table-cell-padding: var(--space-2) var(--table-padding-x);
+          --table-cell-padding-compact: var(--space-1) var(--table-padding-x-compact);
           --table-border-color: var(--color-border-muted);
           --table-header-border-color: var(--color-border);
           --table-row-bg: transparent;
@@ -448,6 +594,12 @@ export class BrownieTable extends HTMLElement {
           padding: 0.125em 0.375em;
           border-radius: var(--radius-element, 0.25rem);
         }
+
+        /* Column styles */
+        ${columnStyles}
+
+        /* Plugin styles */
+        ${pluginStyles}
       </style>
 
       ${
@@ -466,6 +618,13 @@ export class BrownieTable extends HTMLElement {
           : emptyState
       }
     `;
+
+    // Call onTableReady for each plugin (after DOM is built)
+    for (const plugin of plugins) {
+      if (typeof plugin.onTableReady === 'function') {
+        plugin.onTableReady(this, shadow, context);
+      }
+    }
   }
 }
 
