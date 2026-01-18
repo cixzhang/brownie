@@ -6,6 +6,10 @@ Brownie is a native web component system for generating polished interfaces in p
 
 Like the helpful household spirits of folklore, Brownie components work quietly in the background — small, unobtrusive, and reliable.
 
+**NOTE:** Brownie is highly experimental and I'm still playing around with the APIs. It is possible to pull a specific
+version and just have it copied and stored if something stable is necessary. Before using this library, please carefully
+read the Browser Support section.
+
 ---
 
 ## Why Brownie?
@@ -223,11 +227,18 @@ livereload .
 
 ## Browser Support
 
-Brownie is brand new in 2026 and leverages the latest browser technologies to achieve
+Brownie is experimental and brand new in 2026 and leverages the latest browser technologies to achieve
 a zero build, zero library core. It has limited browser support.
 
 For example, Brownie uses CSS Anchor Positioning for menus and hovercards which are yet to be baseline.
 You may need additional polyfills for the latest browser features if you want to support older browsers.
+
+For Brownie, we can use anything Baseline for the current year or before or have Working Drafts
+or Living Standards.
+
+* Shadow DOM is baseline
+* `light-dark` is baseline 2024
+* CSS Anchor Positioning is in Working Draft
 
 ---
 
