@@ -127,97 +127,39 @@ brow-button[variant="primary"]::part(base):hover {
   background: linear-gradient(135deg, #9333ea 0%, #db2777 100%);
 }
 
-/* Rainbow neon glow for cards */
-brow-card::part(base) {
-  position: relative;
-  background: var(--color-card);
-  border: 1px solid var(--color-border-muted);
-}
-
-brow-card::part(base)::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(
-    135deg,
-    rgba(236, 72, 153, 0.3),
-    rgba(168, 85, 247, 0.3),
-    rgba(59, 130, 246, 0.3),
-    rgba(16, 185, 129, 0.3),
-    rgba(245, 158, 11, 0.3),
-    rgba(239, 68, 68, 0.3)
-  );
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity var(--transition-base);
-  pointer-events: none;
-  z-index: 1;
-}
-
-brow-card:hover::part(base)::before {
-  opacity: 1;
-}
-
-/* Neon shadow on hover */
+/* Rainbow glow for cards on hover */
 brow-card::part(base) {
   transition: box-shadow var(--transition-base);
 }
 
 brow-card::part(base):hover {
   box-shadow:
-    0 0 20px rgba(168, 85, 247, 0.15),
-    0 0 40px rgba(236, 72, 153, 0.1),
-    0 0 60px rgba(59, 130, 246, 0.05);
+    -4px 0 12px rgba(236, 72, 153, 0.25),
+    -2px 0 20px rgba(168, 85, 247, 0.2),
+    2px 0 20px rgba(59, 130, 246, 0.2),
+    4px 0 12px rgba(16, 185, 129, 0.25),
+    0 0 30px rgba(168, 85, 247, 0.1);
 }
 
-/* Table styling - rainbow glow at boundaries */
+/* Table styling */
 brow-table {
   --table-cell-padding: var(--space-3) var(--space-4);
   --table-row-bg-hover: rgba(168, 85, 247, 0.08);
   --table-row-bg-alt: rgba(168, 85, 247, 0.04);
 }
 
-/* Rainbow border + glow at bottom of header */
+/* Rainbow border on header (using background gradient as border) */
 brow-table::part(head) {
-  border-bottom: 1px solid !important;
-  border-image: linear-gradient(90deg,
-    rgba(236, 72, 153, 0.6),
-    rgba(168, 85, 247, 0.6),
-    rgba(59, 130, 246, 0.6),
-    rgba(16, 185, 129, 0.6),
-    rgba(245, 158, 11, 0.6),
-    rgba(236, 72, 153, 0.6)
-  ) 1 !important;
-  /* Glow that tapers at sides and fades to transparent */
-  background: radial-gradient(
-    ellipse 80% 50% at 50% 100%,
-    rgba(168, 85, 247, 0.18) 0%,
-    rgba(236, 72, 153, 0.1) 40%,
-    transparent 60%
-  );
+  background: linear-gradient(90deg,
+    #ec4899, #a855f7, #3b82f6, #10b981, #f59e0b, #ec4899
+  ) bottom / 100% 1px no-repeat;
 }
 
-/* Rainbow border + glow at top of footer */
+/* Rainbow border on footer (using background gradient as border) */
 brow-table::part(foot) {
-  border-top: 1px solid !important;
-  border-image: linear-gradient(90deg,
-    rgba(236, 72, 153, 0.6),
-    rgba(168, 85, 247, 0.6),
-    rgba(59, 130, 246, 0.6),
-    rgba(16, 185, 129, 0.6),
-    rgba(245, 158, 11, 0.6),
-    rgba(236, 72, 153, 0.6)
-  ) 1 !important;
-  /* Glow that tapers at sides and fades to transparent */
-  background: radial-gradient(
-    ellipse 80% 50% at 50% 0%,
-    rgba(168, 85, 247, 0.18) 0%,
-    rgba(236, 72, 153, 0.1) 40%,
-    transparent 60%
-  );
+  background: linear-gradient(90deg,
+    #ec4899, #a855f7, #3b82f6, #10b981, #f59e0b, #ec4899
+  ) top / 100% 1px no-repeat;
 }
 
 }
