@@ -1,0 +1,185 @@
+/**
+ * Brownie Vibes Theme
+ *
+ * Soft, rounded, spacious aesthetic with subtle neon rainbow accents.
+ * Good vibes only.
+ */
+
+@layer theme {
+
+:root {
+  color-scheme: light dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+:root {
+  /* ==========================================================================
+     SEMANTIC COLORS - Soft, warm palette
+  ========================================================================== */
+
+  --color-accent: light-dark(#a855f7, #c084fc);
+  --color-secondary: light-dark(#f5f3ff, #1e1b2e);
+  --color-page: light-dark(#faf8ff, #0f0d15);
+  --color-card: light-dark(#ffffff, #1a1725);
+  --color-highlight: light-dark(#f3e8ff, #2a2440);
+  --color-muted: light-dark(#f5f3ff, #1e1b2e);
+  --color-overlay: light-dark(rgba(15, 13, 21, 0.5), rgba(0, 0, 0, 0.7));
+
+  /* ==========================================================================
+     TEXT COLORS
+  ========================================================================== */
+
+  --color-text-primary: light-dark(#1e1b2e, #f0eeff);
+  --color-text-secondary: light-dark(#6b6580, #a8a0c0);
+  --color-text-accent: light-dark(#9333ea, #c084fc);
+  --color-text-muted: light-dark(#a8a0c0, #4a4560);
+  --color-text-inverse: light-dark(#ffffff, #0f0d15);
+
+  /* ==========================================================================
+     BORDER COLORS
+  ========================================================================== */
+
+  --color-border: light-dark(#e9e4f5, #2a2640);
+  --color-border-muted: light-dark(#f0ecf9, #1e1b2e);
+  --color-border-strong: light-dark(#d4cce8, #3a3555);
+
+  /* ==========================================================================
+     STATUS COLORS
+  ========================================================================== */
+
+  --color-success-bg: light-dark(#ecfdf5, #1a2e22);
+  --color-success-text: light-dark(#059669, #34d399);
+  --color-success-dot: light-dark(#10b981, #059669);
+
+  --color-warning-bg: light-dark(#fffbeb, #2e2815);
+  --color-warning-text: light-dark(#d97706, #fbbf24);
+  --color-warning-dot: light-dark(#f59e0b, #d97706);
+
+  --color-error-bg: light-dark(#fef2f2, #2e1a1a);
+  --color-error-text: light-dark(#dc2626, #f87171);
+  --color-error-dot: light-dark(#ef4444, #dc2626);
+
+  --color-info-bg: light-dark(#eff6ff, #1a2235);
+  --color-info-text: light-dark(#2563eb, #60a5fa);
+  --color-info-dot: light-dark(#3b82f6, #2563eb);
+
+  /* ==========================================================================
+     TYPOGRAPHY - Friendly, rounded
+  ========================================================================== */
+
+  --font-body: 'Nunito', 'Quicksand', system-ui, sans-serif;
+  --font-header: 'Nunito', 'Quicksand', system-ui, sans-serif;
+  --font-code: 'Fira Code', 'JetBrains Mono', monospace;
+
+  /* ==========================================================================
+     ELEVATION - Soft glow
+  ========================================================================== */
+
+  --elevation-base: 0 2px 8px light-dark(rgba(168, 85, 247, 0.08), rgba(0, 0, 0, 0.3));
+
+  /* ==========================================================================
+     RADIUS - Round and friendly
+  ========================================================================== */
+
+  --radius-round: 9999px;
+  --radius-container: 1.25rem;
+  --radius-element: 0.875rem;
+
+  /* ==========================================================================
+     SPACING - More spacious
+  ========================================================================== */
+
+  --space-0: 0;
+  --space-0_5: 0.1875rem;
+  --space-1: 0.375rem;
+  --space-1_5: 0.5rem;
+  --space-2: 0.625rem;
+  --space-2_5: 0.75rem;
+  --space-3: 0.875rem;
+  --space-4: 1.25rem;
+  --space-5: 1.5rem;
+  --space-6: 1.875rem;
+  --space-8: 2.5rem;
+  --space-10: 3rem;
+  --space-12: 3.75rem;
+
+  /* ==========================================================================
+     TRANSITIONS - Smooth and bouncy
+  ========================================================================== */
+
+  --transition-fast: 150ms ease-out;
+  --transition-base: 200ms ease-out;
+  --transition-slow: 300ms ease-out;
+}
+
+/* ==========================================================================
+   COMPONENT OVERRIDES - Vibes styling
+========================================================================== */
+
+brow-button::part(base) {
+  font-weight: 600;
+  border-radius: var(--radius-round);
+}
+
+brow-button[variant="primary"]::part(base) {
+  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+}
+
+brow-button[variant="primary"]::part(base):hover {
+  background: linear-gradient(135deg, #9333ea 0%, #db2777 100%);
+}
+
+/* Rainbow neon glow for cards */
+brow-card::part(base) {
+  position: relative;
+  background: var(--color-card);
+  border: 1px solid var(--color-border-muted);
+}
+
+brow-card::part(base)::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(236, 72, 153, 0.3),
+    rgba(168, 85, 247, 0.3),
+    rgba(59, 130, 246, 0.3),
+    rgba(16, 185, 129, 0.3),
+    rgba(245, 158, 11, 0.3),
+    rgba(239, 68, 68, 0.3)
+  );
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  pointer-events: none;
+  z-index: 1;
+}
+
+brow-card:hover::part(base)::before {
+  opacity: 1;
+}
+
+/* Neon shadow on hover */
+brow-card::part(base) {
+  transition: box-shadow var(--transition-base);
+}
+
+brow-card::part(base):hover {
+  box-shadow:
+    0 0 20px rgba(168, 85, 247, 0.15),
+    0 0 40px rgba(236, 72, 153, 0.1),
+    0 0 60px rgba(59, 130, 246, 0.05);
+}
+
+}

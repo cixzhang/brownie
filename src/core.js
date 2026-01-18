@@ -10,6 +10,9 @@ class BrownieCore {
   /** @type {Set<string>} */
   #pendingComponents = new Set();
 
+  /** @type {CSSStyleSheet[]} */
+  #themes = [];
+
   /** @type {() => void} */
   #resolveReady = () => {};
 
@@ -76,6 +79,74 @@ class BrownieCore {
    */
   get componentNames() {
     return Array.from(this.#components.keys());
+  }
+
+  /**
+   * Get current themes.
+   * @returns {CSSStyleSheet[]}
+   */
+  get themes() {
+    return [...this.#themes];
+  }
+
+  /**
+   * Inject a theme stylesheet into all registered components.
+   * @param {CSSStyleSheet} stylesheet - The stylesheet to inject
+   */
+  injectTheme(stylesheet) {
+    this.#themes.push(stylesheet);
+    this.#applyThemesToAll();
+  }
+
+  /**
+   * Remove a theme stylesheet from all components.
+   * @param {CSSStyleSheet} stylesheet - The stylesheet to remove
+   */
+  removeTheme(stylesheet) {
+    const index = this.#themes.indexOf(stylesheet);
+    if (index > -1) {
+      this.#themes.splice(index, 1);
+      this.#applyThemesToAll();
+    }
+  }
+
+  /**
+   * Clear all injected themes.
+   */
+  clearThemes() {
+    this.#themes = [];
+    this.#applyThemesToAll();
+  }
+
+  #applyThemesToAll() {
+    for (const tagName of this.#components.keys()) {
+      const elements = document.querySelectorAll(tagName);
+      for (const el of elements) {
+        if (el.shadowRoot) {
+          this.#applyThemes(el.shadowRoot);
+        }
+      }
+    }
+  }
+
+  /**
+   * Apply current themes to a shadow root.
+   * Called by components during connectedCallback.
+   * @param {ShadowRoot} shadowRoot
+   */
+  applyThemes(shadowRoot) {
+    this.#applyThemes(shadowRoot);
+  }
+
+  /**
+   * @param {ShadowRoot} shadowRoot
+   */
+  #applyThemes(shadowRoot) {
+    // Get existing adopted sheets that aren't our themes
+    const existing = shadowRoot.adoptedStyleSheets.filter(
+      (s) => !this.#themes.includes(s)
+    );
+    shadowRoot.adoptedStyleSheets = [...existing, ...this.#themes];
   }
 
   #checkReady() {

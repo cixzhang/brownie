@@ -1,0 +1,181 @@
+/**
+ * Brownie documentation theme
+ *
+ * This theme adds some flair to base Brownie for the documentation site,
+ * including more 3D effects. You can use this as a reference for custom
+ * themes for Brownie.
+ */
+
+@layer theme {
+
+  :root {
+    color-scheme: light dark;
+  }
+
+  [data-theme="light"] {
+    color-scheme: light;
+  }
+
+  [data-theme="dark"] {
+    color-scheme: dark;
+  }
+
+  :root {
+    /* ==========================================================================
+    SEMANTIC COLORS
+  ========================================================================== */
+
+    --color-accent: light-dark(#6a8a6a, #7a9f7a);
+    --color-secondary: light-dark(#eae8e4, #2a2a26);
+    --color-page: light-dark(#f5f5f4, #121210);
+    --color-card: light-dark(#ffffff, #1a1a18);
+    --color-highlight: light-dark(#f4f7f4, #1a2a1a);
+    --color-muted: light-dark(#f0efed, #232320);
+    --color-overlay: light-dark(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7));
+
+    /* ==========================================================================
+    TEXT COLORS
+  ========================================================================== */
+
+    --color-text-primary: light-dark(#393a34, #dbd7caee);
+    --color-text-secondary: light-dark(#5c5c56, #a8a49a);
+    --color-text-accent: light-dark(#4a6a4a, #9fc09f);
+    --color-text-muted: light-dark(#a8a8a0, #5a5850);
+    --color-text-inverse: light-dark(#ffffff, #1a1a18);
+
+    /* ==========================================================================
+    BORDER COLORS
+  ========================================================================== */
+
+    --color-border: light-dark(#e5e5e0, #3a3a35);
+    --color-border-muted: light-dark(#eeede8, #2a2a26);
+    --color-border-strong: light-dark(#d4d4cf, #4a4a44);
+
+    /* ==========================================================================
+    STATUS COLORS
+  ========================================================================== */
+
+    --color-success-bg: light-dark(#e2efe2, #1e2e1e);
+    --color-success-text: light-dark(#2d5a2d, #a3d4a3);
+    --color-success-dot: light-dark(#6a9a6a, #5a9a5a);
+
+    --color-warning-bg: light-dark(#f5ead8, #2e2818);
+    --color-warning-text: light-dark(#8a6020, #d4c08a);
+    --color-warning-dot: light-dark(#c9a040, #a08030);
+
+    --color-error-bg: light-dark(#f5e0de, #2e1e1c);
+    --color-error-text: light-dark(#8a3a35, #d4a09c);
+    --color-error-dot: light-dark(#c97a76, #a05a54);
+
+    --color-info-bg: light-dark(#e0eaf5, #1c2430);
+    --color-info-text: light-dark(#2a4a70, #9cb8d4);
+    --color-info-dot: light-dark(#6a9ac4, #5a8aba);
+
+    /* ==========================================================================
+    TYPOGRAPHY
+  ========================================================================== */
+
+    --font-body: 'Inter', 'Source Sans 3', system-ui, sans-serif;
+    --font-header: 'Inter', 'Source Sans 3', system-ui, sans-serif;
+    --font-code: 'JetBrains Mono', 'Fira Code', monospace;
+
+    /* ==========================================================================
+    ELEVATION
+  ========================================================================== */
+
+    --elevation-base: 0 1px 3px light-dark(rgba(0, 0, 0, 0.04), transparent);
+
+    /* ==========================================================================
+    RADIUS
+  ========================================================================== */
+
+    --radius-round: 9999px;
+    --radius-container: 0.75rem;
+    /* 12px */
+    --radius-element: 0.625rem;
+    /* 10px */
+
+    /* ==========================================================================
+    SPACING (base unit: 4px)
+  ========================================================================== */
+
+    --space-0: 0;
+    --space-0_5: 0.125rem;
+    /* 2px */
+    --space-1: 0.25rem;
+    /* 4px */
+    --space-1_5: 0.375rem;
+    /* 6px */
+    --space-2: 0.5rem;
+    /* 8px */
+    --space-2_5: 0.625rem;
+    /* 10px */
+    --space-3: 0.75rem;
+    /* 12px */
+    --space-4: 1rem;
+    /* 16px */
+    --space-5: 1.25rem;
+    /* 20px */
+    --space-6: 1.5rem;
+    /* 24px */
+    --space-8: 2rem;
+    /* 32px */
+    --space-10: 2.5rem;
+    /* 40px */
+    --space-12: 3rem;
+    /* 48px */
+
+    /* ==========================================================================
+    TRANSITIONS
+  ========================================================================== */
+
+    --transition-fast: 100ms ease;
+    --transition-base: 150ms ease;
+    --transition-slow: 200ms ease;
+  }
+
+  /**
+ * ---------------------
+ * Customizing Components
+ * ---------------------
+ * Override component styles using ::part() selectors.
+ * Each component exposes named parts you can target.
+ *
+ * Example - custom button styling:
+ *
+ *   brow-button::part(base) {
+ *     border-radius: var(--radius-round);
+ *     text-transform: uppercase;
+ *   }
+ *
+ *   brow-button[variant="primary"]::part(base) {
+ *     background: linear-gradient(135deg, #6a8a6a, #4a6a4a);
+ *   }
+ */
+
+  brow-button::part(base):not(:disabled),
+  brow-button[variant="secondary"]::part(base):not(:disabled) {
+    box-shadow: inset 0 3px 0 color-mix(in srgb, var(--color-secondary), white 15%),
+      inset 0 -3px 0 color-mix(in srgb, var(--color-secondary), black 15%);
+  }
+  brow-button:active::part(base):not(:disabled),
+  brow-button[variant="secondary"]:active::part(base):not(:disabled) {
+    box-shadow: inset 0 3px 0 color-mix(in srgb, var(--color-secondary), black 15%);
+    transform: translateY(1px);
+  }
+
+  brow-button[variant="primary"]::part(base):not(:disabled) {
+    box-shadow: inset 0 3px 0 color-mix(in srgb, var(--color-accent), white 15%),
+      inset 0 -3px 0 color-mix(in srgb, var(--color-accent), black 15%);
+  }
+  brow-button[variant="primary"]:active::part(base):not(:disabled) {
+    box-shadow: inset 0 3px 0 color-mix(in srgb, var(--color-accent), black 15%);
+  }
+
+  brow-button[variant="ghost"]::part(base):not(:disabled) {
+    box-shadow: none;
+  }
+  brow-button[variant="ghost"]:active::part(base):not(:disabled) {
+    box-shadow: inset 0 3px 0 color-mix(in srgb, var(--color-secondary), transparent 10%);
+  }
+}

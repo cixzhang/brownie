@@ -3,7 +3,7 @@
     {
       "name": "brow-button",
       "path": "./components/brow-button.js",
-      "description": "A button component that renders as <button> or <a>"
+      "description": "A button component that can also handle links."
     },
     {
       "name": "brow-card",
@@ -13,6 +13,11 @@
     {
       "name": "brow-layout",
       "path": "./components/brow-layout.js",
+      "description": "A composable layout with header, footer, left, right panels and content slots."
+    },
+    {
+      "name": "brow-section",
+      "path": "./components/brow-section.js",
       "description": "TODO: Add description"
     }
   ]

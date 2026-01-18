@@ -1,0 +1,24 @@
+{
+  "themes": [
+    {
+      "name": "Base",
+      "path": "../src/theme.css",
+      "description": "Default Brownie theme with flat styling"
+    },
+    {
+      "name": "Brownie",
+      "path": "brownie.css",
+      "description": "Documentation theme with 3D button effects"
+    },
+    {
+      "name": "Technical",
+      "path": "technical.css",
+      "description": "Minimalist blueprint-inspired theme with monospace typography"
+    },
+    {
+      "name": "Vibes",
+      "path": "vibes.css",
+      "description": "Soft, rounded aesthetic with neon rainbow accents"
+    }
+  ]
+}

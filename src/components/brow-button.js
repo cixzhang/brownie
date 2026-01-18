@@ -4,7 +4,7 @@ import Brownie from '../core.js';
  * A button component that renders as <button> or <a> depending on href attribute.
  * @element brow-button
  * @csspart base - The underlying button or anchor element
- * @typedef {'primary' | 'secondary' | 'ghost'} ButtonVariant
+ * @typedef {'primary' | 'secondary' | 'ghost'} BrownieButtonVariant
  */
 export class BrownieButton extends HTMLElement {
   static get observedAttributes() {
@@ -18,18 +18,19 @@ export class BrownieButton extends HTMLElement {
 
   connectedCallback() {
     this.render();
+    Brownie.applyThemes(/** @type {ShadowRoot} */ (this.shadowRoot));
   }
 
   attributeChangedCallback() {
     this.render();
   }
 
-  /** @returns {ButtonVariant} */
+  /** @returns {BrownieButtonVariant} */
   get variant() {
-    return /** @type {ButtonVariant} */ (this.getAttribute('variant')) || 'secondary';
+    return /** @type {BrownieButtonVariant} */ (this.getAttribute('variant')) || 'secondary';
   }
 
-  /** @param {ButtonVariant} value */
+  /** @param {BrownieButtonVariant} value */
   set variant(value) {
     this.setAttribute('variant', value);
   }
@@ -66,6 +67,7 @@ export class BrownieButton extends HTMLElement {
       <style>
         :host {
           display: inline-block;
+          user-select: none;
         }
 
         [part="base"] {

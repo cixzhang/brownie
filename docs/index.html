@@ -5,14 +5,238 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Brownie - Web Component Library</title>
   <link rel="stylesheet" href="../src/base.css">
-  <link rel="stylesheet" href="../src/theme.css">
+  <link rel="stylesheet" href="brownie.css" id="theme-link">
+  <style>
+    body {
+      font-family: var(--font-body);
+      color: var(--color-text-primary);
+      background: var(--color-page);
+      max-width: 800px;
+      margin: 0 auto;
+      padding: var(--space-6);
+      line-height: 1.6;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-8);
+    }
+
+    h1 { margin: 0; }
+    h2 { margin-top: var(--space-8); border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-2); }
+    h3 { margin-top: 0; }
+
+    .tagline {
+      color: var(--color-text-secondary);
+      margin-top: var(--space-2);
+    }
+
+    .controls {
+      display: flex;
+      gap: var(--space-2);
+      align-items: center;
+    }
+
+    .theme-toggle, .theme-select {
+      font-family: inherit;
+      font-size: 0.875rem;
+      padding: var(--space-1_5) var(--space-3);
+      border-radius: var(--radius-element);
+      border: 1px solid var(--color-border);
+      background: var(--color-card);
+      color: var(--color-text-primary);
+      cursor: pointer;
+    }
+
+    .theme-toggle:hover, .theme-select:hover {
+      background: var(--color-muted);
+    }
+
+    .component-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .component-list li {
+      border-bottom: 1px solid var(--color-border-muted);
+    }
+
+    .component-list a {
+      display: block;
+      padding: var(--space-4);
+      text-decoration: none;
+      color: var(--color-text-primary);
+      transition: background var(--transition-fast);
+    }
+
+    .component-list a:hover {
+      background: var(--color-muted);
+    }
+
+    .component-name {
+      font-family: var(--font-code);
+      color: var(--color-text-accent);
+    }
+
+    .component-desc {
+      color: var(--color-text-secondary);
+      font-size: 0.875rem;
+      margin-top: var(--space-1);
+    }
+
+    .example-section {
+      margin: var(--space-6) 0;
+      padding: var(--space-6);
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-container);
+    }
+
+    .example-section h3 {
+      margin-top: 0;
+    }
+
+    .demo {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+    .demo-stack {
+      display: flex;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+      align-items: center;
+    }
+  </style>
 </head>
-<body class="brownie-base">
+<body>
+  <header>
+    <div>
+      <h1>Brownie</h1>
+      <p class="tagline">A native web component library</p>
+    </div>
+    <div class="controls">
+      <select class="theme-select" id="theme-select"></select>
+      <button class="theme-toggle" id="theme-toggle" title="Toggle dark mode">
+        <span id="theme-icon">☀️</span>
+      </button>
+    </div>
+  </header>
 
-  <brow-button>Default</brow-button>
-  <brow-button variant="primary">Primary</brow-button>
-  <brow-button disabled>Disabled</brow-button>
+  <brow-card>
+    <div class="demo">
+      <div class="demo-stack">
+        <brow-button>Default</brow-button>
+        <brow-button variant="primary">Primary</brow-button>
+        <brow-button variant="ghost">Ghost</brow-button>
+        <brow-button disabled>Disabled</brow-button>
+      </div>
 
-  <script type="module" src="../src/components/brow-button.js"></script>
+      <brow-section height="20rem" variant="muted" slot="start">
+        <brow-layout>
+          <brow-section slot="start" width="12rem">Left</brow-section>
+          <brow-card slot="content" height="100%">
+            <brow-layout>
+              <brow-section slot="content">Content</brow-section>
+              <brow-section slot="end">Right</brow-section>
+            </brow-layout>
+          </brow-card>
+        </brow-layout>
+      </brow-section>
+    </div>
+  </brow-card>
+
+  <h2>Components</h2>
+  <ul class="component-list" id="component-list">
+    <li>Loading...</li>
+  </ul>
+
+  <script type="module">
+    import Brownie from '../src/index.js';
+
+    // Load component list from registry
+    async function loadRegistry() {
+      try {
+        const response = await fetch('../src/registry.json');
+        const registry = await response.json();
+
+        const list = document.getElementById('component-list');
+        list.innerHTML = registry.components.map(c => `
+          <li>
+            <a href="component.html?component=${c.name}">
+              <span class="component-name">&lt;${c.name}&gt;</span>
+              <div class="component-desc">${c.description}</div>
+            </a>
+          </li>
+        `).join('');
+      } catch (err) {
+        console.error('Failed to load registry:', err);
+      }
+    }
+
+    // Theme switching
+    const themeSelect = document.getElementById('theme-select');
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const themeLink = document.getElementById('theme-link');
+
+    async function loadThemes() {
+      try {
+        const response = await fetch('themes.json');
+        const data = await response.json();
+
+        themeSelect.innerHTML = data.themes.map(t =>
+          `<option value="${t.path}">${t.name}</option>`
+        ).join('');
+
+        // Restore saved theme
+        const savedTheme = localStorage.getItem('brownie-theme');
+        if (savedTheme) {
+          themeSelect.value = savedTheme;
+          setTheme(savedTheme);
+        }
+      } catch (err) {
+        console.error('Failed to load themes:', err);
+      }
+    }
+
+    function setTheme(themePath) {
+      themeLink.href = themePath;
+    }
+
+    themeSelect.addEventListener('change', (e) => {
+      const value = /** @type {HTMLSelectElement} */ (e.target).value;
+      setTheme(value);
+      localStorage.setItem('brownie-theme', value);
+    });
+
+    // Dark mode toggle
+    function updateDarkMode() {
+      const isDark = document.documentElement.dataset.theme === 'dark';
+      themeIcon.textContent = isDark ? '🌙' : '☀️';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const isDark = document.documentElement.dataset.theme === 'dark';
+      document.documentElement.dataset.theme = isDark ? 'light' : 'dark';
+      localStorage.setItem('brownie-dark-mode', isDark ? 'light' : 'dark');
+      updateDarkMode();
+    });
+
+    // Restore dark mode preference
+    const savedDarkMode = localStorage.getItem('brownie-dark-mode');
+    if (savedDarkMode) {
+      document.documentElement.dataset.theme = savedDarkMode;
+    }
+    updateDarkMode();
+
+    // Initialize
+    loadRegistry();
+    loadThemes();
+    await Brownie.ready();
+  </script>
 </body>
 </html>

@@ -1,0 +1,158 @@
+/**
+ * Brownie Technical Theme
+ *
+ * Minimalist blueprint-inspired theme with monospace typography
+ * and a serious, engineering-focused aesthetic.
+ */
+
+@layer theme {
+
+:root {
+  color-scheme: light dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+:root {
+  /* ==========================================================================
+     SEMANTIC COLORS - Blueprint palette
+  ========================================================================== */
+
+  --color-accent: light-dark(#1a5f9e, #4a9eed);
+  --color-secondary: light-dark(#e8edf2, #1e2830);
+  --color-page: light-dark(#ffffff, #0d1117);
+  --color-card: light-dark(#ffffff, #161b22);
+  --color-highlight: light-dark(#e1ebf5, #1a2633);
+  --color-muted: light-dark(#eef2f6, #1a1f26);
+  --color-overlay: light-dark(rgba(13, 17, 23, 0.6), rgba(0, 0, 0, 0.8));
+
+  /* ==========================================================================
+     TEXT COLORS
+  ========================================================================== */
+
+  --color-text-primary: light-dark(#1a1f26, #c9d1d9);
+  --color-text-secondary: light-dark(#57606a, #8b949e);
+  --color-text-accent: light-dark(#1a5f9e, #58a6ff);
+  --color-text-muted: light-dark(#8b949e, #484f58);
+  --color-text-inverse: light-dark(#ffffff, #0d1117);
+
+  /* ==========================================================================
+     BORDER COLORS
+  ========================================================================== */
+
+  --color-border: light-dark(#d0d7de, #30363d);
+  --color-border-muted: light-dark(#e1e4e8, #21262d);
+  --color-border-strong: light-dark(#8b949e, #484f58);
+
+  /* ==========================================================================
+     STATUS COLORS
+  ========================================================================== */
+
+  --color-success-bg: light-dark(#dafbe1, #1b3d2f);
+  --color-success-text: light-dark(#1a7f37, #3fb950);
+  --color-success-dot: light-dark(#2da44e, #238636);
+
+  --color-warning-bg: light-dark(#fff8c5, #3d2e00);
+  --color-warning-text: light-dark(#9a6700, #d29922);
+  --color-warning-dot: light-dark(#bf8700, #9e6a03);
+
+  --color-error-bg: light-dark(#ffebe9, #3d1f20);
+  --color-error-text: light-dark(#cf222e, #f85149);
+  --color-error-dot: light-dark(#da3633, #b62324);
+
+  --color-info-bg: light-dark(#ddf4ff, #1a3a52);
+  --color-info-text: light-dark(#0969da, #58a6ff);
+  --color-info-dot: light-dark(#218bff, #1f6feb);
+
+  /* ==========================================================================
+     TYPOGRAPHY - Monospace for technical feel
+  ========================================================================== */
+
+  --font-body: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  --font-header: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  --font-code: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* ==========================================================================
+     ELEVATION - Subtle, flat
+  ========================================================================== */
+
+  --elevation-base: none;
+
+  /* ==========================================================================
+     RADIUS - Sharp, technical
+  ========================================================================== */
+
+  --radius-round: 2px;
+  --radius-container: 2px;
+  --radius-element: 2px;
+
+  /* ==========================================================================
+     SPACING (base unit: 4px)
+  ========================================================================== */
+
+  --space-0: 0;
+  --space-0_5: 0.125rem;
+  --space-1: 0.25rem;
+  --space-1_5: 0.375rem;
+  --space-2: 0.5rem;
+  --space-2_5: 0.625rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  /* ==========================================================================
+     TRANSITIONS - Snappy
+  ========================================================================== */
+
+  --transition-fast: 80ms linear;
+  --transition-base: 120ms linear;
+  --transition-slow: 160ms linear;
+}
+
+/* ==========================================================================
+   COMPONENT OVERRIDES - Technical styling
+========================================================================== */
+
+brow-button::part(base) {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  border: 1px solid var(--color-border);
+}
+
+brow-button::part(base):hover {
+  border-color: var(--color-border-strong);
+}
+
+brow-button[variant="primary"]::part(base) {
+  border-color: var(--color-accent);
+}
+
+brow-button[variant="primary"]::part(base):hover {
+  border-color: color-mix(in srgb, var(--color-accent), white 20%);
+}
+
+brow-button[variant="ghost"]::part(base) {
+  border-color: transparent;
+}
+
+brow-button[variant="ghost"]::part(base):hover {
+  border-color: var(--color-border);
+}
+
+brow-card::part(base) {
+  border: 1px solid var(--color-border);
+}
+
+}

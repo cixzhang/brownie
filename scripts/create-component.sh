@@ -19,7 +19,7 @@ if [[ ! "$NAME" =~ ^brow- ]]; then
   exit 1
 fi
 
-# Convert to PascalCase for class name (e.g., brow-card -> BrowCard)
+# Convert to PascalCase for class name (e.g., brow-card -> BrownieCard)
 CLASS_NAME=$(
   echo "$NAME" \
     | sed 's/^brow-/Brownie-/' \
@@ -55,6 +55,7 @@ export class ${CLASS_NAME} extends HTMLElement {
 
   connectedCallback() {
     this.render();
+    Brownie.applyThemes(/** @type {ShadowRoot} */ (this.shadowRoot));
   }
 
   attributeChangedCallback() {
@@ -64,7 +65,7 @@ export class ${CLASS_NAME} extends HTMLElement {
   render() {
     const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
 
-    shadow.innerHTML = \`
+    shadow.innerHTML = /*html*/\`
       <style>
         :host {
           display: block;
@@ -100,6 +101,11 @@ TODO: Add component description.
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
+
+## Slots
+
+| Slot | Description | Example Content |
+|----- |-------------|-----------------|
 
 ## CSS Parts
 
