@@ -23,25 +23,19 @@ Brownie takes a different approach:
 - **Backend and AI friendly** — generate complete, working interfaces from any language or LLM
 - **Zero build step** — drop in a script tag and go
 
+Brownie is built with backend rendering and AI interactions in mind.
+It tries to achieve a DOM that can be fully observed to provide dense information
+about your application and allow machines to understand everything from structure,
+data, appearance, semantics, and capabilities just from reading the DOM and HTML files.
+
+- **Declarative configuration** — no imperative JS required for most UIs
+- **Minimal template syntax** — just `{{property}}` bindings and optional formatters
+- **Attribute-driven** — all state is visible in the markup
+- **Predictable output** — same inputs always produce the same DOM
+
 ---
 
 ## Core Principles
-
-### Full Theming
-
-Brownie components can be fully themed using pure CSS. A central registry injects stylesheets into each component's shadow DOM, giving you complete control over appearance while maintaining encapsulation.
-
-```javascript
-const brownie = new Brownie();
-brownie.injectTheme(myTheme);
-
-// All components automatically receive the theme
-```
-
-Themes are just CSS files. No special syntax, no token APIs — just the CSS you already know.
-
-We recommend sticking to changing only the CSS variables and component `::part()` to maintain
-compatibility in future versions.
 
 ### Data in the DOM
 
@@ -58,6 +52,36 @@ We lean into HTML's natural model of keeping data in the DOM. This makes it easy
   <brow-table-row name="Alice" role="Admin" status="active"/>
   <brow-table-row name="Bob" role="Editor" status="pending"/>
 </brow-table>
+```
+
+### Full Theming
+
+Brownie components can be fully themed using pure CSS. No special syntax,
+no token APIs — just the CSS you already know. Web components have style encapsulation
+so Brownie components can also expose a public API for themes using `::part()`.
+
+To create a new theme, start with cloning one of the example themes then modify as
+needed. Refer to component documentation for style-able parts.
+
+* [base.css](https://github.com/cixzhang/brownie/blob/main/src/base.css): Minimal base theme
+* [brownie.css](https://github.com/cixzhang/brownie/blob/main/docs/brownie.css): Brownie documentation theme with 3D buttons
+* [technical.css](https://github.com/cixzhang/brownie/blob/main/docs/technical.css): Serious technical theme with monospace fonts
+* [vibes.css](https://github.com/cixzhang/brownie/blob/main/docs/vibes.css): Fun vibes theme with rainbow gradients
+
+Themes use CSS `light-dark` to set colors that switch between light and dark mode.
+The theme control is handled by `base.css` by applying `color-scheme` to `:root`.
+Brownie sets `color-scheme: light dark` to enable OS preference for light and dark modes,
+then the `data-theme` attribute on the `<html>` can be used to control for specific modes.
+
+```html
+<!-- Use OS preference by default -->
+<html>
+
+<!-- Explicitly set dark theme -->
+<html data-theme="dark">
+
+<!-- Explicitly set light theme -->
+<html data-theme="light">
 ```
 
 ### Progressive Complexity
@@ -122,82 +146,6 @@ Simple things stay simple. Complex things are possible.
 ```
 ---
 
-## Imports and Plugins
-
-After `brownie/core`, import what you need. We use ES6 modules to pull in dependencies.
-We can also progressively load behaviors through plugins.
-
-```html
-<script src="brownie/core.js"></script>
-<script src="brownie/table.js"></script>
-<script src="brownie/table-sort.js"></script>
-<script src="brownie/table-select.js"></script>
-```
-
-Plugins register themselves with the core and enable new attributes on existing components:
-
-```html
-<brow-table>
-  <brow-table-header name="Name" age="Age"/>
-  <brow-table-column field="name" sortable/>
-  <brow-table-column field="age" sortable/>
-  
-  <brow-table-row name="Alice" age="34" selected/>
-  <brow-table-row name="Bob" age="28"/>
-</brow-table>
-```
-
----
-
-## Theming
-
-Themes are pure CSS stylesheets that get injected into every component's shadow DOM.
-To create a new theme, clone the `theme.css` file then make adjustments as necessary.
-Brownie's base theme is kept simple and lightweight since it's intended to be used as
-a starting point to clone and develop your custom theme.
-
-For more advanced theming, each component's shadow root can also be styled and 
-any named `:part` can be styled as well. Parts are documented for each component.
-
-Here are a few example themes from our documentation:
-
-* `docs/brownie.css`: A more 3-dimensional version of the base theme with additional fonts loaded.
-* `docs/technical.css`: A technical, blueprint-like theme using monospace fonts, high contrast, sharp corners.
-* `docs/vibes.css`: A colorful, friendly theme with additional gradient effects.
-
-### Light/Dark Mode
-
-Themes use CSS `light-dark` to set colors that switch between light and dark mode.
-The theme control is handled by `base.css` by applying `color-scheme` to `:root`.
-Brownie sets `color-scheme: light dark` to enable OS preference for light and dark modes,
-then the `data-theme` attribute on the `<html>` can be used to control for specific modes.
-
-```html
-<!-- Use OS preference by default -->
-<html>
-
-<!-- Explicitly set dark theme -->
-<html data-theme="dark">
-
-<!-- Explicitly set light theme -->
-<html data-theme="light">
-```
-
----
-
-## Designed for Generation
-
-Brownie is built with backend rendering and AI generation in mind:
-
-- **Declarative configuration** — no imperative JS required for most UIs
-- **Minimal template syntax** — just `{{property}}` bindings and optional formatters
-- **Attribute-driven** — all state is visible in the markup
-- **Predictable output** — same inputs always produce the same DOM
-
-Whether you're rendering from Rails, Django, PHP, or an LLM — if you can output HTML, you can build with Brownie.
-
----
-
 ## Local Development
 
 Brownie has no build step, so any static file server with live reload works.
@@ -233,7 +181,7 @@ a zero build, zero library core. It has limited browser support.
 For example, Brownie uses CSS Anchor Positioning for menus and hovercards which are yet to be baseline.
 You may need additional polyfills for the latest browser features if you want to support older browsers.
 
-For Brownie, we can use anything Baseline for the current year or before or have Working Drafts
+For Brownie, we can choose baseline features for the current year and features that have Working Drafts
 or Living Standards.
 
 * Shadow DOM is baseline
