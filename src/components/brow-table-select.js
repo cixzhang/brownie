@@ -8,6 +8,7 @@ import Brownie from '../core.js';
  * @attr {string} mode - Selection mode: 'single' or 'multi' (default: 'multi')
  * @attr {string} key - Data attribute key for identifying rows
  * @attr {boolean} row-click - Enable clicking anywhere on a row to toggle selection
+ * @attr {boolean} cascade - When used with tree, selecting a parent selects all children
  *
  * @example
  * <brow-table>
@@ -19,8 +20,21 @@ import Brownie from '../core.js';
  */
 export class BrownieTableSelect extends HTMLElement {
   static get observedAttributes() {
-    return ['mode', 'key', 'row-click'];
+    return ['mode', 'key', 'row-click', 'cascade'];
   }
+
+  /**
+   * Plugin priority (lower = runs first).
+   * Select runs after tree so its column appears after tree.
+   * @type {number}
+   */
+  priority = 20;
+
+  /** @type {string | null} */
+  #treeIdKey = null;
+
+  /** @type {string | null} */
+  #treeParentKey = null;
 
   // ============================================================
   // Config: selection mode and key field
@@ -80,6 +94,26 @@ export class BrownieTableSelect extends HTMLElement {
     }
   }
 
+  /**
+   * Get whether cascade selection is enabled.
+   * When true and used with tree, selecting a parent selects all children.
+   * @returns {boolean}
+   */
+  get cascade() {
+    return this.hasAttribute('cascade');
+  }
+
+  /**
+   * @param {boolean} value
+   */
+  set cascade(value) {
+    if (value) {
+      this.setAttribute('cascade', '');
+    } else {
+      this.removeAttribute('cascade');
+    }
+  }
+
   // ============================================================
   // Selection State
   // ============================================================
@@ -101,9 +135,13 @@ export class BrownieTableSelect extends HTMLElement {
   getSelectedKeys() {
     const keyField = this.key;
     if (!keyField) return [];
-    return this.getSelectedRows()
-      .map((row) => /** @type {HTMLElement} */ (row).dataset[keyField])
-      .filter(Boolean);
+    /** @type {string[]} */
+    const keys = [];
+    for (const row of this.getSelectedRows()) {
+      const key = /** @type {HTMLElement} */ (row).dataset[keyField];
+      if (key) keys.push(key);
+    }
+    return keys;
   }
 
   /**
@@ -116,6 +154,19 @@ export class BrownieTableSelect extends HTMLElement {
         this.#clearSelection();
       }
       row.setAttribute('selected', '');
+
+      // Cascade to children and parents if enabled
+      if (this.cascade) {
+        // Select all descendants
+        for (const child of this.#getDescendants(row)) {
+          if (this.#isRowSelectable(child)) {
+            child.setAttribute('selected', '');
+          }
+        }
+        // Check if parent should be selected (all siblings now selected)
+        this.#cascadeUp(row);
+      }
+
       this.#dispatchSelectEvent();
     }
   }
@@ -126,6 +177,17 @@ export class BrownieTableSelect extends HTMLElement {
    */
   deselectRow(row) {
     row.removeAttribute('selected');
+
+    // Cascade to children and parents if enabled
+    if (this.cascade) {
+      // Deselect all descendants
+      for (const child of this.#getDescendants(row)) {
+        child.removeAttribute('selected');
+      }
+      // Deselect all ancestors
+      this.#cascadeUpDeselect(row);
+    }
+
     this.#dispatchSelectEvent();
   }
 
@@ -198,6 +260,137 @@ export class BrownieTableSelect extends HTMLElement {
   }
 
   /**
+   * Get all descendant rows of a given row (for cascade selection).
+   * @param {Element} row
+   * @returns {Element[]}
+   */
+  #getDescendants(row) {
+    if (!this.#treeIdKey || !this.#treeParentKey) return [];
+
+    const table = this.closest('brow-table');
+    if (!table) return [];
+
+    const rowId = /** @type {HTMLElement} */ (row).dataset[this.#treeIdKey];
+    if (!rowId) return [];
+
+    const allRows = [...table.querySelectorAll('brow-table-row')];
+
+    // Build parent -> children map (O(n))
+    /** @type {Map<string, Element[]>} */
+    const childrenMap = new Map();
+    for (const r of allRows) {
+      const parentId = /** @type {HTMLElement} */ (r).dataset[this.#treeParentKey];
+      if (parentId) {
+        const children = childrenMap.get(parentId);
+        if (children) {
+          children.push(r);
+        } else {
+          childrenMap.set(parentId, [r]);
+        }
+      }
+    }
+
+    // BFS using the map (O(descendants))
+    /** @type {Element[]} */
+    const descendants = [];
+    const idsToCheck = [rowId];
+
+    while (idsToCheck.length > 0) {
+      const parentId = /** @type {string} */ (idsToCheck.shift());
+      const children = childrenMap.get(parentId);
+      if (children) {
+        for (const child of children) {
+          descendants.push(child);
+          const childId = /** @type {HTMLElement} */ (child).dataset[this.#treeIdKey];
+          if (childId) {
+            idsToCheck.push(childId);
+          }
+        }
+      }
+    }
+
+    return descendants;
+  }
+
+  /**
+   * Get the parent row of a given row.
+   * @param {Element} row
+   * @returns {Element | null}
+   */
+  #getParentRow(row) {
+    if (!this.#treeIdKey || !this.#treeParentKey) return null;
+
+    const table = this.closest('brow-table');
+    if (!table) return null;
+
+    const parentId = /** @type {HTMLElement} */ (row).dataset[this.#treeParentKey];
+    if (!parentId) return null;
+
+    for (const r of table.querySelectorAll('brow-table-row')) {
+      if (/** @type {HTMLElement} */ (r).dataset[this.#treeIdKey] === parentId) {
+        return r;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Get sibling rows (same parent) of a given row.
+   * @param {Element} row
+   * @returns {Element[]}
+   */
+  #getSiblings(row) {
+    if (!this.#treeIdKey || !this.#treeParentKey) return [];
+
+    const table = this.closest('brow-table');
+    if (!table) return [];
+
+    const parentId = /** @type {HTMLElement} */ (row).dataset[this.#treeParentKey];
+    /** @type {Element[]} */
+    const siblings = [];
+
+    for (const r of table.querySelectorAll('brow-table-row')) {
+      if (/** @type {HTMLElement} */ (r).dataset[this.#treeParentKey] === parentId) {
+        siblings.push(r);
+      }
+    }
+    return siblings;
+  }
+
+  /**
+   * Cascade selection upward - select parent if all siblings are selected.
+   * @param {Element} row
+   */
+  #cascadeUp(row) {
+    const parent = this.#getParentRow(row);
+    if (!parent) return;
+
+    const siblings = this.#getSiblings(row);
+    const selectableSiblings = siblings.filter((s) => this.#isRowSelectable(s));
+
+    // Check if all selectable siblings are selected
+    const allSelected = selectableSiblings.every((s) => s.hasAttribute('selected'));
+
+    if (allSelected && this.#isRowSelectable(parent)) {
+      parent.setAttribute('selected', '');
+      // Recurse up
+      this.#cascadeUp(parent);
+    }
+  }
+
+  /**
+   * Cascade deselection upward - deselect all ancestors.
+   * @param {Element} row
+   */
+  #cascadeUpDeselect(row) {
+    let parent = this.#getParentRow(row);
+    while (parent) {
+      parent.removeAttribute('selected');
+      parent = this.#getParentRow(parent);
+    }
+  }
+
+  /**
    * Clear all selections.
    */
   #clearSelection() {
@@ -244,6 +437,15 @@ export class BrownieTableSelect extends HTMLElement {
         text-align: center;
       }
 
+      :host([bordered]) th.select-column,
+      :host([bordered]) td.select-column {
+        padding-right: var(--space-3);
+      }
+
+      td.select-column[data-interactive] {
+        cursor: pointer;
+      }
+
       .select-checkbox {
         width: 1rem;
         height: 1rem;
@@ -260,25 +462,16 @@ export class BrownieTableSelect extends HTMLElement {
       th.select-column .select-checkbox {
         vertical-align: middle;
       }
-
-      :host([row-click]) tbody tr {
-        cursor: pointer;
-      }
-
-      :host([row-click]) tbody tr[data-no-select],
-      :host([row-click]) tbody tr[data-select-disabled] {
-        cursor: default;
-      }
     `;
   }
 
   /**
    * Add checkbox column to the beginning.
    * @param {import('./brow-table.js').Column[]} columns
-   * @param {import('./brow-table.js').RenderContext} context
+   * @param {import('./brow-table.js').RenderContext} _context
    * @returns {import('./brow-table.js').Column[]}
    */
-  transformColumns(columns, context) {
+  transformColumns(columns, _context) {
     return [{ field: '__select__', label: '' }, ...columns];
   }
 
@@ -289,6 +482,12 @@ export class BrownieTableSelect extends HTMLElement {
    * @param {import('./brow-table.js').RenderContext} context
    */
   onTableReady(table, shadowRoot, context) {
+    // Store tree config for cascade selection
+    if (context.shared.tree) {
+      this.#treeIdKey = context.shared.tree.idKey;
+      this.#treeParentKey = context.shared.tree.parentKey;
+    }
+
     const rows = [...table.querySelectorAll('brow-table-row')];
 
     // Get header checkbox cell
@@ -363,11 +562,25 @@ export class BrownieTableSelect extends HTMLElement {
 
       cell.appendChild(checkbox);
 
+      // Make entire cell clickable and mark as interactive for row-click handlers
+      if (this.#isRowSelectable(rowElement)) {
+        /** @type {HTMLElement} */ (cell).dataset.interactive = '';
+        cell.addEventListener('click', (e) => {
+          // Skip if clicking the checkbox itself (already handled by change event)
+          if (e.target === checkbox) return;
+          e.stopPropagation();
+          this.toggleRow(rowElement);
+          table.render();
+        });
+      }
+
       // Add row click handler if enabled
       if (this.rowClick && this.#isRowSelectable(rowElement)) {
+        /** @type {HTMLElement} */ (tr).style.cursor = 'pointer';
         tr.addEventListener('click', (e) => {
-          // Don't toggle if clicking the checkbox itself
-          if (e.target === checkbox) return;
+          // Don't toggle if clicking an interactive element or container
+          const interactive = /** @type {HTMLElement} */ (e.target).closest('a, button, input, select, textarea, [tabindex], [data-interactive]');
+          if (interactive && tr.contains(interactive)) return;
           this.toggleRow(rowElement);
           table.render();
         });

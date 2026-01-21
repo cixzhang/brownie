@@ -8,10 +8,86 @@
   <link rel="stylesheet" href="brownie.css" id="theme-link">
   <style>
     body {
-      max-width: 800px;
-      margin: 0 auto;
+      margin: 0;
       padding: var(--space-6);
       line-height: 1.6;
+    }
+
+    .page-layout {
+      display: flex;
+      gap: var(--space-6);
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .main-content {
+      flex: 1;
+      min-width: 0;
+      max-width: 800px;
+    }
+
+    .toc-sidebar {
+      width: 200px;
+      flex-shrink: 0;
+      display: none;
+    }
+
+    @media (min-width: 1000px) {
+      .toc-sidebar {
+        display: block;
+      }
+    }
+
+    .toc {
+      position: sticky;
+      top: var(--space-6);
+      max-height: calc(100vh - var(--space-6) * 2);
+      overflow-y: auto;
+      padding-right: var(--space-2);
+    }
+
+    .toc-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-2);
+    }
+
+    .toc-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 0.875rem;
+    }
+
+    .toc-list li {
+      margin-bottom: var(--space-1);
+    }
+
+    .toc-list a {
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      display: block;
+      padding: var(--space-0_5) 0;
+      border-left: 2px solid transparent;
+      padding-left: var(--space-2);
+      transition: all 150ms;
+    }
+
+    .toc-list a:hover {
+      color: var(--color-text-primary);
+    }
+
+    .toc-list a.active {
+      color: var(--color-text-accent);
+      border-left-color: var(--color-accent);
+    }
+
+    .toc-list .toc-h3 {
+      padding-left: var(--space-4);
+      font-size: 0.8125rem;
     }
 
     header {
@@ -19,6 +95,9 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: var(--space-4);
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .back-link {
@@ -52,7 +131,8 @@
     }
 
     h1 { margin-top: 0; }
-    h2 { margin-top: var(--space-6); border-bottom: 1px solid var(--color-border); }
+    h2 { margin-top: var(--space-6); border-bottom: 1px solid var(--color-border); scroll-margin-top: var(--space-4); }
+    h3 { margin-top: var(--space-4); scroll-margin-top: var(--space-4); }
     div { margin-bottom: var(--space-2); }
 
     code {
@@ -99,8 +179,18 @@
     </div>
   </header>
 
-  <div id="content"></div>
-  <div id="error" class="error" style="display: none;"></div>
+  <div class="page-layout">
+    <main class="main-content">
+      <div id="content"></div>
+      <div id="error" class="error" style="display: none;"></div>
+    </main>
+    <aside class="toc-sidebar">
+      <nav class="toc">
+        <div class="toc-title">On this page</div>
+        <ul class="toc-list" id="toc-list"></ul>
+      </nav>
+    </aside>
+  </div>
 
   <script type="module">
     import Brownie from '../src/index.js';
@@ -146,6 +236,7 @@
         document.getElementById('content').classList.add('loaded');
         document.title = `${name} - Brownie`;
 
+        buildTOC();
         await Brownie.ready();
       } catch (err) {
         showError(err.message);
@@ -236,10 +327,11 @@
         return `<code>${escaped}</code>`;
       });
 
-      // Headers
-      html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-      html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-      html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+      // Headers with IDs for TOC
+      const toId = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      html = html.replace(/^### (.+)$/gm, (_, text) => `<h3 id="${toId(text)}">${text}</h3>`);
+      html = html.replace(/^## (.+)$/gm, (_, text) => `<h2 id="${toId(text)}">${text}</h2>`);
+      html = html.replace(/^# (.+)$/gm, (_, text) => `<h1 id="${toId(text)}">${text}</h1>`);
 
       // Paragraphs (simple approach)
       html = html.replace(/\n\n/g, '</div><div>');
@@ -249,6 +341,51 @@
       html = html.replace(/<p><\/p>/g, '');
 
       return html;
+    }
+
+    function buildTOC() {
+      const content = document.getElementById('content');
+      const tocList = document.getElementById('toc-list');
+      const headings = content.querySelectorAll('h2, h3');
+
+      if (headings.length === 0) {
+        document.querySelector('.toc-sidebar').style.display = 'none';
+        return;
+      }
+
+      tocList.innerHTML = headings.length > 0
+        ? [...headings].map(h => {
+            const level = h.tagName.toLowerCase();
+            return `<li><a href="#${h.id}" class="toc-${level}">${h.textContent}</a></li>`;
+          }).join('')
+        : '';
+
+      // Scroll spy for active state
+      const tocLinks = tocList.querySelectorAll('a');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            tocLinks.forEach(link => link.classList.remove('active'));
+            const activeLink = tocList.querySelector(`a[href="#${entry.target.id}"]`);
+            if (activeLink) activeLink.classList.add('active');
+          }
+        });
+      }, { rootMargin: '-20% 0px -70% 0px' });
+
+      headings.forEach(h => observer.observe(h));
+
+      // Smooth scroll on click
+      tocLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const id = link.getAttribute('href').slice(1);
+          const target = document.getElementById(id);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            history.pushState(null, '', `#${id}`);
+          }
+        });
+      });
     }
 
     // Theme switching

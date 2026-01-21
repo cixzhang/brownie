@@ -20,10 +20,12 @@ import Brownie from '../core.js';
  * @property {Row[]} rows - Row data
  * @property {Record<string, string> | null} footer - Footer data
  * @property {TablePlugin[]} plugins - Active plugins
+ * @property {Record<string, any>} shared - Shared data for plugin communication
  */
 
 /**
  * @typedef {Object} TablePlugin
+ * @property {number} [priority] - Plugin execution order (lower = runs first, default 50)
  * @property {(context: RenderContext) => void} [onTableRender] - Called before rendering
  * @property {(columns: Column[], context: RenderContext) => Column[]} [transformColumns] - Transform columns
  * @property {(rows: Row[], context: RenderContext) => Row[]} [transformRows] - Transform rows
@@ -76,7 +78,7 @@ export class BrownieTable extends HTMLElement {
    * Wait for plugin custom elements to be defined, then re-render.
    */
   async #waitForPlugins() {
-    const pluginTags = ['brow-table-sort', 'brow-table-select', 'brow-table-paginate'];
+    const pluginTags = ['brow-table-sort', 'brow-table-select', 'brow-table-paginate', 'brow-table-tree'];
     const hasPlugins = pluginTags.some((tag) => this.querySelector(tag));
     if (!hasPlugins) return;
 
@@ -165,6 +167,7 @@ export class BrownieTable extends HTMLElement {
       attributeFilter: [
         'data-*',
         'selected',
+        'expanded',
         // Plugin attributes
         'field',
         'direction',
@@ -176,6 +179,8 @@ export class BrownieTable extends HTMLElement {
         'sortable',
         'no-select',
         'select-disabled',
+        'id-key',
+        'parent-key',
       ],
     });
   }
@@ -274,7 +279,8 @@ export class BrownieTable extends HTMLElement {
   }
 
   /**
-   * Gets plugin elements from the table's children.
+   * Gets plugin elements from the table's children, sorted by priority.
+   * Lower priority values run first. Default priority is 50.
    * @returns {TablePlugin[]}
    */
   #getPlugins() {
@@ -282,10 +288,17 @@ export class BrownieTable extends HTMLElement {
       'brow-table-sort',
       'brow-table-select',
       'brow-table-paginate',
+      'brow-table-tree',
     ];
-    return /** @type {TablePlugin[]} */ (
+    const plugins = /** @type {TablePlugin[]} */ (
       [...this.querySelectorAll(pluginSelectors.join(', '))]
     );
+    // Sort by priority (lower = runs first)
+    return plugins.sort((a, b) => {
+      const aPriority = typeof a.priority === 'number' ? a.priority : 50;
+      const bPriority = typeof b.priority === 'number' ? b.priority : 50;
+      return aPriority - bPriority;
+    });
   }
 
   /**
@@ -413,7 +426,14 @@ export class BrownieTable extends HTMLElement {
       if (colTemplate.align === 'center') {
         declarations.push('text-align: center;');
       } else if (colTemplate.align === 'end') {
-        declarations.push('text-align: right;');
+        declarations.push('text-align: end;');
+      }
+
+      // Header content alignment (for flex layout)
+      if (colTemplate.align === 'center') {
+        rules.push(`th.col-${col.field} .th-content { justify-content: center; }`);
+      } else if (colTemplate.align === 'end') {
+        rules.push(`th.col-${col.field} .th-content { justify-content: flex-end; }`);
       }
 
       if (declarations.length > 0) {
@@ -425,6 +445,10 @@ export class BrownieTable extends HTMLElement {
 
   render() {
     const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
+
+    // Save focus info before re-render
+    const focusInfo = this.#saveFocus(shadow);
+
     let columns = this.#getColumns();
     let rows = this.#getRows();
     const footer = this.#getFooter();
@@ -440,6 +464,7 @@ export class BrownieTable extends HTMLElement {
       rows,
       footer,
       plugins,
+      shared: {},
     };
 
     // Call onTableRender for each plugin
@@ -476,9 +501,9 @@ export class BrownieTable extends HTMLElement {
 
     const hasRows = rows.length > 0;
 
-    // Build header row
+    // Build header row with standard structure for plugins
     const headerCells = columns
-      .map((col) => `<th class="col-${col.field}">${this.#escapeHtml(col.label)}</th>`)
+      .map((col) => `<th class="col-${col.field}"><div class="th-content"><span class="th-start"></span><span class="th-label">${this.#escapeHtml(col.label)}</span><span class="th-end"></span></div></th>`)
       .join('');
 
     // Build body rows
@@ -544,6 +569,25 @@ export class BrownieTable extends HTMLElement {
           font-weight: 600;
           color: var(--color-text-secondary);
           border-bottom-color: var(--table-header-border-color);
+        }
+
+        /* Standard header cell structure for plugins */
+        .th-content {
+          display: flex;
+          align-items: center;
+          gap: var(--space-1);
+        }
+
+        .th-start:empty,
+        .th-end:empty {
+          display: none;
+        }
+
+        .th-start,
+        .th-end {
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
         }
 
         tbody tr:last-child td {
@@ -623,6 +667,139 @@ export class BrownieTable extends HTMLElement {
     for (const plugin of plugins) {
       if (typeof plugin.onTableReady === 'function') {
         plugin.onTableReady(this, shadow, context);
+      }
+    }
+
+    // Restore focus after re-render
+    this.#restoreFocus(shadow, focusInfo);
+  }
+
+  /**
+   * Save information about the currently focused element.
+   * @param {ShadowRoot} shadow
+   * @returns {{ rowIndex: number, colIndex: number, section: string, selector: string } | null}
+   */
+  #saveFocus(shadow) {
+    const active = shadow.activeElement;
+    if (!active) return null;
+
+    // Find row and column indices
+    const tr = active.closest('tr');
+    const td = active.closest('td, th');
+    const tbody = active.closest('tbody');
+    const thead = active.closest('thead');
+
+    let rowIndex = -1;
+    let colIndex = -1;
+    let section = '';
+
+    if (thead && tr) {
+      section = 'thead';
+      rowIndex = 0;
+    } else if (tbody && tr) {
+      section = 'tbody';
+      const rows = tbody.querySelectorAll('tr');
+      rowIndex = [...rows].indexOf(tr);
+    }
+
+    if (td && tr) {
+      const cells = tr.querySelectorAll('td, th');
+      colIndex = [...cells].indexOf(td);
+    }
+
+    // Build a selector for the focused element within its cell
+    const container = td || tr;
+    const selector = container ? this.#getElementSelector(active, container) : '';
+
+    return { rowIndex, colIndex, section, selector };
+  }
+
+  /**
+   * Get a selector to identify an element within a container.
+   * @param {Element} element
+   * @param {Element} container
+   * @returns {string}
+   */
+  #getElementSelector(element, container) {
+    const parts = [];
+    /** @type {Element | null} */
+    let current = element;
+
+    while (current && current !== container) {
+      let selector = current.tagName.toLowerCase();
+
+      if (current.className && typeof current.className === 'string') {
+        const classes = current.className.split(' ').filter(Boolean);
+        if (classes.length > 0) {
+          selector += '.' + classes.join('.');
+        }
+      }
+
+      // Add nth-child for disambiguation
+      const parent = current.parentElement;
+      if (parent && current) {
+        const tagName = current.tagName;
+        const siblings = [...parent.children].filter(
+          (c) => c.tagName === tagName
+        );
+        if (siblings.length > 1) {
+          const index = siblings.indexOf(current) + 1;
+          selector += `:nth-of-type(${index})`;
+        }
+      }
+
+      parts.unshift(selector);
+      current = current.parentElement;
+    }
+
+    return parts.join(' > ');
+  }
+
+  /**
+   * Restore focus to the equivalent element after re-render.
+   * @param {ShadowRoot} shadow
+   * @param {{ rowIndex: number, colIndex: number, section: string, selector: string } | null} focusInfo
+   */
+  #restoreFocus(shadow, focusInfo) {
+    if (!focusInfo) return;
+
+    const { rowIndex, colIndex, section, selector } = focusInfo;
+
+    // Find the target cell
+    let cell = null;
+    if (section === 'thead') {
+      const headerRow = shadow.querySelector('thead tr');
+      if (headerRow) {
+        const cells = headerRow.querySelectorAll('th');
+        cell = cells[colIndex];
+      }
+    } else if (section === 'tbody' && rowIndex >= 0) {
+      const rows = shadow.querySelectorAll('tbody tr');
+      const row = rows[rowIndex];
+      if (row && colIndex >= 0) {
+        const cells = row.querySelectorAll('td');
+        cell = cells[colIndex];
+      }
+    }
+
+    // Try to find the element using the selector
+    if (cell && selector) {
+      try {
+        const target = cell.querySelector(selector);
+        if (target && typeof /** @type {HTMLElement} */ (target).focus === 'function') {
+          /** @type {HTMLElement} */ (target).focus();
+          return;
+        }
+      } catch {
+        // Selector might be invalid, ignore
+      }
+    }
+
+    // Fallback: try to find any focusable element in the cell
+    if (cell) {
+      const focusable = cell.querySelector('button, input, [tabindex]');
+      if (focusable && typeof /** @type {HTMLElement} */ (focusable).focus === 'function') {
+        /** @type {HTMLElement} */ (focusable).focus();
       }
     }
   }

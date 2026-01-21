@@ -102,8 +102,6 @@ Use `brow-table-column` with template syntax for custom cell rendering. The `fie
 
 ### Template Syntax
 
-Templates support two substitution patterns:
-
 | Syntax | Description |
 |--------|-------------|
 | `{{property}}` | Inserts the value with HTML escaped (safe for user content) |
@@ -111,13 +109,15 @@ Templates support two substitution patterns:
 
 Any `data-*` attribute from the row can be referenced by its camelCase name. For example, `data-first-name` becomes `{{firstName}}`.
 
-## Column Alignment
+## Column Options
+
+Use `brow-table-column` to set alignment and width for specific columns.
 
 ```html example
 <brow-table>
   <brow-table-header data-item="Item" data-qty="Quantity" data-price="Price"></brow-table-header>
-  <brow-table-column field="qty" align="center"></brow-table-column>
-  <brow-table-column field="price" align="end"></brow-table-column>
+  <brow-table-column field="qty" align="center" width="100px"></brow-table-column>
+  <brow-table-column field="price" align="end" width="100px"></brow-table-column>
   <brow-table-row data-item="Widget" data-qty="10" data-price="$5.00"></brow-table-row>
   <brow-table-row data-item="Gadget" data-qty="5" data-price="$12.00"></brow-table-row>
   <brow-table-row data-item="Gizmo" data-qty="3" data-price="$8.00"></brow-table-row>
@@ -125,76 +125,110 @@ Any `data-*` attribute from the row can be referenced by its camelCase name. For
 </brow-table>
 ```
 
-## Column Width
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `field` | `string` | required | Which column to configure |
+| `align` | `'start' \| 'center' \| 'end'` | `'start'` | Text alignment |
+| `width` | `string` | `'auto'` | Column width (any CSS value) |
 
-Use the `width` attribute on `brow-table-column` to set column widths.
-
-```html example
-<brow-table>
-  <brow-table-header data-id="ID" data-name="Name" data-email="Email"></brow-table-header>
-  <brow-table-column field="id" width="60px" align="center"></brow-table-column>
-  <brow-table-column field="name" width="150px"></brow-table-column>
-  <brow-table-row data-id="1" data-name="Alice" data-email="alice@example.com"></brow-table-row>
-  <brow-table-row data-id="2" data-name="Bob" data-email="bob@example.com"></brow-table-row>
-</brow-table>
-```
-
-## Sorting, Selection & Pagination
+## Plugins
 
 Plugins extend the table with additional functionality. Import the plugins you need and add them as child elements.
 
+### Sorting
+
+Click column headers to sort. Add `sortable` to `brow-table-column` to enable. Use `sortable="numeric"` or `sortable="date"` for type-aware sorting.
+
 ```html example
-<brow-table striped>
+<brow-table>
   <brow-table-sort field="name" direction="asc"></brow-table-sort>
-  <brow-table-select mode="multi" key="id" row-click></brow-table-select>
-  <brow-table-paginate page-size="5"></brow-table-paginate>
-  <brow-table-header data-name="Name" data-role="Role" data-joined="Joined"></brow-table-header>
-  <brow-table-column field="name" sortable width="180px"></brow-table-column>
-  <brow-table-column field="role" sortable width="120px"></brow-table-column>
+  <brow-table-header data-name="Name" data-age="Age" data-joined="Joined"></brow-table-header>
+  <brow-table-column field="name" sortable></brow-table-column>
+  <brow-table-column field="age" sortable="numeric" align="end" width="80px"></brow-table-column>
   <brow-table-column field="joined" sortable="date" width="120px"></brow-table-column>
-  <brow-table-row data-id="1" data-name="Alice Chen" data-role="Engineer" data-joined="2023-01-15"></brow-table-row>
-  <brow-table-row data-id="2" data-name="Bob Smith" data-role="Designer" data-joined="2023-03-22"></brow-table-row>
-  <brow-table-row data-id="3" data-name="Carol Davis" data-role="Manager" data-joined="2022-11-08"></brow-table-row>
-  <brow-table-row data-id="4" data-name="Dan Wilson" data-role="Engineer" data-joined="2023-06-01"></brow-table-row>
-  <brow-table-row data-id="5" data-name="Eve Johnson" data-role="Designer" data-joined="2022-08-17"></brow-table-row>
-  <brow-table-row data-id="6" data-name="Frank Brown" data-role="Engineer" data-joined="2024-01-10"></brow-table-row>
-  <brow-table-row data-id="7" data-name="Grace Lee" data-role="Manager" data-joined="2021-05-20"></brow-table-row>
+  <brow-table-row data-name="Alice" data-age="34" data-joined="2023-01-15"></brow-table-row>
+  <brow-table-row data-name="Bob" data-age="28" data-joined="2023-03-22"></brow-table-row>
+  <brow-table-row data-name="Carol" data-age="42" data-joined="2022-11-08"></brow-table-row>
 </brow-table>
 ```
-
-### Plugin Elements
-
-| Element | Description |
-|---------|-------------|
-| `brow-table-sort` | Enables sortable columns with click-to-sort headers |
-| `brow-table-select` | Adds row selection with checkboxes |
-| `brow-table-paginate` | Client-side pagination with navigation controls |
-
-### brow-table-sort
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `field` | `string` | - | Currently sorted field |
 | `direction` | `'asc' \| 'desc'` | `'asc'` | Sort direction |
 
-Add `sortable` to `brow-table-column` to enable sorting. Use `sortable="numeric"` or `sortable="date"` for type-aware sorting.
+### Selection
 
-### brow-table-select
+Add checkboxes for row selection. Use `row-click` to allow clicking anywhere on a row to toggle.
+
+```html example
+<brow-table>
+  <brow-table-select mode="multi" key="id" row-click></brow-table-select>
+  <brow-table-header data-name="Name" data-role="Role"></brow-table-header>
+  <brow-table-row data-id="1" data-name="Alice" data-role="Admin" selected></brow-table-row>
+  <brow-table-row data-id="2" data-name="Bob" data-role="Editor"></brow-table-row>
+  <brow-table-row data-id="3" data-name="Carol" data-role="Viewer"></brow-table-row>
+  <brow-table-row data-id="4" data-name="System" data-role="Internal" no-select></brow-table-row>
+</brow-table>
+```
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `mode` | `'single' \| 'multi'` | `'multi'` | Selection mode |
 | `key` | `string` | - | Data attribute for row identifier |
 | `row-click` | `boolean` | `false` | Click anywhere on row to toggle |
+| `cascade` | `boolean` | `false` | With tree, selecting parent selects children |
 
 Row attributes: `selected` (state), `no-select` (hide checkbox), `select-disabled` (disable checkbox).
 
-### brow-table-paginate
+### Pagination
+
+Client-side pagination with navigation controls.
+
+```html example
+<brow-table>
+  <brow-table-paginate page-size="3" page="1"></brow-table-paginate>
+  <brow-table-header data-name="Name" data-email="Email"></brow-table-header>
+  <brow-table-row data-name="Alice" data-email="alice@example.com"></brow-table-row>
+  <brow-table-row data-name="Bob" data-email="bob@example.com"></brow-table-row>
+  <brow-table-row data-name="Carol" data-email="carol@example.com"></brow-table-row>
+  <brow-table-row data-name="Dan" data-email="dan@example.com"></brow-table-row>
+  <brow-table-row data-name="Eve" data-email="eve@example.com"></brow-table-row>
+  <brow-table-row data-name="Frank" data-email="frank@example.com"></brow-table-row>
+  <brow-table-row data-name="Grace" data-email="grace@example.com"></brow-table-row>
+</brow-table>
+```
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `page-size` | `number` | `10` | Rows per page |
 | `page` | `number` | `1` | Current page (1-indexed) |
+
+### Tree
+
+Hierarchical rows with expand/collapse. Rows reference their parent via a data attribute. Tree controls (toggle + indentation) are injected into the specified column. Use `row-click` to allow clicking anywhere on a parent row to toggle.
+
+```html example
+<brow-table>
+  <brow-table-tree id-key="id" parent-key="parent" field="name" row-click></brow-table-tree>
+  <brow-table-header data-name="Name" data-size="Size"></brow-table-header>
+  <brow-table-row data-id="1" data-name="Documents" data-size="--" expanded></brow-table-row>
+  <brow-table-row data-id="2" data-parent="1" data-name="Report.pdf" data-size="2.4 MB"></brow-table-row>
+  <brow-table-row data-id="3" data-parent="1" data-name="Notes.txt" data-size="12 KB"></brow-table-row>
+  <brow-table-row data-id="4" data-name="Images" data-size="--" expanded></brow-table-row>
+  <brow-table-row data-id="5" data-parent="4" data-name="Photo.jpg" data-size="3.1 MB"></brow-table-row>
+  <brow-table-row data-id="6" data-parent="4" data-name="Logo.png" data-size="156 KB"></brow-table-row>
+</brow-table>
+```
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `id-key` | `string` | `'id'` | Data attribute for row identity |
+| `parent-key` | `string` | `'parent'` | Data attribute for parent reference |
+| `field` | `string` | first column | Column to inject tree controls into |
+| `row-click` | `boolean` | `false` | Click anywhere on parent row to toggle |
+
+Row attributes: `expanded` (state) to show/hide children.
 
 ## Attributes
 

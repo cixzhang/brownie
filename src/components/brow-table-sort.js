@@ -160,34 +160,64 @@ export class BrownieTableSort extends HTMLElement {
         background: var(--table-row-bg-hover);
       }
 
-      th[data-sortable]::after {
-        content: '';
-        display: inline-block;
+      .sort-indicator {
+        display: none;
         width: 1em;
         text-align: center;
-        opacity: 0.3;
-        margin-left: 0.25em;
+        flex-shrink: 0;
       }
 
-      th[data-sortable]:hover::after {
-        content: '▲';
+      .sort-indicator:not(:empty) {
+        display: inline-block;
+      }
+
+      th[data-sortable]:hover .sort-indicator {
+        display: inline-block;
         opacity: 0.5;
       }
 
-      th[data-sortable][data-sort="asc"]::after {
+      th[data-sortable]:hover .sort-indicator:empty::after {
         content: '▲';
-        opacity: 1;
       }
 
-      th[data-sortable][data-sort="desc"]::after {
-        content: '▼';
+      th[data-sortable][data-sort="asc"] .sort-indicator,
+      th[data-sortable][data-sort="desc"] .sort-indicator {
+        display: inline-block;
         opacity: 1;
       }
     `;
   }
 
   /**
+   * Compare two values for sorting.
+   * @param {string} aVal
+   * @param {string} bVal
+   * @param {'string' | 'numeric' | 'date'} sortType
+   * @param {number} multiplier
+   * @returns {number}
+   */
+  #compareValues(aVal, bVal, sortType, multiplier) {
+    let comparison = 0;
+
+    if (sortType === 'numeric') {
+      const aNum = parseFloat(aVal) || 0;
+      const bNum = parseFloat(bVal) || 0;
+      comparison = aNum - bNum;
+    } else if (sortType === 'date') {
+      const aDate = new Date(aVal).getTime() || 0;
+      const bDate = new Date(bVal).getTime() || 0;
+      comparison = aDate - bDate;
+    } else {
+      // String comparison (case-insensitive)
+      comparison = aVal.localeCompare(bVal, undefined, { sensitivity: 'base' });
+    }
+
+    return comparison * multiplier;
+  }
+
+  /**
    * Transform rows by sorting them.
+   * When tree plugin is present, only sorts root rows while keeping children grouped.
    * @param {import('./brow-table.js').Row[]} rows
    * @param {import('./brow-table.js').RenderContext} context
    * @returns {import('./brow-table.js').Row[]}
@@ -200,27 +230,91 @@ export class BrownieTableSort extends HTMLElement {
     const direction = this.direction;
     const multiplier = direction === 'desc' ? -1 : 1;
 
+    // Check if tree plugin is present
+    const tree = context.shared.tree;
+    if (tree) {
+      return this.#sortWithTree(rows, sortField, sortType, multiplier, tree);
+    }
+
+    // Simple sort for non-tree tables
     return [...rows].sort((a, b) => {
       const aVal = a.data[sortField] ?? '';
       const bVal = b.data[sortField] ?? '';
-
-      let comparison = 0;
-
-      if (sortType === 'numeric') {
-        const aNum = parseFloat(aVal) || 0;
-        const bNum = parseFloat(bVal) || 0;
-        comparison = aNum - bNum;
-      } else if (sortType === 'date') {
-        const aDate = new Date(aVal).getTime() || 0;
-        const bDate = new Date(bVal).getTime() || 0;
-        comparison = aDate - bDate;
-      } else {
-        // String comparison (case-insensitive)
-        comparison = aVal.localeCompare(bVal, undefined, { sensitivity: 'base' });
-      }
-
-      return comparison * multiplier;
+      return this.#compareValues(aVal, bVal, sortType, multiplier);
     });
+  }
+
+  /**
+   * Sort rows while preserving tree structure.
+   * Only root rows are sorted; children stay grouped under their parents.
+   * @param {import('./brow-table.js').Row[]} rows
+   * @param {string} sortField
+   * @param {'string' | 'numeric' | 'date'} sortType
+   * @param {number} multiplier
+   * @param {{ idKey: string, parentKey: string }} tree
+   * @returns {import('./brow-table.js').Row[]}
+   */
+  #sortWithTree(rows, sortField, sortType, multiplier, tree) {
+    const { idKey, parentKey } = tree;
+
+    // Build parent -> children map
+    /** @type {Map<string, import('./brow-table.js').Row[]>} */
+    const childrenMap = new Map();
+    /** @type {import('./brow-table.js').Row[]} */
+    const rootRows = [];
+
+    for (const row of rows) {
+      const parentId = row.data[parentKey];
+      if (parentId) {
+        const children = childrenMap.get(parentId);
+        if (children) {
+          children.push(row);
+        } else {
+          childrenMap.set(parentId, [row]);
+        }
+      } else {
+        rootRows.push(row);
+      }
+    }
+
+    // Sort root rows
+    rootRows.sort((a, b) => {
+      const aVal = a.data[sortField] ?? '';
+      const bVal = b.data[sortField] ?? '';
+      return this.#compareValues(aVal, bVal, sortType, multiplier);
+    });
+
+    // Recursively sort children at each level and rebuild tree order
+    /** @type {import('./brow-table.js').Row[]} */
+    const result = [];
+
+    /**
+     * @param {import('./brow-table.js').Row} row
+     */
+    const addWithChildren = (row) => {
+      result.push(row);
+      const rowId = row.data[idKey];
+      if (rowId) {
+        const children = childrenMap.get(rowId);
+        if (children) {
+          // Sort children at this level too
+          children.sort((a, b) => {
+            const aVal = a.data[sortField] ?? '';
+            const bVal = b.data[sortField] ?? '';
+            return this.#compareValues(aVal, bVal, sortType, multiplier);
+          });
+          for (const child of children) {
+            addWithChildren(child);
+          }
+        }
+      }
+    };
+
+    for (const root of rootRows) {
+      addWithChildren(root);
+    }
+
+    return result;
   }
 
   /**
@@ -250,8 +344,25 @@ export class BrownieTableSort extends HTMLElement {
         th.setAttribute('data-sort', this.direction);
       }
 
+      // Check column alignment - put indicator in th-start for right-aligned columns
+      const columnEl = table.querySelector(`brow-table-column[field="${field}"]`);
+      const isEndAligned = columnEl?.getAttribute('align') === 'end';
+      const slot = th.querySelector(isEndAligned ? '.th-start' : '.th-end');
+
+      if (slot) {
+        const indicator = document.createElement('span');
+        indicator.className = 'sort-indicator';
+        if (this.field === field) {
+          indicator.textContent = this.direction === 'asc' ? '▲' : '▼';
+        }
+        slot.appendChild(indicator);
+      }
+
       // Bind click handler
-      th.addEventListener('click', () => {
+      th.addEventListener('click', (e) => {
+        // Don't sort if clicking an interactive element (like tree expand toggle)
+        const interactive = /** @type {HTMLElement} */ (e.target).closest('a, button, input, select, textarea, [tabindex], [data-interactive]');
+        if (interactive && th.contains(interactive)) return;
         this.#handleHeaderClick(field, table);
       });
     });

@@ -18,8 +18,21 @@ export class BrownieTablePaginate extends HTMLElement {
     return ['page-size', 'page'];
   }
 
+  /**
+   * Plugin priority (lower = runs first).
+   * Paginate runs after tree so it can access tree info.
+   * @type {number}
+   */
+  priority = 100;
+
   /** @type {number} */
   #totalRows = 0;
+
+  /** @type {number} */
+  #totalRootRows = 0;
+
+  /** @type {boolean} */
+  #hasTree = false;
 
   // ============================================================
   // Config: page size
@@ -71,7 +84,8 @@ export class BrownieTablePaginate extends HTMLElement {
    * @returns {number}
    */
   get totalPages() {
-    return Math.max(1, Math.ceil(this.#totalRows / this.pageSize));
+    const count = this.#hasTree ? this.#totalRootRows : this.#totalRows;
+    return Math.max(1, Math.ceil(count / this.pageSize));
   }
 
   /**
@@ -150,6 +164,8 @@ export class BrownieTablePaginate extends HTMLElement {
         pageSize: this.pageSize,
         totalPages: this.totalPages,
         totalRows: this.#totalRows,
+        totalRootRows: this.#hasTree ? this.#totalRootRows : null,
+        hasTree: this.#hasTree,
         plugin: this,
       },
     });
@@ -250,6 +266,7 @@ export class BrownieTablePaginate extends HTMLElement {
 
   /**
    * Store total row count and slice rows for current page.
+   * When tree plugin is present, paginates by root rows and includes all descendants.
    * @param {import('./brow-table.js').Row[]} rows
    * @param {import('./brow-table.js').RenderContext} context
    * @returns {import('./brow-table.js').Row[]}
@@ -258,7 +275,15 @@ export class BrownieTablePaginate extends HTMLElement {
     // Store total for pagination info
     this.#totalRows = rows.length;
 
-    // Calculate slice indices
+    // Check if tree plugin is present
+    const tree = context.shared.tree;
+    this.#hasTree = !!tree;
+
+    if (tree) {
+      return this.#paginateWithTree(rows, tree);
+    }
+
+    // Simple pagination for non-tree tables
     const start = (this.page - 1) * this.pageSize;
     const end = start + this.pageSize;
 
@@ -266,12 +291,49 @@ export class BrownieTablePaginate extends HTMLElement {
   }
 
   /**
+   * Paginate by root rows, keeping children grouped with parents.
+   * @param {import('./brow-table.js').Row[]} rows
+   * @param {{ idKey: string, parentKey: string }} tree
+   * @returns {import('./brow-table.js').Row[]}
+   */
+  #paginateWithTree(rows, tree) {
+    const { parentKey } = tree;
+
+    // Find root rows (rows without a parent)
+    /** @type {number[]} */
+    const rootIndices = [];
+    for (let i = 0; i < rows.length; i++) {
+      if (!rows[i].data[parentKey]) {
+        rootIndices.push(i);
+      }
+    }
+
+    this.#totalRootRows = rootIndices.length;
+
+    // Calculate which root rows to include on this page
+    const startRootIndex = (this.page - 1) * this.pageSize;
+    const endRootIndex = Math.min(startRootIndex + this.pageSize, rootIndices.length);
+
+    if (startRootIndex >= rootIndices.length) {
+      return [];
+    }
+
+    // Get the row indices to include (from first root on page to just before next page's first root)
+    const startRowIndex = rootIndices[startRootIndex];
+    const endRowIndex = endRootIndex < rootIndices.length
+      ? rootIndices[endRootIndex]
+      : rows.length;
+
+    return rows.slice(startRowIndex, endRowIndex);
+  }
+
+  /**
    * Render pagination controls after table.
    * @param {import('./brow-table.js').BrownieTable} table
    * @param {ShadowRoot} shadowRoot
-   * @param {import('./brow-table.js').RenderContext} context
+   * @param {import('./brow-table.js').RenderContext} _context
    */
-  onTableReady(table, shadowRoot, context) {
+  onTableReady(table, shadowRoot, _context) {
     // Don't show pagination if only one page
     if (this.totalPages <= 1) return;
 
@@ -282,9 +344,17 @@ export class BrownieTablePaginate extends HTMLElement {
     // Info section
     const info = document.createElement('div');
     info.className = 'pagination-info';
-    const start = (this.page - 1) * this.pageSize + 1;
-    const end = Math.min(this.page * this.pageSize, this.#totalRows);
-    info.textContent = `${start}–${end} of ${this.#totalRows}`;
+
+    if (this.#hasTree) {
+      // For tree mode, show root row range
+      const start = (this.page - 1) * this.pageSize + 1;
+      const end = Math.min(this.page * this.pageSize, this.#totalRootRows);
+      info.textContent = `${start}–${end} of ${this.#totalRootRows} items`;
+    } else {
+      const start = (this.page - 1) * this.pageSize + 1;
+      const end = Math.min(this.page * this.pageSize, this.#totalRows);
+      info.textContent = `${start}–${end} of ${this.#totalRows}`;
+    }
 
     // Controls section
     const controls = document.createElement('div');

@@ -75,6 +75,13 @@
       "description": "Plugin that enables client-side pagination with navigation controls.",
       "docs": "brow-table",
       "plugin": true
+    },
+    {
+      "name": "brow-table-tree",
+      "path": "./components/brow-table-tree.js",
+      "description": "Plugin that enables hierarchical rows with expand/collapse functionality.",
+      "docs": "brow-table",
+      "plugin": true
     }
   ]
 }

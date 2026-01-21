@@ -14,3 +14,4 @@ export * from './components/brow-table.js';
 export * from './components/brow-table-sort.js';
 export * from './components/brow-table-select.js';
 export * from './components/brow-table-paginate.js';
+export * from './components/brow-table-tree.js';

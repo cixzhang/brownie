@@ -163,6 +163,44 @@
         <brow-table-empty>No team members found.</brow-table-empty>
       </brow-table>
     </brow-section>
+    <brow-section padding="space-0">
+      <brow-table bordered>
+        <brow-table-tree id-key="id" parent-key="parent" field="name" row-click></brow-table-tree>
+        <brow-table-select mode="multi" key="id" cascade></brow-table-select>
+        <brow-table-paginate page-size="5" page="1"></brow-table-paginate>
+        <brow-table-header data-name="Name" data-size="Size" data-modified="Modified"></brow-table-header>
+        <brow-table-sort field="name" direction="asc"></brow-table-sort>
+        <brow-table-column field="name" sortable></brow-table-column>
+        <brow-table-column field="size" align="end" width="100px"></brow-table-column>
+        <brow-table-column field="modified" width="140px"></brow-table-column>
+        <brow-table-row data-id="1" data-name="Documents" data-size="--" data-modified="2024-01-15"></brow-table-row>
+        <brow-table-row data-id="2" data-parent="1" data-name="Work" data-size="--" data-modified="2024-01-14"></brow-table-row>
+        <brow-table-row data-id="3" data-parent="2" data-name="Report.pdf" data-size="2.4 MB" data-modified="2024-01-14"></brow-table-row>
+        <brow-table-row data-id="4" data-parent="2" data-name="Presentation.pptx" data-size="8.1 MB" data-modified="2024-01-12"></brow-table-row>
+        <brow-table-row data-id="5" data-parent="1" data-name="Personal" data-size="--" data-modified="2024-01-10"></brow-table-row>
+        <brow-table-row data-id="6" data-parent="5" data-name="Notes.txt" data-size="12 KB" data-modified="2024-01-10"></brow-table-row>
+        <brow-table-row data-id="7" data-name="Images" data-size="--" data-modified="2024-01-08"></brow-table-row>
+        <brow-table-row data-id="8" data-parent="7" data-name="Photo.jpg" data-size="3.1 MB" data-modified="2024-01-08"></brow-table-row>
+        <brow-table-row data-id="9" data-parent="7" data-name="Logo.png" data-size="156 KB" data-modified="2024-01-05"></brow-table-row>
+        <brow-table-row data-id="10" data-name="Videos" data-size="--" data-modified="2024-01-03"></brow-table-row>
+        <brow-table-row data-id="11" data-parent="10" data-name="Tutorial.mp4" data-size="245 MB" data-modified="2024-01-03"></brow-table-row>
+        <brow-table-row data-id="12" data-parent="10" data-name="Demo.mov" data-size="89 MB" data-modified="2024-01-02"></brow-table-row>
+        <brow-table-row data-id="13" data-name="Downloads" data-size="--" data-modified="2023-12-28"></brow-table-row>
+        <brow-table-row data-id="14" data-parent="13" data-name="installer.dmg" data-size="512 MB" data-modified="2023-12-28"></brow-table-row>
+        <brow-table-row data-id="15" data-parent="13" data-name="archive.zip" data-size="34 MB" data-modified="2023-12-25"></brow-table-row>
+        <brow-table-row data-id="16" data-name="Music" data-size="--" data-modified="2023-12-20"></brow-table-row>
+        <brow-table-row data-id="17" data-parent="16" data-name="playlist.m3u" data-size="2 KB" data-modified="2023-12-20"></brow-table-row>
+        <brow-table-row data-id="18" data-name="Projects" data-size="--" data-modified="2023-12-15"></brow-table-row>
+        <brow-table-row data-id="19" data-parent="18" data-name="webapp" data-size="--" data-modified="2023-12-15"></brow-table-row>
+        <brow-table-row data-id="20" data-parent="19" data-name="index.html" data-size="8 KB" data-modified="2023-12-15"></brow-table-row>
+        <brow-table-row data-id="21" data-parent="19" data-name="styles.css" data-size="4 KB" data-modified="2023-12-14"></brow-table-row>
+        <brow-table-row data-id="22" data-parent="18" data-name="cli-tool" data-size="--" data-modified="2023-12-10"></brow-table-row>
+        <brow-table-row data-id="23" data-parent="22" data-name="main.go" data-size="12 KB" data-modified="2023-12-10"></brow-table-row>
+        <brow-table-row data-id="24" data-name="README.md" data-size="4 KB" data-modified="2024-01-01"></brow-table-row>
+        <brow-table-row data-id="25" data-name="LICENSE" data-size="1 KB" data-modified="2023-11-01"></brow-table-row>
+        <brow-table-row data-id="26" data-name=".gitignore" data-size="512 B" data-modified="2023-10-15"></brow-table-row>
+      </brow-table>
+    </brow-section>
   </brow-card>
 
   <h2>Components</h2>
