@@ -4,11 +4,14 @@ import Brownie from '../core.js';
  * A button component that renders as <button> or <a> depending on href attribute.
  * @element brow-button
  * @csspart base - The underlying button or anchor element
+ * @attr {boolean} disabled - Disable the select
+ * @attr {string} href - URL for links
+ * @attr {boolean} caret - Show dropdown caret indicator
  * @typedef {'primary' | 'secondary' | 'ghost'} BrownieButtonVariant
  */
 export class BrownieButton extends HTMLElement {
   static get observedAttributes() {
-    return ['variant', 'disabled', 'href'];
+    return ['variant', 'disabled', 'href', 'caret'];
   }
 
   constructor() {
@@ -59,19 +62,33 @@ export class BrownieButton extends HTMLElement {
     }
   }
 
+  get caret() {
+    return this.hasAttribute('caret');
+  }
+
+  set caret(value) {
+    if (value) {
+      this.setAttribute('caret', '');
+    } else {
+      this.removeAttribute('caret');
+    }
+  }
+
   render() {
     const isLink = !!this.href;
     const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
 
-    shadow.innerHTML = /*html*/`
+    shadow.innerHTML = /*html*/ `
       <style>
         :host {
-          display: inline-block;
+          display: inline-flex;
           user-select: none;
         }
 
         [part="base"] {
-          display: inline-block;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
           font: inherit;
           text-decoration: none;
           margin: 0;
@@ -81,9 +98,11 @@ export class BrownieButton extends HTMLElement {
           color: var(--color-text-primary);
           border: none;
           border-radius: var(--radius-element);
-          padding: var(--space-2) var(--space-4);
+          padding-inline: var(--space-3);
+          height: var(--space-9);
           transition: box-shadow var(--transition-fast);
           user-select: none;
+          min-width: 100%;
         }
 
         [part="base"]:hover {
@@ -133,11 +152,20 @@ export class BrownieButton extends HTMLElement {
         .iconOnly {
           aspect-ratio: 1 / 1;
         }
+
+        :host([caret]) [part="base"] {
+          gap: var(--space-2);
+        }
+
+        .caret {
+          flex-shrink: 0;
+          opacity: 0.7;
+        }
       </style>
       ${
         isLink
-          ? /*html*/ `<a part="base" href="${this.href}"${this.disabled ? ' aria-disabled="true"' : ''}><slot></slot></a>`
-          : /*html*/ `<button part="base"${this.disabled ? ' disabled' : ''}><slot></slot></button>`
+          ? /*html*/ `<a part="base" href="${this.href}"${this.disabled ? ' aria-disabled="true"' : ''}><slot></slot>${this.caret ? '<span class="caret">&#9662;</span>' : ''}</a>`
+          : /*html*/ `<button part="base"${this.disabled ? ' disabled' : ''}><slot></slot>${this.caret ? '<span class="caret">&#9662;</span>' : ''}</button>`
       }
     `;
   }

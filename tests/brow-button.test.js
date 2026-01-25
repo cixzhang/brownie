@@ -18,7 +18,7 @@ describe('brow-button', () => {
   });
 
   it('should render with default variant', () => {
-    expect(element.variant).to.equal('default');
+    expect(element.variant).to.equal('secondary');
   });
 
   it('should reflect variant attribute', () => {

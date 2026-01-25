@@ -36,20 +36,6 @@
       align-items: center;
     }
 
-    .theme-toggle, .theme-select {
-      font-family: inherit;
-      font-size: 0.875rem;
-      padding: var(--space-1_5) var(--space-3);
-      border-radius: var(--radius-element);
-      border: 1px solid var(--color-border);
-      background: var(--color-card);
-      color: var(--color-text-primary);
-      cursor: pointer;
-    }
-
-    .theme-toggle:hover, .theme-select:hover {
-      background: var(--color-muted);
-    }
 
     .component-list {
       list-style: none;
@@ -97,7 +83,7 @@
       <p class="tagline">A native web component library</p>
     </div>
     <div class="controls">
-      <select class="theme-select" id="theme-select"></select>
+      <brow-select id="theme-select"></brow-select>
       <brow-button variant="ghost" id="theme-toggle" title="Toggle dark mode">
         <span id="theme-icon">☀️</span>
       </brow-button>
@@ -106,10 +92,33 @@
 
   <brow-card padding="space-0">
     <brow-section divider="bottom" class="stack">
-      <brow-button>Default</brow-button>
-      <brow-button variant="primary">Primary</brow-button>
+      <brow-tooltip text="Default button style">
+        <brow-button>Default</brow-button>
+      </brow-tooltip>
+      <brow-tooltip text="Primary action button">
+        <brow-button variant="primary">Primary</brow-button>
+      </brow-tooltip>
       <brow-button variant="ghost">Ghost</brow-button>
       <brow-button disabled>Disabled</brow-button>
+    </brow-section>
+    <brow-section divider="bottom" class="stack">
+      <brow-hovercard>
+        <span slot="trigger">Alice Chen</span>
+        <h4 style="margin: 0 0 var(--space-2)">Alice Chen</h4>
+        <p style="margin: 0 0 var(--space-3); color: var(--color-text-secondary)">Software Engineer at Acme Corp</p>
+        <brow-button size="sm">View Profile</brow-button>
+      </brow-hovercard>
+      <brow-menu id="actions-menu">
+        <brow-button slot="trigger" caret>Actions</brow-button>
+        <brow-menu-item value="edit">Edit</brow-menu-item>
+        <brow-menu-item value="duplicate">Duplicate</brow-menu-item>
+        <brow-menu-item value="delete" variant="danger">Delete</brow-menu-item>
+      </brow-menu>
+      <brow-select name="status" value="active">
+        <brow-option value="active">Active</brow-option>
+        <brow-option value="pending">Pending</brow-option>
+        <brow-option value="inactive">Inactive</brow-option>
+      </brow-select>
     </brow-section>
     <brow-section height="20rem" variant="muted">
       <brow-layout>
@@ -246,7 +255,7 @@
         const data = await response.json();
 
         themeSelect.innerHTML = data.themes.map(t =>
-          `<option value="${t.path}">${t.name}</option>`
+          `<brow-option value="${t.path}">${t.name}</brow-option>`
         ).join('');
 
         // Restore saved theme
@@ -295,6 +304,13 @@
       document.documentElement.dataset.theme = savedDarkMode;
     }
     updateDarkMode();
+
+    // Menu event listener demo
+    document.getElementById('actions-menu').addEventListener('brow-select', (e) => {
+      const { value } = e.detail;
+      console.log('Menu action selected:', value);
+      alert(`Action: ${value}`);
+    });
 
     // Initialize
     loadRegistry();

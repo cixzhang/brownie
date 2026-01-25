@@ -1,4 +1,5 @@
 import Brownie from '../core.js';
+import { isInteractiveClick } from '../utils/interactive.js';
 
 /**
  * Tree plugin for brow-table.
@@ -554,8 +555,7 @@ export class BrownieTableTree extends HTMLElement {
           /** @type {HTMLElement} */ (tr).style.cursor = 'pointer';
           tr.addEventListener('click', (e) => {
             // Don't toggle if clicking an interactive element or container
-            const interactive = /** @type {HTMLElement} */ (e.target).closest('a, button, input, select, textarea, [tabindex], [data-interactive]');
-            if (interactive && tr.contains(interactive)) return;
+            if (isInteractiveClick(e, tr)) return;
             this.toggle(rowElement);
             table.render();
           });

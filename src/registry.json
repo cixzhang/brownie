@@ -82,6 +82,44 @@
       "description": "Plugin that enables hierarchical rows with expand/collapse functionality.",
       "docs": "brow-table",
       "plugin": true
+    },
+    {
+      "name": "brow-tooltip",
+      "path": "./components/brow-tooltip.js",
+      "description": "Tooltip that shows text hints on hover or focus."
+    },
+    {
+      "name": "brow-hovercard",
+      "path": "./components/brow-hovercard.js",
+      "description": "Rich content preview that appears on hover."
+    },
+    {
+      "name": "brow-menu",
+      "path": "./components/brow-menu.js",
+      "description": "Dropdown menu with items and keyboard navigation."
+    },
+    {
+      "name": "brow-menu-item",
+      "path": "./components/brow-menu-item.js",
+      "description": "A selectable item within a brow-menu.",
+      "docs": "brow-menu"
+    },
+    {
+      "name": "brow-select",
+      "path": "./components/brow-select.js",
+      "description": "Custom select dropdown with keyboard navigation."
+    },
+    {
+      "name": "brow-option",
+      "path": "./components/brow-option.js",
+      "description": "An option for use within brow-select.",
+      "docs": "brow-select"
+    },
+    {
+      "name": "brow-option-group",
+      "path": "./components/brow-option-group.js",
+      "description": "A group of options within brow-select.",
+      "docs": "brow-select"
     }
   ]
 }

@@ -1,4 +1,5 @@
 import Brownie from '../core.js';
+import { isInteractiveClick } from '../utils/interactive.js';
 
 /**
  * Sort plugin for brow-table.
@@ -361,8 +362,7 @@ export class BrownieTableSort extends HTMLElement {
       // Bind click handler
       th.addEventListener('click', (e) => {
         // Don't sort if clicking an interactive element (like tree expand toggle)
-        const interactive = /** @type {HTMLElement} */ (e.target).closest('a, button, input, select, textarea, [tabindex], [data-interactive]');
-        if (interactive && th.contains(interactive)) return;
+        if (isInteractiveClick(e, th)) return;
         this.#handleHeaderClick(field, table);
       });
     });

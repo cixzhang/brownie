@@ -34,6 +34,15 @@ When `href` is provided, the button renders as an anchor element.
 <brow-button href="/docs/index.html" variant="primary">Primary Link</brow-button>
 ```
 
+## Dropdown Caret
+
+Use the `caret` attribute to show a dropdown indicator. This is useful when using the button as a menu trigger.
+
+```html example
+<brow-button caret>Dropdown</brow-button>
+<brow-button variant="primary" caret>Actions</brow-button>
+```
+
 ## Attributes
 
 | Attribute | Type | Default | Description |
@@ -41,6 +50,7 @@ When `href` is provided, the button renders as an anchor element.
 | `variant` | `'primary' 'secondary' 'ghost'` | `'secondary'` | Visual style variant |
 | `disabled` | `boolean` | `false` | Disables the button |
 | `href` | `string` | - | When set, renders as an anchor element |
+| `caret` | `boolean` | `false` | Shows a dropdown caret indicator |
 
 ## CSS Parts
 

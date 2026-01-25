@@ -13,6 +13,9 @@ class BrownieCore {
   /** @type {CSSStyleSheet[]} */
   #themes = [];
 
+  /** @type {number} */
+  #idCounter = 0;
+
   /** @type {() => void} */
   #resolveReady = () => {};
 
@@ -120,6 +123,14 @@ class BrownieCore {
   clearThemes() {
     this.#themes = [];
     this.#applyThemesToAll();
+  }
+
+  /**
+   * Generate a unique ID.
+   * @returns {string}
+   */
+  generateId() {
+    return `brow${String(++this.#idCounter)}`;
   }
 
   #applyThemesToAll() {

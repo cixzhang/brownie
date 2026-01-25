@@ -205,28 +205,7 @@ export class BrownieTablePaginate extends HTMLElement {
       }
 
       .pagination-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 2rem;
-        height: 2rem;
-        padding: 0;
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius-element, 0.25rem);
-        background: var(--color-card, #fff);
-        color: var(--color-text-primary);
-        cursor: pointer;
-        transition: all var(--transition-fast, 150ms);
-      }
-
-      .pagination-btn:hover:not(:disabled) {
-        background: var(--color-highlight);
-        border-color: var(--color-border-strong);
-      }
-
-      .pagination-btn:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
+        width: var(--space-9);
       }
 
       .pagination-pages {
@@ -361,11 +340,11 @@ export class BrownieTablePaginate extends HTMLElement {
     controls.className = 'pagination-controls';
 
     // Previous button
-    const prevBtn = document.createElement('button');
+    const prevBtn = document.createElement('brow-button');
     prevBtn.className = 'pagination-btn';
     prevBtn.innerHTML = '‹';
     prevBtn.title = 'Previous page';
-    prevBtn.disabled = this.page <= 1;
+    if (this.page <= 1) prevBtn.setAttribute('disabled', '');
     prevBtn.addEventListener('click', () => {
       this.prevPage();
       table.render();
@@ -377,11 +356,11 @@ export class BrownieTablePaginate extends HTMLElement {
     this.#renderPageButtons(pages, table);
 
     // Next button
-    const nextBtn = document.createElement('button');
+    const nextBtn = document.createElement('brow-button');
     nextBtn.className = 'pagination-btn';
     nextBtn.innerHTML = '›';
     nextBtn.title = 'Next page';
-    nextBtn.disabled = this.page >= this.totalPages;
+    if (this.page >= this.totalPages) nextBtn.setAttribute('disabled', '');
     nextBtn.addEventListener('click', () => {
       this.nextPage();
       table.render();
