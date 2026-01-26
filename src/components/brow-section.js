@@ -1,4 +1,21 @@
 import Brownie from '../core.js';
+import { escapeHtml } from '../utils/html.js';
+
+// Shared stylesheet for all instances
+const styles = new CSSStyleSheet();
+styles.replaceSync(/*css*/ `
+  :host {
+    display: block;
+  }
+
+  :host([variant="muted"]) {
+    background-color: var(--color-muted);
+  }
+
+  :host([variant="surface"]) {
+    background-color: var(--color-card);
+  }
+`);
 
 /**
  * A section used with `brow-layout` providing spacing around content and optional background.
@@ -12,9 +29,14 @@ export class BrownieSection extends HTMLElement {
     return ['padding', 'divider', 'height', 'width'];
   }
 
+  /** @type {CSSStyleSheet} */
+  static styles = styles;
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
+    shadow.adoptedStyleSheets = [styles];
   }
 
   connectedCallback() {
@@ -28,9 +50,8 @@ export class BrownieSection extends HTMLElement {
 
   /** @returns {BrownieSectionVariant} */
   get variant() {
-    return (
-      /** @type {BrownieSectionVariant} */ (this.getAttribute('variant')) ||
-      'default'
+    return /** @type {BrownieSectionVariant} */ (
+      escapeHtml(this.getAttribute('variant') || 'default')
     );
   }
 
@@ -41,9 +62,8 @@ export class BrownieSection extends HTMLElement {
 
   /** @returns {BrownieSectionSpacing} */
   get padding() {
-    return (
-      /** @type {BrownieSectionSpacing} */ (this.getAttribute('padding')) ||
-      'layout-padding'
+    return /** @type {BrownieSectionSpacing} */ (
+      escapeHtml(this.getAttribute('padding') || 'layout-padding')
     );
   }
 
@@ -54,15 +74,13 @@ export class BrownieSection extends HTMLElement {
 
   /** @returns {?BrownieSectionDivider} */
   get divider() {
-    return (
-      /** @type {BrownieSectionDivider} */ (this.getAttribute('divider')) ||
-      undefined
-    );
+    const val = this.getAttribute('divider');
+    return val ? /** @type {BrownieSectionDivider} */ (escapeHtml(val)) : undefined;
   }
 
   /** @returns {string} */
   get height() {
-    return /** @type {string} */ (this.getAttribute('height')) || '100%';
+    return escapeHtml(this.getAttribute('height') || '100%');
   }
 
   /** @param {string} value */
@@ -72,7 +90,7 @@ export class BrownieSection extends HTMLElement {
 
   /** @returns {string} */
   get width() {
-    return /** @type {string} */ (this.getAttribute('width')) || '100%';
+    return escapeHtml(this.getAttribute('width') || '100%');
   }
 
   /** @param {string} value */
@@ -85,31 +103,27 @@ export class BrownieSection extends HTMLElement {
 
     const paddingSides = this.getValuesForSides(this.padding);
 
+    // Build dynamic styles
+    const dynamicStyles = [];
+    dynamicStyles.push(`height: ${this.height}`);
+    dynamicStyles.push(`width: ${this.width}`);
+    dynamicStyles.push(`padding-block-start: var(--${paddingSides.top}, var(--space-3))`);
+    dynamicStyles.push(`padding-block-end: var(--${paddingSides.bottom}, var(--space-3))`);
+    dynamicStyles.push(`padding-inline-start: var(--${paddingSides.start}, var(--space-3))`);
+    dynamicStyles.push(`padding-inline-end: var(--${paddingSides.end}, var(--space-3))`);
+
+    if (this.divider === 'all') dynamicStyles.push('border: 1px solid var(--color-border)');
+    if (this.divider === 'top') dynamicStyles.push('border-block-start: 1px solid var(--color-border)');
+    if (this.divider === 'bottom') dynamicStyles.push('border-block-end: 1px solid var(--color-border)');
+    if (this.divider === 'start') dynamicStyles.push('border-inline-start: 1px solid var(--color-border)');
+    if (this.divider === 'end') dynamicStyles.push('border-inline-end: 1px solid var(--color-border)');
+    if (this.divider === 'inline') dynamicStyles.push('border-inline: 1px solid var(--color-border)');
+    if (this.divider === 'block') dynamicStyles.push('border-block: 1px solid var(--color-border)');
+
     shadow.innerHTML = /*html*/`
       <style>
         :host {
-          display: block;
-          height: ${this.height};
-          width: ${this.width};
-          padding-block-start: var(--${paddingSides.top}, var(--space-3));
-          padding-block-end: var(--${paddingSides.bottom}, var(--space-3));
-          padding-inline-start: var(--${paddingSides.start}, var(--space-3));
-          padding-inline-end: var(--${paddingSides.end}, var(--space-3));
-          ${this.divider === 'all' ? 'border: 1px solid var(--color-border)' : ''}
-          ${this.divider === 'top' ? 'border-block-start: 1px solid var(--color-border)' : ''}
-          ${this.divider === 'bottom' ? 'border-block-end: 1px solid var(--color-border)' : ''}
-          ${this.divider === 'start' ? 'border-inline-start: 1px solid var(--color-border)' : ''}
-          ${this.divider === 'end' ? 'border-inline-end: 1px solid var(--color-border)' : ''}
-          ${this.divider === 'inline' ? 'border-inline: 1px solid var(--color-border)' : ''}
-          ${this.divider === 'block' ? 'border-block: 1px solid var(--color-border)' : ''}
-        }
-
-        :host([variant="muted"]) {
-          background-color: var(--color-muted);
-        }
-
-        :host([variant="surface"]) {
-          background-color: var(--color-card);
+          ${dynamicStyles.join('; ')};
         }
       </style>
       <slot></slot>

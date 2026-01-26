@@ -1,5 +1,6 @@
 import Brownie from '../core.js';
 import { isInteractiveClick } from '../utils/interactive.js';
+import { escapeHtml } from '../utils/html.js';
 
 /**
  * Sort plugin for brow-table.
@@ -30,7 +31,7 @@ export class BrownieTableSort extends HTMLElement {
    * @returns {string}
    */
   get fields() {
-    return this.getAttribute('fields') || '*';
+    return escapeHtml(this.getAttribute('fields') || '*');
   }
 
   /**
@@ -59,7 +60,8 @@ export class BrownieTableSort extends HTMLElement {
    * @returns {string | null}
    */
   get field() {
-    return this.getAttribute('field');
+    const val = this.getAttribute('field');
+    return val ? escapeHtml(val) : null;
   }
 
   /**

@@ -1,4 +1,34 @@
 import Brownie from '../core.js';
+import { escapeHtml } from '../utils/html.js';
+
+// Shared stylesheet for all instances
+const styles = new CSSStyleSheet();
+styles.replaceSync(/*css*/ `
+  :host {
+    display: flex;
+  }
+  .vertical {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .horizontal {
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+    width: 100%;
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
+  .content {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-direction: column;
+  }
+`);
 
 /**
  * A composable layout with header, footer, start, end panels and content slots.
@@ -10,9 +40,14 @@ export class BrownieLayout extends HTMLElement {
     return ['height', 'width', 'padding'];
   }
 
+  /** @type {CSSStyleSheet} */
+  static styles = styles;
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
+    shadow.adoptedStyleSheets = [styles];
   }
 
   connectedCallback() {
@@ -26,7 +61,7 @@ export class BrownieLayout extends HTMLElement {
 
   /** @returns {string} */
   get height() {
-    return /** @type {string} */ (this.getAttribute('height')) || '100%';
+    return escapeHtml(this.getAttribute('height') || '100%');
   }
 
   /** @param {string} value */
@@ -36,7 +71,7 @@ export class BrownieLayout extends HTMLElement {
 
   /** @returns {string} */
   get width() {
-    return /** @type {string} */ (this.getAttribute('width')) || '100%';
+    return escapeHtml(this.getAttribute('width') || '100%');
   }
 
   /** @param {string} value */
@@ -46,9 +81,8 @@ export class BrownieLayout extends HTMLElement {
 
   /** @returns {BrownieLayoutSpacing} */
   get padding() {
-    return (
-      /** @type {BrownieLayoutSpacing} */ (this.getAttribute('padding')) ||
-      'space-3'
+    return /** @type {BrownieLayoutSpacing} */ (
+      escapeHtml(this.getAttribute('padding') || 'space-3')
     );
   }
 
@@ -63,31 +97,9 @@ export class BrownieLayout extends HTMLElement {
     shadow.innerHTML = /*html*/`
       <style>
         :host {
-          display: flex;
           height: ${this.height};
           width: ${this.width};
           --layout-padding: var(--${this.padding});
-        }
-        .vertical {
-          display: flex;
-          flex-direction: column;
-          width: 100%;
-        }
-        .horizontal {
-          display: flex;
-          flex-direction: row;
-          justify-content: stretch;
-          width: 100%;
-          flex-grow: 1;
-          flex-shrink: 1;
-        }
-        .content {
-          display: flex;
-          width: 100%;
-          height: 100%;
-          flex-grow: 1;
-          flex-shrink: 1;
-          flex-direction: column;
         }
       </style>
       <div class="vertical">

@@ -11,7 +11,7 @@ Use the `slot="trigger"` attribute on the element that should trigger the hoverc
   <a slot="trigger" href="/user/alice">Alice Chen</a>
   <h4>Alice Chen</h4>
   <p>Software Engineer at Acme Corp</p>
-  <brow-button size="sm">View Profile</brow-button>
+  <brow-button>View Profile</brow-button>
 </brow-hovercard>
 ```
 
@@ -74,8 +74,8 @@ Hovercards stay open while you interact with their content, including when keybo
 <brow-hovercard>
   <span slot="trigger">Hover for options</span>
   <h4>Quick Actions</h4>
-  <brow-button size="sm">Edit</brow-button>
-  <brow-button size="sm" variant="ghost">Delete</brow-button>
+  <brow-button>Edit</brow-button>
+  <brow-button variant="ghost">Delete</brow-button>
 </brow-hovercard>
 ```
 

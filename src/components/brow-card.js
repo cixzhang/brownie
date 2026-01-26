@@ -1,4 +1,29 @@
 import Brownie from '../core.js';
+import { escapeHtml } from '../utils/html.js';
+
+// Shared stylesheet for all instances
+const styles = new CSSStyleSheet();
+styles.replaceSync(/*css*/ `
+  :host {
+    display: block;
+  }
+
+  [part="base"] {
+    box-sizing: border-box;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-container);
+    box-shadow: var(--elevation-base);
+    width: 100%;
+    height: 100%;
+    overflow: clip;
+  }
+
+  .inner {
+    width: 100%;
+    height: 100%;
+  }
+`);
 
 /**
  * Container used for segmenting general content into a visible block.
@@ -11,9 +36,14 @@ export class BrownieCard extends HTMLElement {
     return ['height', 'width', 'padding'];
   }
 
+  /** @type {CSSStyleSheet} */
+  static styles = styles;
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
+    shadow.adoptedStyleSheets = [styles];
   }
 
   connectedCallback() {
@@ -27,7 +57,7 @@ export class BrownieCard extends HTMLElement {
 
   /** @returns {string} */
   get height() {
-    return /** @type {string} */ (this.getAttribute('height')) || 'auto';
+    return escapeHtml(this.getAttribute('height') || 'auto');
   }
 
   /** @param {string} value */
@@ -37,7 +67,7 @@ export class BrownieCard extends HTMLElement {
 
   /** @returns {string} */
   get width() {
-    return /** @type {string} */ (this.getAttribute('width')) || 'auto';
+    return escapeHtml(this.getAttribute('width') || 'auto');
   }
 
   /** @param {string} value */
@@ -47,9 +77,8 @@ export class BrownieCard extends HTMLElement {
 
   /** @returns {BrownieCardSpacing} */
   get padding() {
-    return (
-      /** @type {BrownieCardSpacing} */ (this.getAttribute('padding')) ||
-      'space-4'
+    return /** @type {BrownieCardSpacing} */ (
+      escapeHtml(this.getAttribute('padding') || 'space-4')
     );
   }
 
@@ -66,29 +95,16 @@ export class BrownieCard extends HTMLElement {
     shadow.innerHTML = /*html*/`
       <style>
         :host {
-          display: block;
           height: ${this.height};
           width: ${this.width};
         }
-
         [part="base"] {
-          box-sizing: border-box;
-          background: var(--color-card);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-container);
           padding-block-start: var(--${paddingSides.top}, var(--space-3));
           padding-block-end: var(--${paddingSides.bottom}, var(--space-3));
           padding-inline-start: var(--${paddingSides.start}, var(--space-3));
           padding-inline-end: var(--${paddingSides.end}, var(--space-3));
-          box-shadow: var(--elevation-base);
-          width: 100%;
-          height: 100%;
-          overflow: clip;
         }
-
         .inner {
-          width: 100%;
-          height: 100%;
           overflow: ${this.height === 'auto' ? 'clip' : 'auto'};
         }
       </style>

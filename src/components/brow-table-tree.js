@@ -1,5 +1,6 @@
 import Brownie from '../core.js';
 import { isInteractiveClick } from '../utils/interactive.js';
+import { escapeHtml } from '../utils/html.js';
 
 /**
  * Tree plugin for brow-table.
@@ -48,7 +49,7 @@ export class BrownieTableTree extends HTMLElement {
    * @returns {string}
    */
   get idKey() {
-    return this.getAttribute('id-key') || 'id';
+    return escapeHtml(this.getAttribute('id-key') || 'id');
   }
 
   /**
@@ -63,7 +64,7 @@ export class BrownieTableTree extends HTMLElement {
    * @returns {string}
    */
   get parentKey() {
-    return this.getAttribute('parent-key') || 'parent';
+    return escapeHtml(this.getAttribute('parent-key') || 'parent');
   }
 
   /**
@@ -78,7 +79,8 @@ export class BrownieTableTree extends HTMLElement {
    * @returns {string | null}
    */
   get field() {
-    return this.getAttribute('field');
+    const val = this.getAttribute('field');
+    return val ? escapeHtml(val) : null;
   }
 
   /**

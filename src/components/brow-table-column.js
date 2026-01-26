@@ -1,4 +1,13 @@
 import Brownie from '../core.js';
+import { escapeHtml } from '../utils/html.js';
+
+// Shared stylesheet for all instances
+const styles = new CSSStyleSheet();
+styles.replaceSync(/*css*/ `
+  :host {
+    display: none;
+  }
+`);
 
 /**
  * Defines custom rendering for a table column.
@@ -17,22 +26,27 @@ export class BrownieTableColumn extends HTMLElement {
     return ['field', 'align', 'width'];
   }
 
+  /** @type {CSSStyleSheet} */
+  static styles = styles;
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
+    shadow.adoptedStyleSheets = [styles];
   }
 
   connectedCallback() {
-    this.render();
+    // No render needed - styles are in adoptedStyleSheets
   }
 
   attributeChangedCallback() {
-    this.render();
+    // No render needed
   }
 
   /** @returns {string} */
   get field() {
-    return this.getAttribute('field') || '';
+    return escapeHtml(this.getAttribute('field') || '');
   }
 
   /** @param {string} value */
@@ -43,7 +57,7 @@ export class BrownieTableColumn extends HTMLElement {
   /** @returns {BrownieTableColumnAlign} */
   get align() {
     return /** @type {BrownieTableColumnAlign} */ (
-      this.getAttribute('align') || 'start'
+      escapeHtml(this.getAttribute('align') || 'start')
     );
   }
 
@@ -54,7 +68,7 @@ export class BrownieTableColumn extends HTMLElement {
 
   /** @returns {string} */
   get width() {
-    return this.getAttribute('width') || 'auto';
+    return escapeHtml(this.getAttribute('width') || 'auto');
   }
 
   /** @param {string} value */
@@ -87,32 +101,10 @@ export class BrownieTableColumn extends HTMLElement {
 
     // Double braces for escaped HTML
     html = html.replace(/\{\{(\w+)\}\}/g, (_, key) => {
-      return this.escapeHtml(data[key] ?? '');
+      return escapeHtml(data[key] ?? '');
     });
 
     return html;
-  }
-
-  /**
-   * HTML-escapes a string for safe insertion.
-   * @param {string} str
-   * @returns {string}
-   */
-  escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-  }
-
-  render() {
-    const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
-    shadow.innerHTML = /*html*/ `
-      <style>
-        :host {
-          display: none;
-        }
-      </style>
-    `;
   }
 }
 

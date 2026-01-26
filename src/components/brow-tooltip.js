@@ -1,4 +1,87 @@
 import Brownie from '../core.js';
+import { escapeHtml } from '../utils/html.js';
+
+// Shared stylesheet for all instances
+const styles = new CSSStyleSheet();
+styles.replaceSync(/*css*/ `
+  :host {
+    display: contents;
+  }
+
+  /* Style non-interactive text triggers */
+  ::slotted(span) {
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: currentColor;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    cursor: help;
+  }
+
+  :host([plain]) ::slotted(span) {
+    text-decoration: none;
+  }
+
+  ::slotted(span:focus-visible) {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  [part="layer"] {
+    position: fixed;
+    padding: var(--space-2);
+    background: transparent;
+    border: none;
+    overflow: clip;
+    overflow-clip-margin: 10px;
+    pointer-events: none;
+  }
+
+  [data-placement="top"] {
+    position-area: top;
+    position-try-fallbacks: flip-block;
+    padding-block: var(--space-1);
+  }
+  [data-placement="bottom"] {
+    position-area: bottom;
+    position-try-fallbacks: flip-block;
+    padding-block: var(--space-1);
+  }
+  [data-placement="left"] {
+    position-area: left;
+    position-try-fallbacks: flip-inline;
+    padding-inline: var(--space-1);
+  }
+  [data-placement="right"] {
+    position-area: right;
+    position-try-fallbacks: flip-inline;
+    padding-inline: var(--space-1);
+  }
+
+  [part="layer"]:popover-open {
+    opacity: 1;
+    transition: opacity 150ms ease;
+  }
+
+  @starting-style {
+    [part="layer"]:popover-open {
+      opacity: 0;
+    }
+  }
+
+  [part="tooltip"] {
+    max-width: 250px;
+    padding: var(--space-1) var(--space-2);
+    background: var(--color-text-primary);
+    color: var(--color-page);
+    font-size: 0.875rem;
+    line-height: 1.4;
+    border-radius: var(--radius-element);
+    white-space: normal;
+    word-wrap: break-word;
+  }
+`);
 
 /**
  * Tooltip component that shows text hints on hover/focus.
@@ -23,6 +106,9 @@ export class BrownieTooltip extends HTMLElement {
     return ['text', 'placement', 'delay'];
   }
 
+  /** @type {CSSStyleSheet} */
+  static styles = styles;
+
   /** @type {number | null} */
   #showTimeout = null;
 
@@ -40,6 +126,8 @@ export class BrownieTooltip extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
+    shadow.adoptedStyleSheets = [styles];
     this.#anchorName = `--tooltip-anchor-${Brownie.generateId()}`;
     this.#tooltipId = `tooltip-${Brownie.generateId()}`;
   }
@@ -69,7 +157,7 @@ export class BrownieTooltip extends HTMLElement {
   // ============================================================
 
   get text() {
-    return this.getAttribute('text') || '';
+    return escapeHtml(this.getAttribute('text') || '');
   }
 
   set text(value) {
@@ -81,7 +169,7 @@ export class BrownieTooltip extends HTMLElement {
   }
 
   get placement() {
-    return this.getAttribute('placement') || 'top';
+    return escapeHtml(this.getAttribute('placement') || 'top');
   }
 
   set placement(value) {
@@ -193,87 +281,11 @@ export class BrownieTooltip extends HTMLElement {
 
     shadow.innerHTML = /*html*/ `
       <style>
-        :host {
-          display: contents;
-        }
-
         [part="trigger"] {
           anchor-name: ${this.#anchorName};
         }
-
-        /* Style non-interactive text triggers */
-        ::slotted(span) {
-          text-decoration-line: underline;
-          text-decoration-style: dotted;
-          text-decoration-color: currentColor;
-          text-decoration-thickness: 1px;
-          text-underline-offset: 2px;
-          cursor: help;
-        }
-
-        :host([plain]) ::slotted(span) {
-          text-decoration: none;
-        }
-
-        ::slotted(span:focus-visible) {
-          outline: 2px solid var(--color-accent);
-          outline-offset: 2px;
-          border-radius: 2px;
-        }
-
         [part="layer"] {
-          position: fixed;
           position-anchor: ${this.#anchorName};
-          padding: var(--space-2);
-          background: transparent;
-          border: none;
-          overflow: clip;
-          overflow-clip-margin: 10px;
-          pointer-events: none;
-        }
-
-        [data-placement="top"] {
-          position-area: top;
-          position-try-fallbacks: flip-block;
-          padding-block: var(--space-1);
-        }
-        [data-placement="bottom"] {
-          position-area: bottom;
-          position-try-fallbacks: flip-block;
-          padding-block: var(--space-1);
-        }
-        [data-placement="left"] {
-          position-area: left;
-          position-try-fallbacks: flip-inline;
-          padding-inline: var(--space-1);
-        }
-        [data-placement="right"] {
-          position-area: right;
-          position-try-fallbacks: flip-inline;
-          padding-inline: var(--space-1);
-        }
-
-        [part="layer"]:popover-open {
-          opacity: 1;
-          transition: opacity 150ms ease;
-        }
-
-        @starting-style {
-          [part="layer"]:popover-open {
-            opacity: 0;
-          }
-        }
-
-        [part="tooltip"] {
-          max-width: 250px;
-          padding: var(--space-1) var(--space-2);
-          background: var(--color-text-primary);
-          color: var(--color-page);
-          font-size: 0.875rem;
-          line-height: 1.4;
-          border-radius: var(--radius-element);
-          white-space: normal;
-          word-wrap: break-word;
         }
       </style>
       <span part="trigger" aria-describedby="${this.#tooltipId}">

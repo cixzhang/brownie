@@ -1,4 +1,92 @@
 import Brownie from '../core.js';
+import { escapeHtml } from '../utils/html.js';
+
+// Shared stylesheet for all instances
+const styles = new CSSStyleSheet();
+styles.replaceSync(/*css*/ `
+  :host {
+    display: contents;
+  }
+
+  /* Style non-interactive text triggers */
+  slot[name="trigger"]::slotted(span) {
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: currentColor;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    cursor: pointer;
+  }
+
+  :host([plain]) slot[name="trigger"]::slotted(span) {
+    text-decoration: none;
+  }
+
+  slot[name="trigger"]::slotted(span:focus-visible) {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  [part="layer"] {
+    position: fixed;
+    padding: var(--space-2);
+    background: transparent;
+    border: none;
+    overflow: clip;
+    overflow-clip-margin: 10px;
+  }
+
+  [data-placement="bottom"] {
+    position-area: bottom;
+    position-try-fallbacks: flip-block;
+    padding-block: var(--space-1);
+  }
+  [data-placement="top"] {
+    position-area: top;
+    position-try-fallbacks: flip-block;
+    padding-block: var(--space-1);
+  }
+  [data-placement="left"] {
+    position-area: left;
+    position-try-fallbacks: flip-inline;
+    padding-inline: var(--space-1);
+  }
+  [data-placement="right"] {
+    position-area: right;
+    position-try-fallbacks: flip-inline;
+    padding-inline: var(--space-1);
+  }
+
+  [part="layer"]:popover-open {
+    opacity: 1;
+    transition: opacity 150ms ease;
+  }
+
+  @starting-style {
+    [part="layer"]:popover-open {
+      opacity: 0;
+    }
+  }
+
+  [part="card"] {
+    min-width: 200px;
+    max-width: 320px;
+    padding: var(--space-4);
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-container);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  ::slotted(*:nth-child(1 of :not([slot="trigger"]))) {
+    margin-top: 0;
+  }
+
+  ::slotted(*:nth-last-child(1 of :not([slot="trigger"]))) {
+    margin-bottom: 0;
+  }
+`);
 
 /**
  * Hovercard component that shows rich content on hover.
@@ -25,6 +113,9 @@ export class BrownieHovercard extends HTMLElement {
   static get observedAttributes() {
     return ['placement', 'delay'];
   }
+
+  /** @type {CSSStyleSheet} */
+  static styles = styles;
 
   /** @type {number | null} */
   #showTimeout = null;
@@ -58,6 +149,8 @@ export class BrownieHovercard extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
+    shadow.adoptedStyleSheets = [styles];
     this.#anchorName = `--hovercard-anchor-${Brownie.generateId()}`;
   }
 
@@ -86,7 +179,7 @@ export class BrownieHovercard extends HTMLElement {
   // ============================================================
 
   get placement() {
-    return this.getAttribute('placement') || 'bottom';
+    return escapeHtml(this.getAttribute('placement') || 'bottom');
   }
 
   set placement(value) {
@@ -282,92 +375,11 @@ export class BrownieHovercard extends HTMLElement {
 
     shadow.innerHTML = /*html*/ `
       <style>
-        :host {
-          display: contents;
-        }
-
         [part="trigger"] {
           anchor-name: ${this.#anchorName};
         }
-
-        /* Style non-interactive text triggers */
-        slot[name="trigger"]::slotted(span) {
-          text-decoration-line: underline;
-          text-decoration-style: dotted;
-          text-decoration-color: currentColor;
-          text-decoration-thickness: 1px;
-          text-underline-offset: 2px;
-          cursor: pointer;
-        }
-
-        :host([plain]) slot[name="trigger"]::slotted(span) {
-          text-decoration: none;
-        }
-
-        slot[name="trigger"]::slotted(span:focus-visible) {
-          outline: 2px solid var(--color-accent);
-          outline-offset: 2px;
-          border-radius: 2px;
-        }
-
         [part="layer"] {
-          position: fixed;
           position-anchor: ${this.#anchorName};
-          padding: var(--space-2);
-          background: transparent;
-          border: none;
-          overflow: clip;
-          overflow-clip-margin: 10px;
-        }
-
-        [data-placement="bottom"] {
-          position-area: bottom;
-          position-try-fallbacks: flip-block;
-          padding-block: var(--space-1);
-        }
-        [data-placement="top"] {
-          position-area: top;
-          position-try-fallbacks: flip-block;
-          padding-block: var(--space-1);
-        }
-        [data-placement="left"] {
-          position-area: left;
-          position-try-fallbacks: flip-inline;
-          padding-inline: var(--space-1);
-        }
-        [data-placement="right"] {
-          position-area: right;
-          position-try-fallbacks: flip-inline;
-          padding-inline: var(--space-1);
-        }
-
-        [part="layer"]:popover-open {
-          opacity: 1;
-          transition: opacity 150ms ease;
-        }
-
-        @starting-style {
-          [part="layer"]:popover-open {
-            opacity: 0;
-          }
-        }
-
-        [part="card"] {
-          min-width: 200px;
-          max-width: 320px;
-          padding: var(--space-4);
-          background: var(--color-card);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-container);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        ::slotted(*:nth-child(1 of :not([slot="trigger"]))) {
-          margin-top: 0;
-        }
-
-        ::slotted(*:nth-last-child(1 of :not([slot="trigger"]))) {
-          margin-bottom: 0;
         }
       </style>
       <span part="trigger" aria-haspopup="dialog">

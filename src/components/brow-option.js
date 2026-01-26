@@ -1,4 +1,44 @@
 import Brownie from '../core.js';
+import { escapeHtml } from '../utils/html.js';
+
+// Shared stylesheet for all instances
+const styles = new CSSStyleSheet();
+styles.replaceSync(/*css*/ `
+  :host {
+    display: block;
+    padding: var(--space-2) var(--space-3);
+    cursor: pointer;
+    color: var(--color-text-primary);
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
+
+  :host(:hover),
+  :host([data-focused]) {
+    background: var(--color-highlight);
+  }
+
+  :host([selected]) {
+    font-weight: 500;
+  }
+
+  :host([selected])::before {
+    content: '\\2713';
+    display: inline-block;
+    width: 1.25rem;
+    margin-left: calc(-1 * var(--space-1));
+    color: var(--color-accent);
+  }
+
+  :host([disabled]) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  :host([disabled]:hover) {
+    background: transparent;
+  }
+`);
 
 /**
  * An option for use within brow-select.
@@ -20,9 +60,14 @@ export class BrownieOption extends HTMLElement {
     return ['value', 'disabled', 'selected'];
   }
 
+  /** @type {CSSStyleSheet} */
+  static styles = styles;
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
+    shadow.adoptedStyleSheets = [styles];
   }
 
   connectedCallback() {
@@ -50,7 +95,8 @@ export class BrownieOption extends HTMLElement {
    * @returns {string | null}
    */
   get value() {
-    return this.getAttribute('value');
+    const val = this.getAttribute('value');
+    return val ? escapeHtml(val) : null;
   }
 
   /**
@@ -129,46 +175,7 @@ export class BrownieOption extends HTMLElement {
    */
   #render() {
     const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
-
-    shadow.innerHTML = /*html*/ `
-      <style>
-        :host {
-          display: block;
-          padding: var(--space-2) var(--space-3);
-          cursor: pointer;
-          color: var(--color-text-primary);
-          font-size: 0.875rem;
-          white-space: nowrap;
-        }
-
-        :host(:hover),
-        :host([data-focused]) {
-          background: var(--color-highlight);
-        }
-
-        :host([selected]) {
-          font-weight: 500;
-        }
-
-        :host([selected])::before {
-          content: '\\2713';
-          display: inline-block;
-          width: 1.25rem;
-          margin-left: calc(-1 * var(--space-1));
-          color: var(--color-accent);
-        }
-
-        :host([disabled]) {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        :host([disabled]:hover) {
-          background: transparent;
-        }
-      </style>
-      <slot></slot>
-    `;
+    shadow.innerHTML = /*html*/ `<slot></slot>`;
   }
 }
 

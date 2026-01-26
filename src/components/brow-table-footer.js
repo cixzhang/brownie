@@ -1,5 +1,13 @@
 import Brownie from '../core.js';
 
+// Shared stylesheet for all instances
+const styles = new CSSStyleSheet();
+styles.replaceSync(/*css*/ `
+  :host {
+    display: none;
+  }
+`);
+
 /**
  * A footer row for a table using data-* attributes for field values.
  * Typically used for totals or summaries.
@@ -10,13 +18,18 @@ import Brownie from '../core.js';
  * <brow-table-footer data-item="Total" data-price="$35"/>
  */
 export class BrownieTableFooter extends HTMLElement {
+  /** @type {CSSStyleSheet} */
+  static styles = styles;
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
+    shadow.adoptedStyleSheets = [styles];
   }
 
   connectedCallback() {
-    this.render();
+    // No render needed - styles are in adoptedStyleSheets
   }
 
   /**
@@ -35,17 +48,6 @@ export class BrownieTableFooter extends HTMLElement {
    */
   getValue(field) {
     return this.dataset[field];
-  }
-
-  render() {
-    const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
-    shadow.innerHTML = /*html*/ `
-      <style>
-        :host {
-          display: none;
-        }
-      </style>
-    `;
   }
 }
 

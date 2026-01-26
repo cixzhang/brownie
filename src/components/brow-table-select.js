@@ -1,5 +1,6 @@
 import Brownie from '../core.js';
 import { isInteractiveClick } from '../utils/interactive.js';
+import { escapeHtml } from '../utils/html.js';
 
 /**
  * Selection plugin for brow-table.
@@ -62,7 +63,8 @@ export class BrownieTableSelect extends HTMLElement {
    * @returns {string | null}
    */
   get key() {
-    return this.getAttribute('key');
+    const val = this.getAttribute('key');
+    return val ? escapeHtml(val) : null;
   }
 
   /**

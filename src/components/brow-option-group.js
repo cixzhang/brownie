@@ -1,4 +1,28 @@
 import Brownie from '../core.js';
+import { escapeHtml } from '../utils/html.js';
+
+// Shared stylesheet for all instances
+const styles = new CSSStyleSheet();
+styles.replaceSync(/*css*/ `
+  :host {
+    display: block;
+  }
+
+  :host(:not(:first-child)) {
+    border-top: 1px solid var(--color-border-muted);
+    margin-top: var(--space-1);
+    padding-top: var(--space-1);
+  }
+
+  .label {
+    padding: var(--space-2) var(--space-3);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+`);
 
 /**
  * A group of options within brow-select.
@@ -23,9 +47,18 @@ export class BrownieOptionGroup extends HTMLElement {
     return ['label'];
   }
 
+  /** @type {CSSStyleSheet} */
+  static styles = styles;
+
+  /** @type {string} */
+  #labelId = '';
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
+    shadow.adoptedStyleSheets = [styles];
+    this.#labelId = `group-label-${Brownie.generateId()}`;
   }
 
   connectedCallback() {
@@ -51,7 +84,8 @@ export class BrownieOptionGroup extends HTMLElement {
    * @returns {string | null}
    */
   get label() {
-    return this.getAttribute('label');
+    const val = this.getAttribute('label');
+    return val ? escapeHtml(val) : null;
   }
 
   /**
@@ -74,33 +108,12 @@ export class BrownieOptionGroup extends HTMLElement {
    */
   #render() {
     const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
-    const labelId = `group-label-${Math.random().toString(36).substring(2, 9)}`;
 
     // Set aria-labelledby on host
-    this.setAttribute('aria-labelledby', labelId);
+    this.setAttribute('aria-labelledby', this.#labelId);
 
     shadow.innerHTML = /*html*/ `
-      <style>
-        :host {
-          display: block;
-        }
-
-        :host(:not(:first-child)) {
-          border-top: 1px solid var(--color-border-muted);
-          margin-top: var(--space-1);
-          padding-top: var(--space-1);
-        }
-
-        .label {
-          padding: var(--space-2) var(--space-3);
-          font-size: 0.75rem;
-          font-weight: 600;
-          color: var(--color-text-muted);
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-      </style>
-      ${this.label ? `<div class="label" id="${labelId}">${this.label}</div>` : ''}
+      ${this.label ? `<div class="label" id="${this.#labelId}">${this.label}</div>` : ''}
       <slot></slot>
     `;
   }

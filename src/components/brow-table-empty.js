@@ -1,5 +1,13 @@
 import Brownie from '../core.js';
 
+// Shared stylesheet for all instances
+const styles = new CSSStyleSheet();
+styles.replaceSync(/*css*/ `
+  :host {
+    display: none;
+  }
+`);
+
 /**
  * Empty state content displayed when a table has no rows.
  * Content is passed through to the parent brow-table.
@@ -10,13 +18,18 @@ import Brownie from '../core.js';
  * <brow-table-empty>No records found.</brow-table-empty>
  */
 export class BrownieTableEmpty extends HTMLElement {
+  /** @type {CSSStyleSheet} */
+  static styles = styles;
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
+    shadow.adoptedStyleSheets = [styles];
   }
 
   connectedCallback() {
-    this.render();
+    // No render needed - styles are in adoptedStyleSheets
   }
 
   /**
@@ -25,17 +38,6 @@ export class BrownieTableEmpty extends HTMLElement {
    */
   getContent() {
     return this.innerHTML;
-  }
-
-  render() {
-    const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
-    shadow.innerHTML = /*html*/ `
-      <style>
-        :host {
-          display: none;
-        }
-      </style>
-    `;
   }
 }
 

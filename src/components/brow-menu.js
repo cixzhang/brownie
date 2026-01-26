@@ -1,4 +1,73 @@
 import Brownie from '../core.js';
+import { escapeHtml } from '../utils/html.js';
+
+// Shared stylesheet for all instances
+const styles = new CSSStyleSheet();
+styles.replaceSync(/*css*/ `
+  :host {
+    display: contents;
+  }
+
+  [part="layer"] {
+    position: fixed;
+    padding: 0;
+    background: transparent;
+    border: none;
+    overflow: clip;
+    overflow-clip-margin: 10px;
+  }
+
+  [data-placement="bottom-start"] {
+    position-area: bottom span-x-start;
+    position-try-fallbacks: flip-block;
+    padding-block: var(--space-1);
+  }
+  [data-placement="bottom-end"] {
+    position-area: bottom span-x-end;
+    position-try-fallbacks: flip-block;
+    padding-block: var(--space-1);
+  }
+  [data-placement="top-start"] {
+    position-area: top span-x-start;
+    position-try-fallbacks: flip-block;
+    padding-block: var(--space-1);
+  }
+  [data-placement="top-end"] {
+    position-area: top span-x-end;
+    position-try-fallbacks: flip-block;
+    padding-block: var(--space-1);
+  }
+
+  [part="layer"]:popover-open {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 150ms ease, transform 150ms ease;
+  }
+
+  @starting-style {
+    [part="layer"]:popover-open {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+  }
+
+  [part="menu"] {
+    min-width: var(--menu-min-width, 12rem);
+    max-height: var(--menu-max-height, 20rem);
+    overflow-y: auto;
+    padding: var(--space-1) 0;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-container);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    list-style: none;
+    transform-origin: top center;
+  }
+
+  [part="menu"]:focus {
+    outline: none;
+  }
+`);
 
 /**
  * Menu component that shows a dropdown list of items.
@@ -28,6 +97,9 @@ export class BrownieMenu extends HTMLElement {
     return ['placement'];
   }
 
+  /** @type {CSSStyleSheet} */
+  static styles = styles;
+
   /** @type {string} */
   #anchorName = '';
 
@@ -47,6 +119,8 @@ export class BrownieMenu extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
+    shadow.adoptedStyleSheets = [styles];
     this.#anchorName = `--menu-anchor-${Brownie.generateId()}`;
     this.#menuId = `menu-${Brownie.generateId()}`;
   }
@@ -74,7 +148,7 @@ export class BrownieMenu extends HTMLElement {
   // ============================================================
 
   get placement() {
-    return this.getAttribute('placement') || 'bottom-end';
+    return escapeHtml(this.getAttribute('placement') || 'bottom-end');
   }
 
   set placement(value) {
@@ -291,73 +365,11 @@ export class BrownieMenu extends HTMLElement {
 
     shadow.innerHTML = /*html*/ `
       <style>
-        :host {
-          display: contents;
-        }
-
         [part="trigger"] {
           anchor-name: ${this.#anchorName};
         }
-
         [part="layer"] {
-          position: fixed;
           position-anchor: ${this.#anchorName};
-          padding: 0;
-          background: transparent;
-          border: none;
-          overflow: clip;
-          overflow-clip-margin: 10px;
-        }
-
-        [data-placement="bottom-start"] {
-          position-area: bottom span-x-start;
-          position-try-fallbacks: flip-block;
-          padding-block: var(--space-1);
-        }
-        [data-placement="bottom-end"] {
-          position-area: bottom span-x-end;
-          position-try-fallbacks: flip-block;
-          padding-block: var(--space-1);
-        }
-        [data-placement="top-start"] {
-          position-area: top span-x-start;
-          position-try-fallbacks: flip-block;
-          padding-block: var(--space-1);
-        }
-        [data-placement="top-end"] {
-          position-area: top span-x-end;
-          position-try-fallbacks: flip-block;
-          padding-block: var(--space-1);
-        }
-
-        [part="layer"]:popover-open {
-          opacity: 1;
-          transform: scale(1);
-          transition: opacity 150ms ease, transform 150ms ease;
-        }
-
-        @starting-style {
-          [part="layer"]:popover-open {
-            opacity: 0;
-            transform: scale(0.95);
-          }
-        }
-
-        [part="menu"] {
-          min-width: var(--menu-min-width, 12rem);
-          max-height: var(--menu-max-height, 20rem);
-          overflow-y: auto;
-          padding: var(--space-1) 0;
-          background: var(--color-card);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-container);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-          list-style: none;
-          transform-origin: top center;
-        }
-
-        [part="menu"]:focus {
-          outline: none;
         }
       </style>
       <span

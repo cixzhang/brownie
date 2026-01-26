@@ -1,4 +1,43 @@
 import Brownie from '../core.js';
+import { escapeHtml } from '../utils/html.js';
+
+// Shared stylesheet for all instances
+const styles = new CSSStyleSheet();
+styles.replaceSync(/*css*/ `
+  :host {
+    display: block;
+    padding: var(--menu-item-padding, var(--space-2) var(--space-3));
+    cursor: pointer;
+    color: var(--color-text-primary);
+    font-size: 0.875rem;
+    white-space: nowrap;
+    outline: none;
+  }
+
+  :host(:hover),
+  :host(:focus) {
+    background: var(--color-highlight);
+  }
+
+  :host([disabled]) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  :host([disabled]:hover),
+  :host([disabled]:focus) {
+    background: transparent;
+  }
+
+  :host([variant="danger"]) {
+    color: var(--color-danger, #dc2626);
+  }
+
+  :host([variant="danger"]:hover),
+  :host([variant="danger"]:focus) {
+    background: var(--color-danger-bg, #fef2f2);
+  }
+`);
 
 /**
  * A menu item for use within brow-menu.
@@ -19,9 +58,14 @@ export class BrownieMenuItem extends HTMLElement {
     return ['value', 'disabled', 'variant'];
   }
 
+  /** @type {CSSStyleSheet} */
+  static styles = styles;
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
+    shadow.adoptedStyleSheets = [styles];
   }
 
   connectedCallback() {
@@ -53,7 +97,8 @@ export class BrownieMenuItem extends HTMLElement {
    * @returns {string | null}
    */
   get value() {
-    return this.getAttribute('value');
+    const val = this.getAttribute('value');
+    return val ? escapeHtml(val) : null;
   }
 
   /**
@@ -91,7 +136,8 @@ export class BrownieMenuItem extends HTMLElement {
    * @returns {string | null}
    */
   get variant() {
-    return this.getAttribute('variant');
+    const val = this.getAttribute('variant');
+    return val ? escapeHtml(val) : null;
   }
 
   /**
@@ -125,45 +171,7 @@ export class BrownieMenuItem extends HTMLElement {
    */
   #render() {
     const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
-
-    shadow.innerHTML = /*html*/ `
-      <style>
-        :host {
-          display: block;
-          padding: var(--menu-item-padding, var(--space-2) var(--space-3));
-          cursor: pointer;
-          color: var(--color-text-primary);
-          font-size: 0.875rem;
-          white-space: nowrap;
-          outline: none;
-        }
-
-        :host(:hover),
-        :host(:focus) {
-          background: var(--color-highlight);
-        }
-
-        :host([disabled]) {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        :host([disabled]:hover),
-        :host([disabled]:focus) {
-          background: transparent;
-        }
-
-        :host([variant="danger"]) {
-          color: var(--color-danger, #dc2626);
-        }
-
-        :host([variant="danger"]:hover),
-        :host([variant="danger"]:focus) {
-          background: var(--color-danger-bg, #fef2f2);
-        }
-      </style>
-      <slot></slot>
-    `;
+    shadow.innerHTML = /*html*/ `<slot></slot>`;
   }
 }
 

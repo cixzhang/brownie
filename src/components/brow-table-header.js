@@ -1,4 +1,13 @@
 import Brownie from '../core.js';
+import { escapeHtml } from '../utils/html.js';
+
+// Shared stylesheet for all instances
+const styles = new CSSStyleSheet();
+styles.replaceSync(/*css*/ `
+  :host {
+    display: none;
+  }
+`);
 
 /**
  * Defines column headers for a table using data-* attributes.
@@ -10,13 +19,18 @@ import Brownie from '../core.js';
  * <brow-table-header data-name="Name" data-id="ID" data-status="Status"/>
  */
 export class BrownieTableHeader extends HTMLElement {
+  /** @type {CSSStyleSheet} */
+  static styles = styles;
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
+    shadow.adoptedStyleSheets = [styles];
   }
 
   connectedCallback() {
-    this.render();
+    // No render needed - styles are in adoptedStyleSheets
   }
 
   /**
@@ -28,7 +42,7 @@ export class BrownieTableHeader extends HTMLElement {
       .filter((name) => name.startsWith('data-'))
       .map((name) => {
         const field = this.dataAttrToField(name);
-        const label = this.getAttribute(name) || field;
+        const label = escapeHtml(this.getAttribute(name) || field);
         return { field, label };
       });
   }
@@ -43,17 +57,6 @@ export class BrownieTableHeader extends HTMLElement {
     return attrName
       .replace(/^data-/, '')
       .replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
-  }
-
-  render() {
-    const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
-    shadow.innerHTML = /*html*/ `
-      <style>
-        :host {
-          display: none;
-        }
-      </style>
-    `;
   }
 }
 

@@ -1,4 +1,128 @@
 import Brownie from '../core.js';
+import { escapeHtml } from '../utils/html.js';
+
+// Shared stylesheet for all instances
+const styles = new CSSStyleSheet();
+styles.replaceSync(/*css*/ `
+  :host {
+    display: inline-flex;
+    position: relative;
+  }
+
+  [part="trigger"] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    min-width: 10rem;
+    padding-inline: var(--space-3);
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-element);
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: inherit;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    text-align: left;
+    height: var(--space-9);
+  }
+
+  [part="trigger"]:hover {
+    border-color: var(--color-border-hover, var(--color-border));
+  }
+
+  [part="trigger"]:focus {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  [part="trigger"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .display-value {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .display-value.placeholder {
+    color: var(--color-text-muted);
+  }
+
+  .chevron {
+    flex-shrink: 0;
+    color: var(--color-text-muted);
+  }
+
+  [part="layer"] {
+    position: fixed;
+    position-area: bottom span-right;
+    position-try-fallbacks: flip-block;
+    padding: 0;
+    background: transparent;
+    border: none;
+    overflow: clip;
+    overflow-clip-margin: 10px;
+    padding-block: var(--space-1);
+    min-width: anchor-size(width);
+  }
+
+  [part="layer"]:popover-open {
+    opacity: 1;
+    transform: translateY(var(--select-offset-y, 0px)) scale(1);
+    transition: opacity 150ms ease, scale 150ms ease;
+  }
+
+  @starting-style {
+    [part="layer"]:popover-open {
+      opacity: 0;
+      scale: 0.95;
+    }
+  }
+
+  [part="listbox"] {
+    min-width: 100%;
+    max-height: var(--select-max-height, 20rem);
+    overflow-y: auto;
+    padding: var(--space-1) 0;
+    margin: 0;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-container);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    list-style: none;
+    transform-origin: top center;
+  }
+
+  [part="listbox"]:focus {
+    outline: none;
+  }
+
+  .search-wrapper {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--color-border-muted);
+  }
+
+  .search-input {
+    width: 100%;
+    padding: var(--space-1_5) var(--space-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-element);
+    font-family: inherit;
+    font-size: 0.875rem;
+    background: var(--color-background);
+    color: var(--color-text-primary);
+  }
+
+  .search-input:focus {
+    outline: 2px solid var(--color-focus);
+    outline-offset: -1px;
+  }
+`);
 
 /**
  * Custom select dropdown component.
@@ -29,6 +153,9 @@ export class BrownieSelect extends HTMLElement {
     return ['name', 'value', 'placeholder', 'disabled', 'required', 'searchable'];
   }
 
+  /** @type {CSSStyleSheet} */
+  static styles = styles;
+
   /** @type {string} */
   #anchorName = '';
 
@@ -54,6 +181,8 @@ export class BrownieSelect extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    const shadow = /** @type {ShadowRoot} */ (this.shadowRoot);
+    shadow.adoptedStyleSheets = [styles];
     this.#anchorName = `--select-anchor-${Brownie.generateId()}`;
     this.#listboxId = `listbox-${Brownie.generateId()}`;
   }
@@ -99,7 +228,8 @@ export class BrownieSelect extends HTMLElement {
   // ============================================================
 
   get name() {
-    return this.getAttribute('name');
+    const val = this.getAttribute('name');
+    return val ? escapeHtml(val) : null;
   }
 
   set name(value) {
@@ -111,7 +241,8 @@ export class BrownieSelect extends HTMLElement {
   }
 
   get value() {
-    return this.getAttribute('value');
+    const val = this.getAttribute('value');
+    return val ? escapeHtml(val) : null;
   }
 
   set value(val) {
@@ -123,7 +254,7 @@ export class BrownieSelect extends HTMLElement {
   }
 
   get placeholder() {
-    return this.getAttribute('placeholder') || 'Select...';
+    return escapeHtml(this.getAttribute('placeholder') || 'Select...');
   }
 
   set placeholder(value) {
@@ -545,125 +676,11 @@ export class BrownieSelect extends HTMLElement {
 
     shadow.innerHTML = /*html*/ `
       <style>
-        :host {
-          display: inline-flex;
-          position: relative;
-        }
-
         [part="trigger"] {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: var(--space-2);
-          min-width: 10rem;
-          padding-inline: var(--space-3);
-          background: var(--color-card);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-element);
-          box-sizing: border-box;
-          font-family: inherit;
-          font-size: inherit;
-          color: var(--color-text-primary);
-          cursor: pointer;
-          text-align: left;
-          height: var(--space-9);
           anchor-name: ${this.#anchorName};
         }
-
-        [part="trigger"]:hover {
-          border-color: var(--color-border-hover, var(--color-border));
-        }
-
-        [part="trigger"]:focus {
-          outline: 2px solid var(--color-focus);
-          outline-offset: 2px;
-        }
-
-        [part="trigger"]:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .display-value {
-          flex: 1;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-
-        .display-value.placeholder {
-          color: var(--color-text-muted);
-        }
-
-        .chevron {
-          flex-shrink: 0;
-          color: var(--color-text-muted);
-        }
-
         [part="layer"] {
-          position: fixed;
           position-anchor: ${this.#anchorName};
-          position-area: bottom span-right;
-          position-try-fallbacks: flip-block;
-          padding: 0;
-          background: transparent;
-          border: none;
-          overflow: clip;
-          overflow-clip-margin: 10px;
-          padding-block: var(--space-1);
-          min-width: anchor-size(width);
-        }
-
-        [part="layer"]:popover-open {
-          opacity: 1;
-          transform: translateY(var(--select-offset-y, 0px)) scale(1);
-          transition: opacity 150ms ease, scale 150ms ease;
-        }
-
-        @starting-style {
-          [part="layer"]:popover-open {
-            opacity: 0;
-            scale: 0.95;
-          }
-        }
-
-        [part="listbox"] {
-          min-width: 100%;
-          max-height: var(--select-max-height, 20rem);
-          overflow-y: auto;
-          padding: var(--space-1) 0;
-          margin: 0;
-          background: var(--color-card);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-container);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-          list-style: none;
-          transform-origin: top center;
-        }
-
-        [part="listbox"]:focus {
-          outline: none;
-        }
-
-        .search-wrapper {
-          padding: var(--space-2) var(--space-3);
-          border-bottom: 1px solid var(--color-border-muted);
-        }
-
-        .search-input {
-          width: 100%;
-          padding: var(--space-1_5) var(--space-2);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-element);
-          font-family: inherit;
-          font-size: 0.875rem;
-          background: var(--color-background);
-          color: var(--color-text-primary);
-        }
-
-        .search-input:focus {
-          outline: 2px solid var(--color-focus);
-          outline-offset: -1px;
         }
       </style>
       <button

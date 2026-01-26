@@ -1,4 +1,5 @@
 import Brownie from '../core.js';
+import { escapeHtml } from '../utils/html.js';
 
 /**
  * @typedef {Object} Column
@@ -331,10 +332,10 @@ export class BrownieTable extends HTMLElement {
     columns.forEach((col) => {
       const field = col.getAttribute('field');
       if (field) {
-        templates.set(field, {
+        templates.set(escapeHtml(field), {
           template: col.innerHTML.trim(),
-          align: col.getAttribute('align') || 'start',
-          width: col.getAttribute('width') || 'auto',
+          align: escapeHtml(col.getAttribute('align') || 'start'),
+          width: escapeHtml(col.getAttribute('width') || 'auto'),
         });
       }
     });
@@ -366,7 +367,7 @@ export class BrownieTable extends HTMLElement {
     if (colTemplate && colTemplate.template.length > 0) {
       return this.#applyTemplate(colTemplate.template, rowData);
     }
-    return this.#escapeHtml(rowData[field] ?? '');
+    return escapeHtml(rowData[field] ?? '');
   }
 
   /**
@@ -386,21 +387,10 @@ export class BrownieTable extends HTMLElement {
 
     // Double braces for escaped HTML
     html = html.replace(/\{\{(\w+)\}\}/g, (_, key) => {
-      return this.#escapeHtml(data[key] ?? '');
+      return escapeHtml(data[key] ?? '');
     });
 
     return html;
-  }
-
-  /**
-   * HTML-escapes a string.
-   * @param {string} str
-   * @returns {string}
-   */
-  #escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
   }
 
   /**
@@ -503,7 +493,7 @@ export class BrownieTable extends HTMLElement {
 
     // Build header row with standard structure for plugins
     const headerCells = columns
-      .map((col) => `<th class="col-${col.field}"><div class="th-content"><span class="th-start"></span><span class="th-label">${this.#escapeHtml(col.label)}</span><span class="th-end"></span></div></th>`)
+      .map((col) => `<th class="col-${col.field}"><div class="th-content"><span class="th-start"></span><span class="th-label">${escapeHtml(col.label)}</span><span class="th-end"></span></div></th>`)
       .join('');
 
     // Build body rows
