@@ -3,3 +3,4 @@ CLAUDE.md
 .claude
 deno.lock
 tools/
+**/.DS_Store

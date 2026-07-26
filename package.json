@@ -1,15 +1,23 @@
 {
   "name": "brownie",
-  "version": "0.1.0",
-  "description": "A native web component library",
+  "version": "0.2.0",
+  "description": "Markup-first web component library with zero-build, Shadow DOM, and SSR with Declarative Shadow DOM",
   "type": "module",
   "main": "src/index.js",
   "exports": {
     ".": "./src/index.js",
     "./ssr": "./src/ssr.js",
     "./ssr/hydrate": "./src/hydrate.js",
-    "./components/*": "./src/components/*"
+    "./components/*": "./src/components/*",
+    "./utils/html": "./src/utils/html.js",
+    "./utils/interactive": "./src/utils/interactive.js",
+    "./styles/base.css": "./src/base.css",
+    "./styles/theme.css": "./src/theme.css",
+    "./registry.json": "./src/registry.json"
   },
+  "files": [
+    "src"
+  ],
   "scripts": {
     "test": "web-test-runner tests/**/*.test.js --node-resolve",
     "test:watch": "web-test-runner tests/**/*.test.js --node-resolve --watch",
@@ -17,9 +25,25 @@
   },
   "keywords": [
     "web-components",
-    "custom-elements"
+    "custom-elements",
+    "shadow-dom",
+    "ssr",
+    "declarative-shadow-dom",
+    "server-side-rendering",
+    "markup-first",
+    "zero-build",
+    "design-system"
   ],
   "license": "MIT",
+  "author": "Cindy Zhang",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cixzhang/brownie.git"
+  },
+  "homepage": "https://github.com/cixzhang/brownie#readme",
+  "bugs": {
+    "url": "https://github.com/cixzhang/brownie/issues"
+  },
   "engines": {
     "node": ">=18.0.0"
   },
