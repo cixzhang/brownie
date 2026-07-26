@@ -299,3 +299,5 @@ export class BrownieTooltip extends HTMLElement {
 }
 
 Brownie.register('brow-tooltip', BrownieTooltip);
+
+export default BrownieTooltip;

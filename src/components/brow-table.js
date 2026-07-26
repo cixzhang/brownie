@@ -796,3 +796,5 @@ export class BrownieTable extends HTMLElement {
 }
 
 Brownie.register('brow-table', BrownieTable);
+
+export default BrownieTable;

@@ -139,3 +139,5 @@ export class BrownieCard extends HTMLElement {
 }
 
 Brownie.register('brow-card', BrownieCard);
+
+export default BrownieCard;

@@ -52,3 +52,5 @@ export class BrownieTableFooter extends HTMLElement {
 }
 
 Brownie.register('brow-table-footer', BrownieTableFooter);
+
+export default BrownieTableFooter;

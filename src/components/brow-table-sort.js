@@ -398,3 +398,5 @@ export class BrownieTableSort extends HTMLElement {
 }
 
 Brownie.register('brow-table-sort', BrownieTableSort);
+
+export default BrownieTableSort;

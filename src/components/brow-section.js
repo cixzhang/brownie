@@ -153,3 +153,5 @@ export class BrownieSection extends HTMLElement {
 }
 
 Brownie.register('brow-section', BrownieSection);
+
+export default BrownieSection;

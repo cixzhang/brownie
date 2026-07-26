@@ -390,3 +390,5 @@ export class BrownieMenu extends HTMLElement {
 }
 
 Brownie.register('brow-menu', BrownieMenu);
+
+export default BrownieMenu;

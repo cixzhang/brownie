@@ -720,3 +720,5 @@ export class BrownieSelect extends HTMLElement {
 }
 
 Brownie.register('brow-select', BrownieSelect);
+
+export default BrownieSelect;

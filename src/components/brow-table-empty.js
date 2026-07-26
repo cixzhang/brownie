@@ -42,3 +42,5 @@ export class BrownieTableEmpty extends HTMLElement {
 }
 
 Brownie.register('brow-table-empty', BrownieTableEmpty);
+
+export default BrownieTableEmpty;

@@ -568,3 +568,5 @@ export class BrownieTableTree extends HTMLElement {
 }
 
 Brownie.register('brow-table-tree', BrownieTableTree);
+
+export default BrownieTableTree;

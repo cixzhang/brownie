@@ -5,12 +5,16 @@
  * Open: http://localhost:3001
  *
  * Initial page: rendered with DSD via brownie/ssr (no FOUC).
+ * page() auto-generates the hydrate script, component imports,
+ * and Brownie.expect/ready wiring.
+ *
  * htmx interactions: server returns Brownie component HTML fragments.
  *   Components are already registered client-side, so they upgrade
  *   immediately after htmx swaps the content — no DSD needed for fragments.
  *
  * htmx attributes live on light DOM elements (slotted into Brownie components),
- * so htmx can see them without htmx.process().
+ * so htmx can see them. After hydration, htmx.process(document.body) picks
+ * up htmx attributes on elements that were inside DSD templates.
  */
 
 import { createServer } from 'node:http';
@@ -24,16 +28,26 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = 3001;
 const BROWNIE_ROOT = join(__dirname, '..', '..');
 
-const ssr = await createSSR();
-const { dsd } = ssr;
-const { base: baseCss, theme: themeCss } = ssr.pageStyles();
-
 const mimeTypes = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript',
+  '.mjs': 'text/javascript',
   '.css': 'text/css',
   '.json': 'application/json',
 };
+
+// ─── SSR setup ─────────────────────────────────────────────────────
+
+const ssr = await createSSR();
+
+// Import components explicitly — they self-register with Brownie.
+// Must be dynamic imports (after createSSR) so polyfills are in place.
+const Button = (await import('../../src/components/brow-button.js')).default;
+const Card = (await import('../../src/components/brow-card.js')).default;
+const Layout = (await import('../../src/components/brow-layout.js')).default;
+const Section = (await import('../../src/components/brow-section.js')).default;
+
+const { dsd, page } = ssr;
 
 // ─── In-memory task store ───────────────────────────────────────────
 
@@ -48,6 +62,15 @@ const tasks = [
 // For htmx fragments: plain Brownie component HTML, no DSD.
 // Components are already registered client-side, so they upgrade
 // and render their own shadow DOM via connectedCallback.
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 function taskCard(task) {
   const checkBtn = task.done
@@ -67,25 +90,12 @@ function taskCard(task) {
   </brow-card>`;
 }
 
-function taskList() {
-  return tasks.map(taskCard).join('\n');
-}
-
-function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
 // ─── Page rendering (with DSD) ──────────────────────────────────────
 
 function renderPage() {
   // Initial task list — rendered with DSD to prevent FOUC
-  const initialTasks = tasks.map(t =>
-    dsd('brow-card', { padding: 'space-4', id: `task-${t.id}`, style: 'margin-bottom:var(--space-3);' },
+  const initialTasks = tasks.map((t) =>
+    dsd(Card, { padding: 'space-4', id: `task-${t.id}`, style: 'margin-bottom:var(--space-3);' },
       `<div style="display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);">
         <span style="flex:1;${t.done ? 'text-decoration:line-through;color:var(--color-text-muted);' : ''}">${escapeHtml(t.title)}</span>
         <div style="display:flex;gap:var(--space-1);flex-shrink:0;">
@@ -97,16 +107,16 @@ function renderPage() {
   ).join('\n');
 
   const headerSection = dsd(
-    'brow-section',
+    Section,
     { slot: 'header', padding: 'space-4' },
     `<div style="display:flex;justify-content:space-between;align-items:center;">
       <strong style="font-size:1.25rem;">Tasks</strong>
-      <span style="color:var(--color-text-secondary);font-size:0.875rem;">${tasks.filter(t => !t.done).length} remaining</span>
+      <span style="color:var(--color-text-secondary);font-size:0.875rem;">${tasks.filter((t) => !t.done).length} remaining</span>
     </div>`
   );
 
   const contentSection = dsd(
-    'brow-section',
+    Section,
     { slot: 'content', padding: 'space-6' },
     `<div style="max-width:600px;margin:0 auto;">
       <brow-card padding="space-4" style="margin-bottom:var(--space-6);">
@@ -126,7 +136,7 @@ function renderPage() {
   );
 
   const footerSection = dsd(
-    'brow-section',
+    Section,
     { slot: 'footer', padding: 'space-4', divider: 'top' },
     `<p style="margin:0;color:var(--color-text-muted);font-size:0.875rem;text-align:center;">
       Brownie + htmx — server-rendered DSD with client-side htmx interactions
@@ -134,42 +144,23 @@ function renderPage() {
   );
 
   const layout = dsd(
-    'brow-layout',
+    Layout,
     { height: '100vh', padding: 'space-6' },
     headerSection + contentSection + footerSection
   );
 
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Brownie + htmx — Task List</title>
-  <style>${baseCss}</style>
-  <style>${themeCss}</style>
-  <script src="/hydrate.js"></script>
-  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-</head>
-<body>
-  ${layout}
-  <script type="module">
-    import Brownie from '/src/core.js';
-    import '/src/components/brow-button.js';
-    import '/src/components/brow-card.js';
-    import '/src/components/brow-layout.js';
-    import '/src/components/brow-section.js';
-
-    Brownie.expect(['brow-button', 'brow-card', 'brow-layout', 'brow-section']);
-    Brownie.ready().then(() => {
-      console.log('[Brownie] Components hydrated — htmx ready');
-      // Re-process htmx on the whole document so it picks up
-      // htmx attributes on elements that were inside DSD templates
-      // or slotted into Brownie components.
-      htmx.process(document.body);
-    });
-  </script>
-</body>
-</html>`;
+  // page() auto-generates hydrate, imports, expect/ready.
+  // onReady re-processes htmx attributes on elements that were
+  // inside DSD templates or slotted into Brownie components.
+  // extraComponents ensures brow-button and brow-card are imported
+  // client-side even though they appear as light DOM in htmx fragments
+  // (the body scan finds them, but we list them explicitly for clarity).
+  return page({
+    title: 'Brownie + htmx — Task List',
+    body: layout,
+    head: '<script src="https://unpkg.com/htmx.org@2.0.4"></script>',
+    onReady: `console.log('[Brownie] Components hydrated — htmx ready');\n      htmx.process(document.body);`,
+  });
 }
 
 // ─── HTTP server ────────────────────────────────────────────────────
@@ -178,20 +169,7 @@ const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   const method = req.method;
 
-  // Serve static files
-  if (url.pathname === '/hydrate.js') {
-    try {
-      const content = await readFile(join(__dirname, 'public', 'hydrate.js'), 'utf-8');
-      res.writeHead(200, { 'Content-Type': 'text/javascript' });
-      res.end(content);
-    } catch {
-      res.writeHead(404);
-      res.end('Not found');
-    }
-    return;
-  }
-
-  // Serve Brownie source
+  // Serve Brownie source files (/src/core.js, /src/components/*.js, etc.)
   if (url.pathname.startsWith('/src/')) {
     const filePath = join(BROWNIE_ROOT, url.pathname);
     try {
@@ -240,7 +218,7 @@ const server = createServer(async (req, res) => {
   const deleteMatch = url.pathname.match(/^\/tasks\/(\d+)$/);
   if (deleteMatch && method === 'DELETE') {
     const id = parseInt(deleteMatch[1]);
-    const idx = tasks.findIndex(t => t.id === id);
+    const idx = tasks.findIndex((t) => t.id === id);
     if (idx >= 0) tasks.splice(idx, 1);
     // Return empty — htmx swaps outerHTML with nothing, removing the card
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
@@ -252,7 +230,7 @@ const server = createServer(async (req, res) => {
   const toggleMatch = url.pathname.match(/^\/tasks\/(\d+)\/toggle$/);
   if (toggleMatch && method === 'POST') {
     const id = parseInt(toggleMatch[1]);
-    const task = tasks.find(t => t.id === id);
+    const task = tasks.find((t) => t.id === id);
     if (task) task.done = !task.done;
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(taskCard(task));

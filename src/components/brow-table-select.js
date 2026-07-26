@@ -600,3 +600,5 @@ export class BrownieTableSelect extends HTMLElement {
 }
 
 Brownie.register('brow-table-select', BrownieTableSelect);
+
+export default BrownieTableSelect;

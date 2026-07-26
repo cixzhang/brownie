@@ -61,3 +61,5 @@ export class BrownieTableHeader extends HTMLElement {
 }
 
 Brownie.register('brow-table-header', BrownieTableHeader);
+
+export default BrownieTableHeader;

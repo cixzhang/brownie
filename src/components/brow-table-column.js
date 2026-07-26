@@ -109,3 +109,5 @@ export class BrownieTableColumn extends HTMLElement {
 }
 
 Brownie.register('brow-table-column', BrownieTableColumn);
+
+export default BrownieTableColumn;

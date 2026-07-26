@@ -126,3 +126,5 @@ export class BrownieLayout extends HTMLElement {
 }
 
 Brownie.register('brow-layout', BrownieLayout);
+
+export default BrownieLayout;

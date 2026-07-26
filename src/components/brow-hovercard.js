@@ -395,3 +395,5 @@ export class BrownieHovercard extends HTMLElement {
 }
 
 Brownie.register('brow-hovercard', BrownieHovercard);
+
+export default BrownieHovercard;

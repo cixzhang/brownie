@@ -439,3 +439,5 @@ export class BrownieTablePaginate extends HTMLElement {
 }
 
 Brownie.register('brow-table-paginate', BrownieTablePaginate);
+
+export default BrownieTablePaginate;

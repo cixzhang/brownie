@@ -180,3 +180,5 @@ export class BrownieButton extends HTMLElement {
 }
 
 Brownie.register('brow-button', BrownieButton);
+
+export default BrownieButton;

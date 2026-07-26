@@ -1,60 +1,31 @@
-# Brownie + htmx — Task List Example
+# Brownie + htmx — Task List
 
-A task list app combining Brownie's SSR with Declarative Shadow DOM and htmx for
-client-side interactivity without writing JavaScript.
+Server-rendered DSD with client-side htmx interactions. Zero client-side JS for CRUD operations.
 
-## How it works
-
-**Initial page load:** The server renders Brownie components with DSD templates
-using `brownie/ssr`. Shadow roots are created by the HTML parser — no FOUC.
-
-**htmx interactions:** htmx attributes (`hx-post`, `hx-delete`, `hx-target`,
-`hx-swap`) live on light DOM elements slotted into Brownie components. The server
-returns HTML fragments containing Brownie components. Since components are already
-registered client-side, they upgrade immediately after htmx swaps the content —
-no DSD needed for fragments.
-
-**The `htmx.process()` call:** After Brownie hydrates, we call
-`htmx.process(document.body)` to ensure htmx picks up attributes on elements that
-were inside DSD templates or slotted into components.
-
-## Key integration points
-
-1. **htmx attributes on light DOM** — htmx can't see inside shadow DOM. Place
-   `hx-*` attributes on slotted content (light DOM children of custom elements),
-   not inside shadow roots.
-
-2. **Native `<button type="submit">` for forms** — brow-button renders a `<button>`
-   inside shadow DOM, which doesn't trigger form submission. Use a native button
-   styled with Brownie CSS variables for form submit buttons.
-
-3. **DSD for initial page, plain HTML for fragments** — The initial page uses
-   `ssr.dsd()` to prevent FOUC. htmx fragments use plain component HTML —
-   components are already registered, so they render their own shadow DOM via
-   `connectedCallback`.
-
-4. **`htmx.process()` after hydration** — Ensures htmx discovers htmx attributes
-   on elements that were in DSD templates or slotted content.
-
-## Running
+## Quick Start
 
 ```bash
 node examples/htmx/server.js
+# Open http://localhost:3001
 ```
 
-Open http://localhost:3001
+## How It Works
 
-- Add tasks via the form
-- Click "Mark done" / "✓ Done" to toggle
-- Click "Delete" to remove
-- All interactions use htmx — no client-side JS written
+### Initial Page Load
 
-## File structure
+The page is rendered with DSD via `ssr.page()` — shadow DOM is in the HTML, no FOUC. `page()` auto-generates the hydrate script, component imports, and `Brownie.expect/ready` wiring by scanning the body for `<brow-*>` tags.
 
-```
-examples/htmx/
-├── server.js           # Node HTTP server: SSR page + htmx fragment endpoints
-├── public/
-│   └── hydrate.js      # DSD-aware attachShadow patch
-└── README.md
-```
+### htmx Interactions
+
+- **Add task**: `hx-post="/tasks"` → server returns a `<brow-card>` fragment (no DSD needed — component is already registered, upgrades via `connectedCallback`)
+- **Toggle**: `hx-post="/tasks/:id/toggle"` → returns updated card HTML
+- **Delete**: `hx-delete="/tasks/:id"` → returns empty, htmx removes the element
+
+htmx attributes live on light DOM elements slotted into Brownie components. htmx can see them without `htmx.process()`. After hydration, `htmx.process(document.body)` picks up htmx attributes on elements that were inside DSD templates.
+
+### Key Integration Points
+
+1. **htmx attributes go on light DOM** — htmx can't see through shadow boundaries
+2. **`htmx.process(document.body)` after hydration** — components upgrade after DSD, htmx needs to re-scan
+3. **Native `<button type="submit">` for forms** — brow-button's inner button is in shadow DOM and doesn't trigger form submission. Use a native button styled with Brownie's CSS variables.
+4. **Fragments don't need DSD** — components are already registered client-side, so they upgrade immediately after htmx swaps content
