@@ -1,5 +1,5 @@
 {
-  "name": "brownie",
+  "name": "@cixzhang/brownie",
   "version": "0.2.0",
   "description": "Markup-first web component library with zero-build, Shadow DOM, and SSR with Declarative Shadow DOM",
   "type": "module",

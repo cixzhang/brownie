@@ -7,7 +7,7 @@
  * no duplicated render logic, no CSS extraction hacks.
  *
  * Usage:
- *   import { createSSR } from 'brownie/ssr';
+ *   import { createSSR } from '@cixzhang/brownie/ssr';
  *
  *   const ssr = await createSSR();
  *

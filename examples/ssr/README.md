@@ -22,9 +22,9 @@ node examples/ssr/server.js
 ### Server Side
 
 ```js
-import { createSSR } from 'brownie/ssr';
-import Button from 'brownie/components/brow-button';
-import Card from 'brownie/components/brow-card';
+import { createSSR } from '@cixzhang/brownie/ssr';
+import Button from '@cixzhang/brownie/components/brow-button';
+import Card from '@cixzhang/brownie/components/brow-card';
 
 // 1. Create SSR instance (sets up polyfills, intercepts registration)
 const ssr = await createSSR();
@@ -102,7 +102,7 @@ Get component shadow DOM innerHTML only (no CSS, no DSD wrapper).
 
 ```js
 // ✅ Explicit, tree-shakeable, IDE autocomplete
-import Button from 'brownie/components/brow-button';
+import Button from '@cixzhang/brownie/components/brow-button';
 dsd(Button, { variant: 'primary' }, 'Click me');
 
 // ✅ Also works — string tag name
