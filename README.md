@@ -6,7 +6,7 @@ Brownie is a native web component system for generating polished interfaces in p
 
 Like the helpful household spirits of folklore, Brownie components work quietly in the background — small, unobtrusive, and reliable.
 
-**NOTE:** Brownie is highly experimental and I'm still playing around with the APIs. It is possible to pull a specific
+**NOTE:** Brownie is highly experimental and I'm still playing around with it. It is possible to pull a specific
 version and just have it copied and stored if something stable is necessary. Before using this library, please carefully
 read the Browser Support section.
 
@@ -23,7 +23,7 @@ Brownie takes a different approach:
 - **Backend and AI friendly** — generate complete, working interfaces from any language or LLM
 - **Zero build step** — drop in a script tag and go
 
-Brownie is built with backend rendering and AI interactions in mind.
+Brownie is built using purely native HTML/CSS/JS and requires no extra packages to function.
 It tries to achieve a DOM that can be fully observed to provide dense information
 about your application and allow machines to understand everything from structure,
 data, appearance, semantics, and capabilities just from reading the DOM and HTML files.
@@ -116,26 +116,54 @@ Simple things stay simple. Complex things are possible.
 
 ---
 
-## Getting Started (TODO)
+## Installation
+
+```bash
+npm install @cixzhang/brownie
+```
+
+Or use directly in HTML without a package manager — Brownie is zero-build, so you can import from a CDN or serve the files yourself:
+
+```html
+<link rel="stylesheet" href="/src/base.css">
+<link rel="stylesheet" href="/src/theme.css">
+<script type="module">
+  import Brownie from '/src/core.js';
+  import '/src/components/brow-button.js';
+  import '/src/components/brow-card.js';
+  Brownie.expect(['brow-button', 'brow-card']);
+  Brownie.ready().then(() => {
+    // components hydrated
+  });
+</script>
+```
+
+---
+
+## Getting Started
+
+### Client-Side
 
 ```html
 <!DOCTYPE html>
 <html>
 <head>
   <!-- Base reset and functional styles for Brownie -->
-  <link rel="stylesheet" href="https://cdn.example.com/brownie@1.0.0/brownie-base.css">
+  <link rel="stylesheet" href="/src/base.css">
   <!-- Base theme - replace this with your custom theme! -->
-  <link rel="stylesheet" href="https://cdn.example.com/brownie@1.0.0/brownie-theme.css">
-  <!-- Brownie index includes all components and core -->
-  <script src="https://cdn.example.com/brownie@1.0.0/brownie.js"></script>
+  <link rel="stylesheet" href="/src/theme.css">
+  <!-- Brownie core + components -->
+  <script type="module">
+    import Brownie from '/src/core.js';
+    import '/src/components/brow-button.js';
+    import '/src/components/brow-card.js';
+    Brownie.expect(['brow-button', 'brow-card']);
+    Brownie.ready().then(() => {
+      // components hydrated
+    });
+  </script>
 </head>
 <body>
-  <script>
-    // Wait for the ready method to clear for component registration and theme injection
-    // before showing the page to avoid the flash of unstyled content.
-    await Brownie.ready();
-  </script>
-
   <brow-card>
     <h2>Welcome</h2>
     <p>Your first Brownie interface.</p>
@@ -144,7 +172,61 @@ Simple things stay simple. Complex things are possible.
 </body>
 </html>
 ```
----
+
+### Server-Side Rendering (SSR)
+
+Brownie includes a built-in SSR module that renders components on the server using Declarative Shadow DOM (DSD). The browser creates shadow roots during HTML parsing — before any JS loads — so there's no flash of unstyled content (FOUC).
+
+The SSR module runs the actual component code in Node.js using minimal DOM polyfills. Components execute their real `render()` methods — no duplicated render logic.
+
+```js
+import { createSSR } from '@cixzhang/brownie/ssr';
+
+// 1. Create SSR instance (sets up DOM polyfills, intercepts registration)
+const ssr = await createSSR();
+
+// 2. Import components — they self-register with Brownie
+const Button = (await import('@cixzhang/brownie/components/brow-button.js')).default;
+const Card = (await import('@cixzhang/brownie/components/brow-card.js')).default;
+
+// 3. Render components with DSD
+const buttonHtml = ssr.dsd(Button, { variant: 'primary' }, 'Click me');
+const cardHtml = ssr.dsd(Card, { padding: 'space-6' }, buttonHtml);
+
+// 4. Generate a complete HTML page
+//    page() auto-generates everything:
+//      - Inlined hydrate script (DSD-aware attachShadow patch)
+//      - Base CSS + theme CSS (inlined)
+//      - Client import statements (by scanning body for <brow-*> tags)
+//      - Brownie.expect() + Brownie.ready() wiring
+const html = ssr.page({
+  title: 'My App',
+  body: cardHtml,
+  onReady: `console.log('hydrated');`,
+});
+```
+
+You can also use class references or tag strings interchangeably:
+
+```js
+ssr.dsd(Button, { variant: 'primary' }, 'Click me');    // class reference
+ssr.dsd('brow-button', { variant: 'primary' }, 'Click me'); // tag string
+```
+
+**How it works:**
+
+1. `createSSR()` polyfills `CSSStyleSheet`, `HTMLElement`, `customElements` in Node
+2. Component modules are imported — they call `Brownie.register()` which builds the registry
+3. `dsd()` instantiates the component, sets attributes, calls `connectedCallback()`
+4. The real `render()` method produces shadow DOM HTML
+5. Output wraps shadow DOM in `<template shadowrootmode="open">` with CSS inline
+6. Browser parses the DSD template, creating the shadow root before JS loads
+7. When component modules load client-side, `attachShadow()` returns the existing DSD root
+8. `connectedCallback()` calls `render()` — same content, no flicker
+
+The hydrate patch is inlined automatically by `page()`. For manual use, it's available at `@cixzhang/brownie/ssr/hydrate` — load it as a regular script before component modules.
+
+See the [SSR example](examples/ssr) and [htmx + SSR example](examples/htmx) for working servers.
 
 ## Local Development
 
@@ -175,18 +257,14 @@ livereload .
 
 ## Browser Support
 
-Brownie is experimental and brand new in 2026 and leverages the latest browser technologies to achieve
-a zero build, zero library core. It has limited browser support.
-
-For example, Brownie uses CSS Anchor Positioning for menus and hovercards which are yet to be baseline.
-You may need additional polyfills for the latest browser features if you want to support older browsers.
-
-For Brownie, we can choose baseline features for the current year and features that have Working Drafts
-or Living Standards.
+Brownie is experimental and leverages the latest browser technologies to achieve a zero build, zero
+library core. The basis for it's functionality is Shadow DOM. It also relies on other newer browser
+features to avoid pulling in specialized libraries. Brownie will likely stay on the edge of browser
+features in order to continue to avoid complex JS and pulling in libraries.
 
 * Shadow DOM is baseline
 * `light-dark` is baseline 2024
-* CSS Anchor Positioning is in Working Draft
+* CSS Anchor Positioning is baseline 2026
 
 ---
 
