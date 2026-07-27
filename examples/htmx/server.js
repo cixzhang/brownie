@@ -5,10 +5,10 @@
  * Open: http://localhost:3001
  *
  * Initial page: rendered with DSD via brownie/ssr (no FOUC).
- * page() auto-generates the hydrate script, component imports,
- * and Brownie.expect/ready wiring.
+ * page() parses the body HTML, injects DSD templates by running the
+ * real component code, and auto-generates client imports.
  *
- * htmx interactions: server returns Brownie component HTML fragments.
+ * htmx interactions: server returns plain Brownie component HTML fragments.
  *   Components are already registered client-side, so they upgrade
  *   immediately after htmx swaps the content — no DSD needed for fragments.
  *
@@ -42,12 +42,12 @@ const ssr = await createSSR();
 
 // Import components explicitly — they self-register with Brownie.
 // Must be dynamic imports (after createSSR) so polyfills are in place.
-const Button = (await import('@cixzhang/brownie/components/brow-button')).default;
-const Card = (await import('@cixzhang/brownie/components/brow-card')).default;
-const Layout = (await import('@cixzhang/brownie/components/brow-layout')).default;
-const Section = (await import('@cixzhang/brownie/components/brow-section')).default;
+await import('@cixzhang/brownie/components/brow-button');
+await import('@cixzhang/brownie/components/brow-card');
+await import('@cixzhang/brownie/components/brow-layout');
+await import('@cixzhang/brownie/components/brow-section');
 
-const { dsd, page } = ssr;
+const { page } = ssr;
 
 // ─── In-memory task store ───────────────────────────────────────────
 
@@ -73,52 +73,34 @@ function escapeHtml(str) {
 }
 
 function taskCard(task) {
-  const checkBtn = task.done
-    ? `<brow-button variant="ghost" hx-post="/tasks/${task.id}/toggle" hx-target="closest brow-card" hx-swap="outerHTML" style="font-size:0.875rem;">✓ Done</brow-button>`
-    : `<brow-button variant="ghost" hx-post="/tasks/${task.id}/toggle" hx-target="closest brow-card" hx-swap="outerHTML" style="font-size:0.875rem;">Mark done</brow-button>`;
-
-  const deleteBtn = `<brow-button variant="ghost" hx-delete="/tasks/${task.id}" hx-target="closest brow-card" hx-swap="outerHTML" style="font-size:0.875rem;color:var(--color-error-text);">Delete</brow-button>`;
-
+  const checkText = task.done ? '✓ Done' : 'Mark done';
   return `<brow-card padding="space-4" id="task-${task.id}" style="margin-bottom:var(--space-3);">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);">
       <span style="flex:1;${task.done ? 'text-decoration:line-through;color:var(--color-text-muted);' : ''}">${escapeHtml(task.title)}</span>
       <div style="display:flex;gap:var(--space-1);flex-shrink:0;">
-        ${checkBtn}
-        ${deleteBtn}
+        <brow-button variant="ghost" hx-post="/tasks/${task.id}/toggle" hx-target="closest brow-card" hx-swap="outerHTML" style="font-size:0.875rem;">${checkText}</brow-button>
+        <brow-button variant="ghost" hx-delete="/tasks/${task.id}" hx-target="closest brow-card" hx-swap="outerHTML" style="font-size:0.875rem;color:var(--color-error-text);">Delete</brow-button>
       </div>
     </div>
   </brow-card>`;
 }
 
-// ─── Page rendering (with DSD) ──────────────────────────────────────
+// ─── Page rendering (with DSD via page()) ──────────────────────────
 
 function renderPage() {
-  // Initial task list — rendered with DSD to prevent FOUC
-  const initialTasks = tasks.map((t) =>
-    dsd(Card, { padding: 'space-4', id: `task-${t.id}`, style: 'margin-bottom:var(--space-3);' },
-      `<div style="display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);">
-        <span style="flex:1;${t.done ? 'text-decoration:line-through;color:var(--color-text-muted);' : ''}">${escapeHtml(t.title)}</span>
-        <div style="display:flex;gap:var(--space-1);flex-shrink:0;">
-          <brow-button variant="ghost" hx-post="/tasks/${t.id}/toggle" hx-target="closest brow-card" hx-swap="outerHTML" style="font-size:0.875rem;">${t.done ? '✓ Done' : 'Mark done'}</brow-button>
-          <brow-button variant="ghost" hx-delete="/tasks/${t.id}" hx-target="closest brow-card" hx-swap="outerHTML" style="font-size:0.875rem;color:var(--color-error-text);">Delete</brow-button>
-        </div>
-      </div>`
-    )
-  ).join('\n');
+  const initialTasks = tasks.map((t) => taskCard(t)).join('\n');
 
-  const headerSection = dsd(
-    Section,
-    { slot: 'header', padding: 'space-4' },
-    `<div style="display:flex;justify-content:space-between;align-items:center;">
+  const body = `
+<brow-layout height="100vh" padding="space-6">
+  <brow-section slot="header" padding="space-4">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
       <strong style="font-size:1.25rem;">Tasks</strong>
       <span style="color:var(--color-text-secondary);font-size:0.875rem;">${tasks.filter((t) => !t.done).length} remaining</span>
-    </div>`
-  );
+    </div>
+  </brow-section>
 
-  const contentSection = dsd(
-    Section,
-    { slot: 'content', padding: 'space-6' },
-    `<div style="max-width:600px;margin:0 auto;">
+  <brow-section slot="content" padding="space-6">
+    <div style="max-width:600px;margin:0 auto;">
       <brow-card padding="space-4" style="margin-bottom:var(--space-6);">
         <form hx-post="/tasks" hx-target="#task-list" hx-swap="beforeend" hx-on::after-request="this.reset()">
           <div style="display:flex;gap:var(--space-2);">
@@ -132,32 +114,22 @@ function renderPage() {
       <div id="task-list">
         ${initialTasks}
       </div>
-    </div>`
-  );
+    </div>
+  </brow-section>
 
-  const footerSection = dsd(
-    Section,
-    { slot: 'footer', padding: 'space-4', divider: 'top' },
-    `<p style="margin:0;color:var(--color-text-muted);font-size:0.875rem;text-align:center;">
+  <brow-section slot="footer" padding="space-4" divider="top">
+    <p style="margin:0;color:var(--color-text-muted);font-size:0.875rem;text-align:center;">
       Brownie + htmx — server-rendered DSD with client-side htmx interactions
-    </p>`
-  );
-
-  const layout = dsd(
-    Layout,
-    { height: '100vh', padding: 'space-6' },
-    headerSection + contentSection + footerSection
-  );
+    </p>
+  </brow-section>
+</brow-layout>`;
 
   // page() auto-generates hydrate, imports, expect/ready.
   // onReady re-processes htmx attributes on elements that were
   // inside DSD templates or slotted into Brownie components.
-  // extraComponents ensures brow-button and brow-card are imported
-  // client-side even though they appear as light DOM in htmx fragments
-  // (the body scan finds them, but we list them explicitly for clarity).
   return page({
     title: 'Brownie + htmx — Task List',
-    body: layout,
+    body,
     head: '<script src="https://unpkg.com/htmx.org@2.0.4"></script>',
     onReady: `console.log('[Brownie] Components hydrated — htmx ready');\n      htmx.process(document.body);`,
   });

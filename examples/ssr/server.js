@@ -8,9 +8,9 @@
  * component code on the server with minimal DOM polyfills. No duplicated
  * render logic — the real render() methods produce the shadow DOM HTML.
  *
- * The server imports only the components it needs. createSSR() intercepts
- * Brownie.register() to build a registry. page() auto-generates the client
- * import list by scanning the body HTML for <brow-*> tags.
+ * page() parses the body HTML into an AST, injects <template shadowrootmode="open">
+ * into each <brow-*> element, and generates client imports automatically.
+ * Server-side code is just plain HTML — no dsd() calls needed.
  */
 
 import { createServer } from 'node:http';
@@ -42,87 +42,62 @@ const ssr = await createSSR();
 
 // Import components explicitly — they self-register with Brownie.
 // Must be dynamic imports (after createSSR) so polyfills are in place.
-const Button = (await import('@cixzhang/brownie/components/brow-button')).default;
-const Card = (await import('@cixzhang/brownie/components/brow-card')).default;
-const Layout = (await import('@cixzhang/brownie/components/brow-layout')).default;
-const Section = (await import('@cixzhang/brownie/components/brow-section')).default;
-const selectModule = await import('@cixzhang/brownie/components/brow-select');
-const Select = selectModule.default;
-const Option = selectModule.BrownieOption;
+await import('@cixzhang/brownie/components/brow-button');
+await import('@cixzhang/brownie/components/brow-card');
+await import('@cixzhang/brownie/components/brow-layout');
+await import('@cixzhang/brownie/components/brow-section');
+await import('@cixzhang/brownie/components/brow-select');
 
-const { dsd, page } = ssr;
+const { page } = ssr;
 
 // ─── Page rendering ─────────────────────────────────────────────────
 
 function renderPage() {
-  const buttonPrimary = dsd(Button, { variant: 'primary', id: 'get-started' }, 'Get Started');
-
-  const themeSelect = dsd(
-    Select,
-    { placeholder: 'Select theme...' },
-    dsd(Option, { value: 'sage' }, 'Sage') +
-    dsd(Option, { value: 'ocean' }, 'Ocean') +
-    dsd(Option, { value: 'sunset' }, 'Sunset')
-  );
-  const buttonDisabled = dsd(Button, { disabled: '' }, 'Disabled');
-
-  const card1 = dsd(Card, { padding: 'space-6' }, `
-    <h3 style="margin:0 0 var(--space-2) 0;">Declarative Shadow DOM</h3>
-    <p style="margin:0;color:var(--color-text-secondary);">This card was rendered on the server with its shadow DOM included in the HTML. No flash of unstyled content.</p>
-  `);
-
-  const card2 = dsd(Card, { padding: 'space-6' }, `
-    <h3 style="margin:0 0 var(--space-2) 0;">Hydration Ready</h3>
-    <p style="margin:0 0 var(--space-4) 0;color:var(--color-text-secondary);">When the component modules load, they adopt the existing shadow root — no re-render flicker.</p>
-    ${buttonPrimary}
-  `);
-
-  const card3 = dsd(Card, { padding: 'space-6' }, `
-    <h3 style="margin:0 0 var(--space-2) 0;">No JavaScript Required</h3>
-    <p style="margin:0;color:var(--color-text-secondary);">View source — the shadow DOM is in the HTML. Disable JS and reload; it still looks right.</p>
-  `);
-
-  const sectionHeader = dsd(
-    Section,
-    { slot: 'header', padding: 'space-4' },
-    `<div style="display:flex;justify-content:space-between;align-items:center;">
+  const body = `
+<brow-layout height="100vh" padding="space-6">
+  <brow-section slot="header" padding="space-4">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
       <strong style="font-size:1.25rem;">Brownie SSR</strong>
-      <div style="display:flex;gap:var(--space-2);align-items:center;">${themeSelect}${buttonDisabled}</div>
-    </div>`
-  );
-
-  const sectionContent = dsd(
-    Section,
-    { slot: 'content', padding: 'space-6' },
-    `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-4);max-width:960px;margin:0 auto;">
-      ${card1}${card2}${card3}
+      <div style="display:flex;gap:var(--space-2);align-items:center;">
+        <brow-select placeholder="Select theme..." id="theme-select">
+          <brow-option value="sage">Sage</brow-option>
+          <brow-option value="ocean">Ocean</brow-option>
+          <brow-option value="sunset">Sunset</brow-option>
+        </brow-select>
+        <brow-button disabled>Disabled</brow-button>
+      </div>
     </div>
-    <div id="dynamic-content" style="max-width:960px;margin:var(--space-6) auto 0;"></div>`
-  );
+  </brow-section>
 
-  const sectionFooter = dsd(
-    Section,
-    { slot: 'footer', padding: 'space-4', divider: 'top' },
-    `<p style="margin:0;color:var(--color-text-muted);font-size:0.875rem;text-align:center;">
+  <brow-section slot="content" padding="space-6">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-4);max-width:960px;margin:0 auto;">
+      <brow-card padding="space-6">
+        <h3 style="margin:0 0 var(--space-2) 0;">Declarative Shadow DOM</h3>
+        <p style="margin:0;color:var(--color-text-secondary);">This card was rendered on the server with its shadow DOM included in the HTML. No flash of unstyled content.</p>
+      </brow-card>
+      <brow-card padding="space-6">
+        <h3 style="margin:0 0 var(--space-2) 0;">Hydration Ready</h3>
+        <p style="margin:0 0 var(--space-4) 0;color:var(--color-text-secondary);">When the component modules load, they adopt the existing shadow root — no re-render flicker.</p>
+        <brow-button variant="primary" id="get-started">Get Started</brow-button>
+      </brow-card>
+      <brow-card padding="space-6">
+        <h3 style="margin:0 0 var(--space-2) 0;">No JavaScript Required</h3>
+        <p style="margin:0;color:var(--color-text-secondary);">View source — the shadow DOM is in the HTML. Disable JS and reload; it still looks right.</p>
+      </brow-card>
+    </div>
+    <div id="dynamic-content" style="max-width:960px;margin:var(--space-6) auto 0;"></div>
+  </brow-section>
+
+  <brow-section slot="footer" padding="space-4" divider="top">
+    <p style="margin:0;color:var(--color-text-muted);font-size:0.875rem;text-align:center;">
       Rendered at ${new Date().toISOString()} — Declarative Shadow DOM example
-    </p>`
-  );
+    </p>
+  </brow-section>
+</brow-layout>`;
 
-  const fullLayout = dsd(
-    Layout,
-    { height: '100vh', padding: 'space-6' },
-    sectionHeader + sectionContent + sectionFooter
-  );
-
-  // page() scans fullLayout for <brow-*> tags and auto-generates:
-  //   - hydrate script (inlined)
-  //   - base.css + theme.css (inlined)
-  //   - client import statements for each used component
-  //   - Brownie.expect() with all used tag names
-  //   - Brownie.ready() callback with onReady code
   return page({
     title: 'Brownie SSR — Declarative Shadow DOM',
-    body: fullLayout,
+    body,
     onReady: `import('/app.js');`,
   });
 }
@@ -139,34 +114,34 @@ const server = createServer(async (req, res) => {
     return;
   }
 
-  // Fragment endpoint — returns server-rendered DSD HTML
+  // Fragment endpoint — returns server-rendered HTML fragments
+  // (plain Brownie component HTML, no DSD — client-side components
+  // are already registered, so they upgrade immediately)
   if (url.pathname === '/fragment/details') {
-    const detailCard = dsd(Card, { padding: 'space-6' }, `
-      <h3 style="margin:0 0 var(--space-2) 0;">Server-Rendered Fragment</h3>
-      <p style="margin:0 0 var(--space-4) 0;color:var(--color-text-secondary);">
-        This card was rendered on the server in response to clicking "Get Started".
-        The HTML includes DSD templates — the shadow DOM is fully formed.
-      </p>
-      <p style="margin:0;color:var(--color-text-secondary);font-size:0.875rem;">
-        Fetched at ${new Date().toISOString()}
-      </p>
-    `);
-
-    const detailButton = dsd(Button, { variant: 'ghost' }, 'Dismiss');
-
-    const wrapper = dsd(Card, { padding: 'space-6' }, `
-      <h3 style="margin:0 0 var(--space-3) 0;">How This Works</h3>
-      <ol style="margin:0;padding-left:var(--space-5);color:var(--color-text-secondary);line-height:1.8;">
-        <li>Click "Get Started" triggers a fetch to /fragment/details</li>
-        <li>Server renders Brownie components with DSD templates</li>
-        <li>Client injects the HTML — browser processes the DSD templates</li>
-        <li>Components are already registered, so they upgrade immediately</li>
-      </ol>
-      <div style="margin-top:var(--space-4);">${detailButton}</div>
-    `);
+    const fragment = `
+<brow-card padding="space-6">
+  <h3 style="margin:0 0 var(--space-2) 0;">Server-Rendered Fragment</h3>
+  <p style="margin:0 0 var(--space-4) 0;color:var(--color-text-secondary);">
+    This card was rendered on the server in response to clicking "Get Started".
+    The HTML includes DSD templates — the shadow DOM is fully formed.
+  </p>
+  <p style="margin:0;color:var(--color-text-secondary);font-size:0.875rem;">
+    Fetched at ${new Date().toISOString()}
+  </p>
+</brow-card>
+<brow-card padding="space-6">
+  <h3 style="margin:0 0 var(--space-3) 0;">How This Works</h3>
+  <ol style="margin:0;padding-left:var(--space-5);color:var(--color-text-secondary);line-height:1.8;">
+    <li>Click "Get Started" triggers a fetch to /fragment/details</li>
+    <li>Server renders Brownie components with DSD templates</li>
+    <li>Client injects the HTML — browser processes the DSD templates</li>
+    <li>Components are already registered, so they upgrade immediately</li>
+  </ol>
+  <div style="margin-top:var(--space-4);"><brow-button variant="ghost">Dismiss</brow-button></div>
+</brow-card>`;
 
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    res.end(detailCard + wrapper);
+    res.end(fragment);
     return;
   }
 
