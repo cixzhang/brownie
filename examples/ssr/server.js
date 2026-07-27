@@ -60,9 +60,9 @@ function renderPage() {
   const themeSelect = dsd(
     Select,
     { placeholder: 'Select theme...' },
-    '<brow-option value="sage">Sage</brow-option>' +
-    '<brow-option value="ocean">Ocean</brow-option>' +
-    '<brow-option value="sunset">Sunset</brow-option>'
+    dsd(Option, { value: 'sage' }, 'Sage') +
+    dsd(Option, { value: 'ocean' }, 'Ocean') +
+    dsd(Option, { value: 'sunset' }, 'Sunset')
   );
   const buttonDisabled = dsd(Button, { disabled: '' }, 'Disabled');
 
