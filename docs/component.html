@@ -220,7 +220,7 @@
 
     async function loadComponent(name) {
       try {
-        const response = await fetch(`./components/${name}.md`);
+        const response = await fetch(`../src/components/${name}/README.md`);
         if (!response.ok) throw new Error(`Component "${name}" not found`);
 
         const markdown = await response.text();
