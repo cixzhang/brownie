@@ -174,7 +174,11 @@ export async function createSSR() {
   }
 
   // Read hydrate script once at init (for inlining in page())
-  const hydrateScript = readFileSync(join(__dirname, 'hydrate.js'), 'utf-8');
+  // Strip comments to avoid </script> in JSDoc breaking the inline script tag
+  const hydrateScript = readFileSync(join(__dirname, 'hydrate.js'), 'utf-8')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/^\s*\n/gm, '')
+    .trim();
 
   /**
    * Instantiate a component, set attributes, run connectedCallback,
