@@ -1,4 +1,4 @@
-import Brownie from '../core.js';
+import Brownie from '../../core.js';
 
 // Shared stylesheet for all instances
 const styles = new CSSStyleSheet();

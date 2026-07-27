@@ -1,5 +1,5 @@
 import { expect } from '@esm-bundle/chai';
-import '../src/components/brow-button.js';
+import './index.js';
 
 describe('brow-button', () => {
   let element;

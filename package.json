@@ -1,14 +1,15 @@
 {
   "name": "@cixzhang/brownie",
   "version": "0.2.0",
-  "description": "Markup-first web component library with zero-build, Shadow DOM, and SSR with Declarative Shadow DOM",
+  "description": "[Experimental] Markup-first web component library with zero-build, Shadow DOM, and SSR with Declarative Shadow DOM",
   "type": "module",
   "main": "src/index.js",
   "exports": {
     ".": "./src/index.js",
     "./ssr": "./src/ssr.js",
     "./ssr/hydrate": "./src/hydrate.js",
-    "./components/*": "./src/components/*",
+    "./components/*": "./src/components/*/index.js",
+    "./components/*/*": "./src/components/*/*.js",
     "./utils/html": "./src/utils/html.js",
     "./utils/interactive": "./src/utils/interactive.js",
     "./styles/base.css": "./src/base.css",

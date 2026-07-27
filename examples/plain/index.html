@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brownie — Plain HTML Example</title>
+
+  <!-- Import map: resolves @cixzhang/brownie to CDN -->
+  <script type="importmap">
+  {
+    "imports": {
+      "@cixzhang/brownie": "https://unpkg.com/@cixzhang/brownie@0.2.0/src/index.js",
+      "@cixzhang/brownie/": "https://unpkg.com/@cixzhang/brownie@0.2.0/src/"
+    }
+  }
+  </script>
+
+  <!-- Brownie base + theme CSS (inlined from CDN for simplicity) -->
+  <link rel="stylesheet" href="https://unpkg.com/@cixzhang/brownie@0.2.0/src/base.css">
+  <link rel="stylesheet" href="https://unpkg.com/@cixzhang/brownie@0.2.0/src/theme.css">
+
+  <script type="module">
+    import Brownie from '@cixzhang/brownie';
+    import '@cixzhang/brownie/components/brow-button';
+    import '@cixzhang/brownie/components/brow-card';
+    import '@cixzhang/brownie/components/brow-layout';
+    import '@cixzhang/brownie/components/brow-section';
+
+    Brownie.expect(['brow-button', 'brow-card', 'brow-layout', 'brow-section']);
+    Brownie.ready().then(() => {
+      console.log('[Brownie] Components hydrated');
+    });
+  </script>
+</head>
+<body>
+  <brow-layout height="100vh" padding="space-6">
+    <brow-section slot="header" padding="space-4">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <strong style="font-size:1.25rem;">Brownie</strong>
+        <span style="color:var(--color-text-secondary);font-size:0.875rem;">Zero-build, zero-server, just HTML</span>
+      </div>
+    </brow-section>
+
+    <brow-section slot="content" padding="space-6">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-4);max-width:960px;margin:0 auto;">
+        <brow-card padding="space-6">
+          <h3 style="margin:0 0 var(--space-2) 0;">No Build Step</h3>
+          <p style="margin:0;color:var(--color-text-secondary);">This page is a single HTML file. No npm, no bundler, no server. Just an import map and ES modules from a CDN.</p>
+        </brow-card>
+        <brow-card padding="space-6">
+          <h3 style="margin:0 0 var(--space-2) 0;">Web Components</h3>
+          <p style="margin:0 0 var(--space-4) 0;color:var(--color-text-secondary);">Shadow DOM encapsulates styles. Configure via HTML attributes.</p>
+          <brow-button variant="primary">Click me</brow-button>
+        </brow-card>
+        <brow-card padding="space-6">
+          <h3 style="margin:0 0 var(--space-2) 0;">View Source</h3>
+          <p style="margin:0;color:var(--color-text-secondary);">Everything is visible in the HTML. No hidden state, no virtual DOM.</p>
+        </brow-card>
+      </div>
+    </brow-section>
+
+    <brow-section slot="footer" padding="space-4" divider="top">
+      <p style="margin:0;color:var(--color-text-muted);font-size:0.875rem;text-align:center;">
+        Open this file directly in a browser — no server required
+      </p>
+    </brow-section>
+  </brow-layout>
+</body>
+</html>

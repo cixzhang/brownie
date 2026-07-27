@@ -1,4 +1,4 @@
-import Brownie from '../core.js';
+import Brownie from '../../core.js';
 
 /**
  * Pagination plugin for brow-table.

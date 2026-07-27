@@ -18,7 +18,7 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, extname } from 'node:path';
 
-import { createSSR } from '../../src/ssr.js';
+import { createSSR } from '@cixzhang/brownie/ssr';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = 3000;
@@ -42,12 +42,13 @@ const ssr = await createSSR();
 
 // Import components explicitly — they self-register with Brownie.
 // Must be dynamic imports (after createSSR) so polyfills are in place.
-const Button = (await import('../../src/components/brow-button.js')).default;
-const Card = (await import('../../src/components/brow-card.js')).default;
-const Layout = (await import('../../src/components/brow-layout.js')).default;
-const Section = (await import('../../src/components/brow-section.js')).default;
-const Select = (await import('../../src/components/brow-select.js')).default;
-const Option = (await import('../../src/components/brow-option.js')).default;
+const Button = (await import('@cixzhang/brownie/components/brow-button')).default;
+const Card = (await import('@cixzhang/brownie/components/brow-card')).default;
+const Layout = (await import('@cixzhang/brownie/components/brow-layout')).default;
+const Section = (await import('@cixzhang/brownie/components/brow-section')).default;
+const selectModule = await import('@cixzhang/brownie/components/brow-select');
+const Select = selectModule.default;
+const Option = selectModule.BrownieOption;
 
 const { dsd, page } = ssr;
 
@@ -183,7 +184,8 @@ const server = createServer(async (req, res) => {
     }
   }
 
-  // Serve Brownie source files (/src/core.js, /src/components/*.js, etc.)
+  // Serve Brownie source files (/src/core.js, /src/components/brow-button/, etc.)
+  // Resolves directories to index.js (matching the exports map behavior)
   const filePath = join(BROWNIE_ROOT, url.pathname);
   if (!filePath.startsWith(BROWNIE_ROOT)) {
     res.writeHead(403);
@@ -192,9 +194,23 @@ const server = createServer(async (req, res) => {
   }
 
   try {
-    const content = await readFile(filePath);
+    let resolvedPath = filePath;
     const ext = extname(filePath);
-    res.writeHead(200, { 'Content-Type': mimeTypes[ext] || 'application/octet-stream' });
+    
+    // If no extension, try as directory with index.js
+    if (!ext) {
+      const indexPath = join(filePath, 'index.js');
+      try {
+        await readFile(indexPath);
+        resolvedPath = indexPath;
+      } catch {
+        // Not a directory, try as-is
+      }
+    }
+
+    const content = await readFile(resolvedPath);
+    const finalExt = extname(resolvedPath);
+    res.writeHead(200, { 'Content-Type': mimeTypes[finalExt] || 'application/octet-stream' });
     res.end(content);
   } catch {
     res.writeHead(404);

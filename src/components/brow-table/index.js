@@ -1,5 +1,5 @@
-import Brownie from '../core.js';
-import { escapeHtml } from '../utils/html.js';
+import Brownie from '../../core.js';
+import { escapeHtml } from '../../utils/html.js';
 
 /**
  * @typedef {Object} Column
@@ -798,3 +798,14 @@ export class BrownieTable extends HTMLElement {
 Brownie.register('brow-table', BrownieTable);
 
 export default BrownieTable;
+
+// Re-export sub-components (also registers them with Brownie)
+export { default as BrownieTableHeader } from './brow-table-header.js';
+export { default as BrownieTableRow } from './brow-table-row.js';
+export { default as BrownieTableColumn } from './brow-table-column.js';
+export { default as BrownieTableFooter } from './brow-table-footer.js';
+export { default as BrownieTableEmpty } from './brow-table-empty.js';
+export { default as BrownieTableSort } from './brow-table-sort.js';
+export { default as BrownieTableSelect } from './brow-table-select.js';
+export { default as BrownieTablePaginate } from './brow-table-paginate.js';
+export { default as BrownieTableTree } from './brow-table-tree.js';

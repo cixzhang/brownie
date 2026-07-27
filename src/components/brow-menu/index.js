@@ -1,5 +1,5 @@
-import Brownie from '../core.js';
-import { escapeHtml } from '../utils/html.js';
+import Brownie from '../../core.js';
+import { escapeHtml } from '../../utils/html.js';
 
 // Shared stylesheet for all instances
 const styles = new CSSStyleSheet();
@@ -392,3 +392,6 @@ export class BrownieMenu extends HTMLElement {
 Brownie.register('brow-menu', BrownieMenu);
 
 export default BrownieMenu;
+
+// Re-export sub-components (also registers them with Brownie)
+export { default as BrownieMenuItem } from './brow-menu-item.js';

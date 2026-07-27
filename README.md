@@ -6,9 +6,7 @@ Brownie is a native web component system for generating polished interfaces in p
 
 Like the helpful household spirits of folklore, Brownie components work quietly in the background — small, unobtrusive, and reliable.
 
-**NOTE:** Brownie is highly experimental and I'm still playing around with it. It is possible to pull a specific
-version and just have it copied and stored if something stable is necessary. Before using this library, please carefully
-read the Browser Support section.
+**NOTE:** Buyer beware. Brownie is highly experimental. No one is using it anywhere, and it's more of a playground for my explorations. I sometimes use this to test out ideas for other systems, or to experience the latest in vanilla development. This is not intended to be a production ready system.
 
 ---
 

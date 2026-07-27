@@ -2,122 +2,122 @@
   "components": [
     {
       "name": "brow-button",
-      "path": "./components/brow-button.js",
+      "path": "./components/brow-button/index.js",
       "description": "A button component that can also handle links."
     },
     {
       "name": "brow-card",
-      "path": "./components/brow-card.js",
+      "path": "./components/brow-card/index.js",
       "description": "Container used for segmenting general content into a visible block."
     },
     {
       "name": "brow-layout",
-      "path": "./components/brow-layout.js",
+      "path": "./components/brow-layout/index.js",
       "description": "A composable layout with header, footer, left, right panels and content slots."
     },
     {
       "name": "brow-section",
-      "path": "./components/brow-section.js",
+      "path": "./components/brow-section/index.js",
       "description": "A section used with `brow-layout` providing spacing around content and optional background."
     },
     {
       "name": "brow-table",
-      "path": "./components/brow-table.js",
+      "path": "./components/brow-table/index.js",
       "description": "A data table that renders rows from child elements with support for templates."
     },
     {
       "name": "brow-table-header",
-      "path": "./components/brow-table-header.js",
+      "path": "./components/brow-table/brow-table-header.js",
       "description": "Defines column headers for a table using data-* attributes.",
       "docs": "brow-table"
     },
     {
       "name": "brow-table-row",
-      "path": "./components/brow-table-row.js",
+      "path": "./components/brow-table/brow-table-row.js",
       "description": "A data row for a table using data-* attributes for field values.",
       "docs": "brow-table"
     },
     {
       "name": "brow-table-column",
-      "path": "./components/brow-table-column.js",
+      "path": "./components/brow-table/brow-table-column.js",
       "description": "Defines custom rendering for a table column with template support.",
       "docs": "brow-table"
     },
     {
       "name": "brow-table-footer",
-      "path": "./components/brow-table-footer.js",
+      "path": "./components/brow-table/brow-table-footer.js",
       "description": "A footer row for a table, typically used for totals or summaries.",
       "docs": "brow-table"
     },
     {
       "name": "brow-table-empty",
-      "path": "./components/brow-table-empty.js",
+      "path": "./components/brow-table/brow-table-empty.js",
       "description": "Empty state content displayed when a table has no rows.",
       "docs": "brow-table"
     },
     {
       "name": "brow-table-sort",
-      "path": "./components/brow-table-sort.js",
+      "path": "./components/brow-table/brow-table-sort.js",
       "description": "Plugin that enables sortable columns with click-to-sort headers.",
       "docs": "brow-table",
       "plugin": true
     },
     {
       "name": "brow-table-select",
-      "path": "./components/brow-table-select.js",
+      "path": "./components/brow-table/brow-table-select.js",
       "description": "Plugin that enables row selection with checkboxes.",
       "docs": "brow-table",
       "plugin": true
     },
     {
       "name": "brow-table-paginate",
-      "path": "./components/brow-table-paginate.js",
+      "path": "./components/brow-table/brow-table-paginate.js",
       "description": "Plugin that enables client-side pagination with navigation controls.",
       "docs": "brow-table",
       "plugin": true
     },
     {
       "name": "brow-table-tree",
-      "path": "./components/brow-table-tree.js",
+      "path": "./components/brow-table/brow-table-tree.js",
       "description": "Plugin that enables hierarchical rows with expand/collapse functionality.",
       "docs": "brow-table",
       "plugin": true
     },
     {
       "name": "brow-tooltip",
-      "path": "./components/brow-tooltip.js",
+      "path": "./components/brow-tooltip/index.js",
       "description": "Tooltip that shows text hints on hover or focus."
     },
     {
       "name": "brow-hovercard",
-      "path": "./components/brow-hovercard.js",
+      "path": "./components/brow-hovercard/index.js",
       "description": "Rich content preview that appears on hover."
     },
     {
       "name": "brow-menu",
-      "path": "./components/brow-menu.js",
+      "path": "./components/brow-menu/index.js",
       "description": "Dropdown menu with items and keyboard navigation."
     },
     {
       "name": "brow-menu-item",
-      "path": "./components/brow-menu-item.js",
+      "path": "./components/brow-menu/brow-menu-item.js",
       "description": "A selectable item within a brow-menu.",
       "docs": "brow-menu"
     },
     {
       "name": "brow-select",
-      "path": "./components/brow-select.js",
+      "path": "./components/brow-select/index.js",
       "description": "Custom select dropdown with keyboard navigation."
     },
     {
       "name": "brow-option",
-      "path": "./components/brow-option.js",
+      "path": "./components/brow-select/brow-option.js",
       "description": "An option for use within brow-select.",
       "docs": "brow-select"
     },
     {
       "name": "brow-option-group",
-      "path": "./components/brow-option-group.js",
+      "path": "./components/brow-select/brow-option-group.js",
       "description": "A group of options within brow-select.",
       "docs": "brow-select"
     }

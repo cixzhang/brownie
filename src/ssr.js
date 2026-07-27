@@ -150,12 +150,28 @@ export async function createSSR() {
   //   class → tag (for dsd(Button, ...))
   const registry = new Map();       // tag → class
   const classRegistry = new Map();  // class → tag
+  const subToParent = new Map();    // sub-component tag → parent tag
   const originalRegister = Brownie.register.bind(Brownie);
   Brownie.register = function (tagName, componentClass) {
     registry.set(tagName, componentClass);
     classRegistry.set(componentClass, tagName);
     return originalRegister(tagName, componentClass);
   };
+
+  // Read registry.json to build sub-component → parent mapping
+  // (for generating correct client import paths in page())
+  try {
+    const registryJson = JSON.parse(
+      readFileSync(join(__dirname, 'registry.json'), 'utf-8')
+    );
+    for (const comp of registryJson.components) {
+      if (comp.docs && comp.docs !== comp.name) {
+        subToParent.set(comp.name, comp.docs);
+      }
+    }
+  } catch {
+    // registry.json not found — page() will import each tag individually
+  }
 
   // Read hydrate script once at init (for inlining in page())
   const hydrateScript = readFileSync(join(__dirname, 'hydrate.js'), 'utf-8');
@@ -300,7 +316,8 @@ export async function createSSR() {
    * @param {Object} options
    * @param {string} [options.title='Brownie'] - <title> text
    * @param {string} [options.body=''] - HTML content for <body>
-   * @param {string} [options.brownieBase='/src'] - Base URL for Brownie client imports
+   * @param {string} [options.brownieBase='/src'] - Base URL path for Brownie client imports
+   * @param {string} [options.importMap=''] - Custom import map JSON string for browser module resolution
    * @param {string[]} [options.extraComponents=[]] - Additional tag names to import (not found in body scan)
    * @param {string} [options.head=''] - Extra <head> content (scripts, meta tags, etc.)
    * @param {string} [options.onReady=''] - JS code to run inside Brownie.ready().then(() => { ... })
@@ -311,6 +328,7 @@ export async function createSSR() {
       title = 'Brownie',
       body = '',
       brownieBase = '/src',
+      importMap = '',
       extraComponents = [],
       head = '',
       onReady = '',
@@ -334,11 +352,26 @@ export async function createSSR() {
     }
 
     const tags = [...used].sort();
-    const importLines = tags
-      .map((t) => `    import '${brownieBase}/components/${t}.js';`)
+
+    // Determine which tags are sub-components (they live inside a parent folder).
+    // We only need to import the parent — sub-components are re-exported from
+    // the parent's index.js and self-register on import.
+    const importedPaths = new Set();
+    for (const tag of tags) {
+      const parent = subToParent.get(tag) || tag;
+      importedPaths.add(`${brownieBase}/components/${parent}/index.js`);
+    }
+
+    const importLines = [...importedPaths]
+      .sort()
+      .map((p) => `    import '${p}';`)
       .join('\n');
     const expectList = tags.map((t) => `'${t}'`).join(', ');
     const readyBody = onReady ? `\n      ${onReady}` : '';
+
+    const importMapScript = importMap
+      ? `\n  <script type="importmap">${importMap}</script>`
+      : '';
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -348,7 +381,7 @@ export async function createSSR() {
   <title>${escapeHtml(title)}</title>
   <style>${styles.base}</style>
   <style>${styles.theme}</style>
-  <script>${hydrateScript}</script>
+  <script>${hydrateScript}</script>${importMapScript}
   ${head}
 </head>
 <body>

@@ -1,24 +1,12 @@
 // Brownie - Native Web Component Library
 
 export { Brownie, default } from './core.js';
-export * from './components/brow-button.js';
-export * from './components/brow-card.js';
-export * from './components/brow-layout.js';
-export * from './components/brow-section.js';
-export * from './components/brow-table-header.js';
-export * from './components/brow-table-row.js';
-export * from './components/brow-table-column.js';
-export * from './components/brow-table-footer.js';
-export * from './components/brow-table-empty.js';
-export * from './components/brow-table.js';
-export * from './components/brow-table-sort.js';
-export * from './components/brow-table-select.js';
-export * from './components/brow-table-paginate.js';
-export * from './components/brow-table-tree.js';
-export * from './components/brow-tooltip.js';
-export * from './components/brow-hovercard.js';
-export * from './components/brow-menu.js';
-export * from './components/brow-menu-item.js';
-export * from './components/brow-select.js';
-export * from './components/brow-option.js';
-export * from './components/brow-option-group.js';
+export * from './components/brow-button/index.js';
+export * from './components/brow-card/index.js';
+export * from './components/brow-layout/index.js';
+export * from './components/brow-section/index.js';
+export * from './components/brow-table/index.js';
+export * from './components/brow-tooltip/index.js';
+export * from './components/brow-hovercard/index.js';
+export * from './components/brow-menu/index.js';
+export * from './components/brow-select/index.js';

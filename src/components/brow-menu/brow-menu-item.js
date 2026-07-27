@@ -1,5 +1,5 @@
-import Brownie from '../core.js';
-import { escapeHtml } from '../utils/html.js';
+import Brownie from '../../core.js';
+import { escapeHtml } from '../../utils/html.js';
 
 // Shared stylesheet for all instances
 const styles = new CSSStyleSheet();
