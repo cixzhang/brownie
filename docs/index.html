@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Brownie - Web Component Library</title>
-  <link rel="stylesheet" href="../src/base.css">
+  <link rel="stylesheet" href="https://unpkg.com/@cixzhang/brownie@0.2.0/styles/base.css">
   <link rel="stylesheet" href="brownie.css" id="theme-link">
   <style>
     body {
@@ -218,12 +218,12 @@
   </ul>
 
   <script type="module">
-    import Brownie from '../src/index.js';
+    import Brownie from 'https://unpkg.com/@cixzhang/brownie@0.2.0';
 
     // Load component list from registry
     async function loadRegistry() {
       try {
-        const response = await fetch('../src/registry.json');
+        const response = await fetch('src/registry.json');
         const registry = await response.json();
 
         // Filter out components that have docs pointing elsewhere

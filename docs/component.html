@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Component Docs - Brownie</title>
-  <link rel="stylesheet" href="../src/base.css">
+  <link rel="stylesheet" href="https://unpkg.com/@cixzhang/brownie@0.2.0/styles/base.css">
   <link rel="stylesheet" href="brownie.css" id="theme-link">
   <style>
     body {
@@ -187,7 +187,7 @@
   </div>
 
   <script type="module">
-    import Brownie from '../src/index.js';
+    import Brownie from 'https://unpkg.com/@cixzhang/brownie@0.2.0';
 
     const params = new URLSearchParams(window.location.search);
     const component = params.get('component');
@@ -201,7 +201,7 @@
     async function initComponent(name) {
       try {
         // Check registry for redirects
-        const registryResponse = await fetch('../src/registry.json');
+        const registryResponse = await fetch('src/registry.json');
         const registry = await registryResponse.json();
         const componentInfo = registry.components.find(c => c.name === name);
 
@@ -220,7 +220,7 @@
 
     async function loadComponent(name) {
       try {
-        const response = await fetch(`../src/components/${name}/README.md`);
+        const response = await fetch(`src/components/${name}/README.md`);
         if (!response.ok) throw new Error(`Component "${name}" not found`);
 
         const markdown = await response.text();
