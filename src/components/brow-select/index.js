@@ -13,10 +13,10 @@ styles.replaceSync(/*css*/ `
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-2);
+    gap: var(--spacing-2);
     min-width: 10rem;
-    padding-inline: var(--space-3);
-    background: var(--color-card);
+    padding-inline: var(--spacing-3);
+    background: var(--color-background-card);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-element);
     box-sizing: border-box;
@@ -25,7 +25,7 @@ styles.replaceSync(/*css*/ `
     color: var(--color-text-primary);
     cursor: pointer;
     text-align: left;
-    height: var(--space-9);
+    height: var(--spacing-9);
   }
 
   [part="trigger"]:hover {
@@ -50,12 +50,12 @@ styles.replaceSync(/*css*/ `
   }
 
   .display-value.placeholder {
-    color: var(--color-text-muted);
+    color: var(--color-text-disabled);
   }
 
   .chevron {
     flex-shrink: 0;
-    color: var(--color-text-muted);
+    color: var(--color-text-disabled);
   }
 
   [part="layer"] {
@@ -67,7 +67,7 @@ styles.replaceSync(/*css*/ `
     border: none;
     overflow: clip;
     overflow-clip-margin: 10px;
-    padding-block: var(--space-1);
+    padding-block: var(--spacing-1);
     min-width: anchor-size(width);
   }
 
@@ -88,9 +88,9 @@ styles.replaceSync(/*css*/ `
     min-width: 100%;
     max-height: var(--select-max-height, 20rem);
     overflow-y: auto;
-    padding: var(--space-1) 0;
+    padding: var(--spacing-1) 0;
     margin: 0;
-    background: var(--color-card);
+    background: var(--color-background-card);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-container);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -103,18 +103,18 @@ styles.replaceSync(/*css*/ `
   }
 
   .search-wrapper {
-    padding: var(--space-2) var(--space-3);
+    padding: var(--spacing-2) var(--spacing-3);
     border-bottom: 1px solid var(--color-border-muted);
   }
 
   .search-input {
     width: 100%;
-    padding: var(--space-1_5) var(--space-2);
+    padding: var(--spacing-1-5) var(--spacing-2);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-element);
     font-family: inherit;
     font-size: 0.875rem;
-    background: var(--color-background);
+    background: var(--color-background-surface);
     color: var(--color-text-primary);
   }
 
@@ -429,7 +429,7 @@ export class BrownieSelect extends HTMLElement {
     const triggerRect = trigger.getBoundingClientRect();
     const optionHeight = /** @type {HTMLElement} */ (selectedOption).offsetHeight;
     const listboxHeight = /** @type {HTMLElement} */ (listbox).offsetHeight;
-    const listboxPadding = 4; // approximate --space-1
+    const listboxPadding = 4; // approximate --spacing-1
     const layerPadding = 4; // padding-block on layer
     const viewportPadding = 8; // keep some space from viewport edges
 

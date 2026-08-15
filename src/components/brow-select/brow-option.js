@@ -6,7 +6,7 @@ const styles = new CSSStyleSheet();
 styles.replaceSync(/*css*/ `
   :host {
     display: block;
-    padding: var(--space-2) var(--space-3);
+    padding: var(--spacing-2) var(--spacing-3);
     cursor: pointer;
     color: var(--color-text-primary);
     font-size: 0.875rem;
@@ -15,7 +15,7 @@ styles.replaceSync(/*css*/ `
 
   :host(:hover),
   :host([data-focused]) {
-    background: var(--color-highlight);
+    background: var(--color-overlay-hover);
   }
 
   :host([selected]) {
@@ -26,7 +26,7 @@ styles.replaceSync(/*css*/ `
     content: '\\2713';
     display: inline-block;
     width: 1.25rem;
-    margin-left: calc(-1 * var(--space-1));
+    margin-left: calc(-1 * var(--spacing-1));
     color: var(--color-accent);
   }
 

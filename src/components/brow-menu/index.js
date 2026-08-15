@@ -20,22 +20,22 @@ styles.replaceSync(/*css*/ `
   [data-placement="bottom-start"] {
     position-area: bottom span-x-start;
     position-try-fallbacks: flip-block;
-    padding-block: var(--space-1);
+    padding-block: var(--spacing-1);
   }
   [data-placement="bottom-end"] {
     position-area: bottom span-x-end;
     position-try-fallbacks: flip-block;
-    padding-block: var(--space-1);
+    padding-block: var(--spacing-1);
   }
   [data-placement="top-start"] {
     position-area: top span-x-start;
     position-try-fallbacks: flip-block;
-    padding-block: var(--space-1);
+    padding-block: var(--spacing-1);
   }
   [data-placement="top-end"] {
     position-area: top span-x-end;
     position-try-fallbacks: flip-block;
-    padding-block: var(--space-1);
+    padding-block: var(--spacing-1);
   }
 
   [part="layer"]:popover-open {
@@ -55,8 +55,8 @@ styles.replaceSync(/*css*/ `
     min-width: var(--menu-min-width, 12rem);
     max-height: var(--menu-max-height, 20rem);
     overflow-y: auto;
-    padding: var(--space-1) 0;
-    background: var(--color-card);
+    padding: var(--spacing-1) 0;
+    background: var(--color-background-card);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-container);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);

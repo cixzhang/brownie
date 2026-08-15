@@ -16,11 +16,11 @@
   ========================================================================== */
 
   --color-accent: light-dark(#a855f7, #c084fc);
-  --color-secondary: light-dark(#f5f3ff, #1e1b2e);
-  --color-page: light-dark(#faf8ff, #0f0d15);
-  --color-card: light-dark(#ffffff, #1a1725);
-  --color-highlight: light-dark(#f3e8ff, #2a2440);
-  --color-muted: light-dark(#f5f3ff, #1e1b2e);
+  --color-neutral: light-dark(#f5f3ff, #1e1b2e);
+  --color-background-body: light-dark(#faf8ff, #0f0d15);
+  --color-background-card: light-dark(#ffffff, #1a1725);
+  --color-overlay-hover: light-dark(#f3e8ff, #2a2440);
+  --color-background-muted: light-dark(#f5f3ff, #1e1b2e);
   --color-overlay: light-dark(rgba(15, 13, 21, 0.5), rgba(0, 0, 0, 0.7));
 
   /* ==========================================================================
@@ -30,8 +30,8 @@
   --color-text-primary: light-dark(#1e1b2e, #f0eeff);
   --color-text-secondary: light-dark(#6b6580, #a8a0c0);
   --color-text-accent: light-dark(#9333ea, #c084fc);
-  --color-text-muted: light-dark(#a8a0c0, #4a4560);
-  --color-text-inverse: light-dark(#ffffff, #0f0d15);
+  --color-text-disabled: light-dark(#a8a0c0, #4a4560);
+  --color-on-accent: light-dark(#ffffff, #0f0d15);
 
   /* ==========================================================================
      BORDER COLORS
@@ -39,7 +39,7 @@
 
   --color-border: light-dark(#e9e4f5, #2a2640);
   --color-border-muted: light-dark(#f0ecf9, #1e1b2e);
-  --color-border-strong: light-dark(#d4cce8, #3a3555);
+  --color-border-emphasized: light-dark(#d4cce8, #3a3555);
 
   /* ==========================================================================
      STATUS COLORS
@@ -65,21 +65,21 @@
      TYPOGRAPHY - Friendly, rounded
   ========================================================================== */
 
-  --font-body: 'Nunito', 'Quicksand', system-ui, sans-serif;
-  --font-header: 'Nunito', 'Quicksand', system-ui, sans-serif;
-  --font-code: 'JetBrains Mono', 'Monaco', 'Consolas', monospace;
+  --font-family-body: 'Nunito', 'Quicksand', system-ui, sans-serif;
+  --font-family-heading: 'Nunito', 'Quicksand', system-ui, sans-serif;
+  --font-family-code: 'JetBrains Mono', 'Monaco', 'Consolas', monospace;
 
   /* ==========================================================================
      ELEVATION - Soft glow
   ========================================================================== */
 
-  --elevation-base: 0 2px 8px light-dark(rgba(168, 85, 247, 0.08), rgba(0, 0, 0, 0.3));
+  --shadow-low: 0 2px 8px light-dark(rgba(168, 85, 247, 0.08), rgba(0, 0, 0, 0.3));
 
   /* ==========================================================================
      RADIUS - Round and friendly
   ========================================================================== */
 
-  --radius-round: 9999px;
+  --radius-full: 9999px;
   --radius-container: 1.25rem;
   --radius-element: 0.875rem;
 
@@ -87,28 +87,28 @@
      SPACING - More spacious
   ========================================================================== */
 
-  --space-0: 0;
-  --space-0_5: 0.1875rem;
-  --space-1: 0.375rem;
-  --space-1_5: 0.5rem;
-  --space-2: 0.625rem;
-  --space-2_5: 0.75rem;
-  --space-3: 0.875rem;
-  --space-4: 1.25rem;
-  --space-5: 1.5rem;
-  --space-6: 1.875rem;
-  --space-8: 2.5rem;
-  --space-9: 2.75rem;
-  --space-10: 3rem;
-  --space-12: 3.75rem;
+  --spacing-0: 0;
+  --spacing-0-5: 0.1875rem;
+  --spacing-1: 0.375rem;
+  --spacing-1-5: 0.5rem;
+  --spacing-2: 0.625rem;
+  --spacing-2-5: 0.75rem;
+  --spacing-3: 0.875rem;
+  --spacing-4: 1.25rem;
+  --spacing-5: 1.5rem;
+  --spacing-6: 1.875rem;
+  --spacing-8: 2.5rem;
+  --spacing-9: 2.75rem;
+  --spacing-10: 3rem;
+  --spacing-12: 3.75rem;
 
   /* ==========================================================================
      TRANSITIONS - Smooth and bouncy
   ========================================================================== */
 
-  --transition-fast: 150ms ease-out;
-  --transition-base: 200ms ease-out;
-  --transition-slow: 300ms ease-out;
+  --duration-fast: 150ms ease-out;
+  --duration-medium: 200ms ease-out;
+  --duration-slow: 300ms ease-out;
 }
 
 /* ==========================================================================
@@ -117,7 +117,7 @@
 
 brow-button::part(base) {
   font-weight: 600;
-  border-radius: var(--radius-round);
+  border-radius: var(--radius-full);
 }
 
 brow-button[variant="primary"]::part(base) {
@@ -130,7 +130,7 @@ brow-button[variant="primary"]::part(base):hover {
 
 /* Rainbow glow for cards on hover */
 brow-card::part(base) {
-  transition: box-shadow var(--transition-base);
+  transition: box-shadow var(--duration-medium);
 }
 
 brow-card::part(base):hover {
@@ -144,7 +144,7 @@ brow-card::part(base):hover {
 
 /* Table styling */
 brow-table {
-  --table-cell-padding: var(--space-3) var(--space-4);
+  --table-cell-padding: var(--spacing-3) var(--spacing-4);
   --table-row-bg-hover: rgba(168, 85, 247, 0.08);
   --table-row-bg-alt: rgba(168, 85, 247, 0.04);
 }

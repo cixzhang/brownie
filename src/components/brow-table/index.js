@@ -526,15 +526,15 @@ export class BrownieTable extends HTMLElement {
           display: block;
 
           /* Table-specific variables (override in themes via brow-table { --var: value }) */
-          --table-padding-x: var(--space-3);
-          --table-padding-x-compact: var(--space-2);
-          --table-cell-padding: var(--space-2) var(--table-padding-x);
-          --table-cell-padding-compact: var(--space-1) var(--table-padding-x-compact);
+          --table-padding-x: var(--spacing-3);
+          --table-padding-x-compact: var(--spacing-2);
+          --table-cell-padding: var(--spacing-2) var(--table-padding-x);
+          --table-cell-padding-compact: var(--spacing-1) var(--table-padding-x-compact);
           --table-border-color: var(--color-border-muted);
           --table-header-border-color: var(--color-border);
           --table-row-bg: transparent;
-          --table-row-bg-alt: var(--color-muted);
-          --table-row-bg-hover: var(--color-highlight);
+          --table-row-bg-alt: var(--color-background-muted);
+          --table-row-bg-hover: var(--color-overlay-hover);
           --table-row-bg-selected: color-mix(in srgb, var(--color-accent) 15%, transparent);
         }
 
@@ -565,7 +565,7 @@ export class BrownieTable extends HTMLElement {
         .th-content {
           display: flex;
           align-items: center;
-          gap: var(--space-1);
+          gap: var(--spacing-1);
         }
 
         .th-start:empty,
@@ -616,15 +616,15 @@ export class BrownieTable extends HTMLElement {
         }
 
         [part="empty"] {
-          padding: var(--space-8);
+          padding: var(--spacing-8);
           text-align: center;
-          color: var(--color-text-muted);
+          color: var(--color-text-disabled);
         }
 
         code {
-          font-family: var(--font-code);
+          font-family: var(--font-family-code);
           font-size: 0.875em;
-          background: var(--color-muted);
+          background: var(--color-background-muted);
           padding: 0.125em 0.375em;
           border-radius: var(--radius-element, 0.25rem);
         }

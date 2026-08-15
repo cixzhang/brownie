@@ -9,11 +9,11 @@ styles.replaceSync(/*css*/ `
   }
 
   :host([variant="muted"]) {
-    background-color: var(--color-muted);
+    background-color: var(--color-background-muted);
   }
 
   :host([variant="surface"]) {
-    background-color: var(--color-card);
+    background-color: var(--color-background-card);
   }
 `);
 
@@ -107,10 +107,10 @@ export class BrownieSection extends HTMLElement {
     const dynamicStyles = [];
     dynamicStyles.push(`height: ${this.height}`);
     dynamicStyles.push(`width: ${this.width}`);
-    dynamicStyles.push(`padding-block-start: var(--${paddingSides.top}, var(--space-3))`);
-    dynamicStyles.push(`padding-block-end: var(--${paddingSides.bottom}, var(--space-3))`);
-    dynamicStyles.push(`padding-inline-start: var(--${paddingSides.start}, var(--space-3))`);
-    dynamicStyles.push(`padding-inline-end: var(--${paddingSides.end}, var(--space-3))`);
+    dynamicStyles.push(`padding-block-start: var(--${paddingSides.top}, var(--spacing-3))`);
+    dynamicStyles.push(`padding-block-end: var(--${paddingSides.bottom}, var(--spacing-3))`);
+    dynamicStyles.push(`padding-inline-start: var(--${paddingSides.start}, var(--spacing-3))`);
+    dynamicStyles.push(`padding-inline-end: var(--${paddingSides.end}, var(--spacing-3))`);
 
     if (this.divider === 'all') dynamicStyles.push('border: 1px solid var(--color-border)');
     if (this.divider === 'top') dynamicStyles.push('border-block-start: 1px solid var(--color-border)');

@@ -186,7 +186,7 @@ export class BrownieTablePaginate extends HTMLElement {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: var(--space-3) var(--table-padding-x);
+        padding: var(--spacing-3) var(--table-padding-x);
         border-top: 1px solid var(--table-border-color);
         font-size: 0.875rem;
         color: var(--color-text-secondary);
@@ -195,50 +195,50 @@ export class BrownieTablePaginate extends HTMLElement {
       .pagination-info {
         display: flex;
         align-items: center;
-        gap: var(--space-2);
+        gap: var(--spacing-2);
       }
 
       .pagination-controls {
         display: flex;
         align-items: center;
-        gap: var(--space-1);
+        gap: var(--spacing-1);
       }
 
       .pagination-btn {
-        width: var(--space-9);
+        width: var(--spacing-9);
       }
 
       .pagination-pages {
         display: flex;
         align-items: center;
-        gap: var(--space-0_5);
+        gap: var(--spacing-0-5);
       }
 
       .pagination-page {
         min-width: 2rem;
         height: 2rem;
-        padding: 0 var(--space-1);
+        padding: 0 var(--spacing-1);
         border: 1px solid transparent;
         border-radius: var(--radius-element, 0.25rem);
         background: transparent;
         color: var(--color-text-primary);
         cursor: pointer;
-        transition: all var(--transition-fast, 150ms);
+        transition: all var(--duration-fast, 150ms) var(--ease-standard, ease);
       }
 
       .pagination-page:hover {
-        background: var(--color-highlight);
+        background: var(--color-overlay-hover);
       }
 
       .pagination-page.active {
         background: var(--color-accent);
-        color: var(--color-text-inverse, #fff);
+        color: var(--color-on-accent, #fff);
         font-weight: 600;
       }
 
       .pagination-ellipsis {
-        padding: 0 var(--space-1);
-        color: var(--color-text-muted);
+        padding: 0 var(--spacing-1);
+        color: var(--color-text-disabled);
       }
     `;
   }

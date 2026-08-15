@@ -30,7 +30,7 @@ styles.replaceSync(/*css*/ `
 
   [part="layer"] {
     position: fixed;
-    padding: var(--space-2);
+    padding: var(--spacing-2);
     background: transparent;
     border: none;
     overflow: clip;
@@ -40,22 +40,22 @@ styles.replaceSync(/*css*/ `
   [data-placement="bottom"] {
     position-area: bottom;
     position-try-fallbacks: flip-block;
-    padding-block: var(--space-1);
+    padding-block: var(--spacing-1);
   }
   [data-placement="top"] {
     position-area: top;
     position-try-fallbacks: flip-block;
-    padding-block: var(--space-1);
+    padding-block: var(--spacing-1);
   }
   [data-placement="left"] {
     position-area: left;
     position-try-fallbacks: flip-inline;
-    padding-inline: var(--space-1);
+    padding-inline: var(--spacing-1);
   }
   [data-placement="right"] {
     position-area: right;
     position-try-fallbacks: flip-inline;
-    padding-inline: var(--space-1);
+    padding-inline: var(--spacing-1);
   }
 
   [part="layer"]:popover-open {
@@ -72,8 +72,8 @@ styles.replaceSync(/*css*/ `
   [part="card"] {
     min-width: 200px;
     max-width: 320px;
-    padding: var(--space-4);
-    background: var(--color-card);
+    padding: var(--spacing-4);
+    background: var(--color-background-card);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-container);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
