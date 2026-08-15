@@ -19,6 +19,11 @@
       "name": "Vibes",
       "path": "vibes.css",
       "description": "Soft, rounded aesthetic with neon rainbow accents"
+    },
+    {
+      "name": "Astryx Butter",
+      "path": "astryx-butter.css",
+      "description": "Generated from the Astryx butter theme by scripts/astryx-theme.mjs"
     }
   ]
 }
