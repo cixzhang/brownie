@@ -33,7 +33,7 @@ styles.replaceSync(/*css*/ `
 /**
  * A composable layout with header, footer, start, end panels and content slots.
  * @element brow-layout
- * @typedef {'space-0' | 'space-0_5' | 'space-1' | 'space-1_5' | 'space-2' | 'space-2_5' | 'space-3' | 'space-4' | 'space-5' | 'space-6' | 'space-8' | 'space-10' | 'space-12'} BrownieLayoutSpacing
+ * @typedef {'spacing-0' | 'spacing-0-5' | 'spacing-1' | 'spacing-1-5' | 'spacing-2' | 'spacing-2-5' | 'spacing-3' | 'spacing-4' | 'spacing-5' | 'spacing-6' | 'spacing-8' | 'spacing-10' | 'spacing-12'} BrownieLayoutSpacing
  */
 export class BrownieLayout extends HTMLElement {
   static get observedAttributes() {
@@ -82,7 +82,7 @@ export class BrownieLayout extends HTMLElement {
   /** @returns {BrownieLayoutSpacing} */
   get padding() {
     return /** @type {BrownieLayoutSpacing} */ (
-      escapeHtml(this.getAttribute('padding') || 'space-3')
+      escapeHtml(this.getAttribute('padding') || 'spacing-3')
     );
   }
 
@@ -99,7 +99,7 @@ export class BrownieLayout extends HTMLElement {
         :host {
           height: ${this.height};
           width: ${this.width};
-          --layout-padding: var(--${this.padding});
+          --layout-padding: var(--${this.padding}, var(--spacing-3));
         }
       </style>
       <div class="vertical">

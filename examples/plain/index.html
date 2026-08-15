@@ -33,33 +33,33 @@
   </script>
 </head>
 <body>
-  <brow-layout height="100vh" padding="space-6">
-    <brow-section slot="header" padding="space-4">
+  <brow-layout height="100vh" padding="spacing-6">
+    <brow-section slot="header" padding="spacing-4">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <strong style="font-size:1.25rem;">Brownie</strong>
         <span style="color:var(--color-text-secondary);font-size:0.875rem;">Zero-build, zero-server, just HTML</span>
       </div>
     </brow-section>
 
-    <brow-section slot="content" padding="space-6">
+    <brow-section slot="content" padding="spacing-6">
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--spacing-4);max-width:960px;margin:0 auto;">
-        <brow-card padding="space-6">
+        <brow-card padding="spacing-6">
           <h3 style="margin:0 0 var(--spacing-2) 0;">No Build Step</h3>
           <p style="margin:0;color:var(--color-text-secondary);">This page is a single HTML file. No npm, no bundler, no server. Just an import map and ES modules from a CDN.</p>
         </brow-card>
-        <brow-card padding="space-6">
+        <brow-card padding="spacing-6">
           <h3 style="margin:0 0 var(--spacing-2) 0;">Web Components</h3>
           <p style="margin:0 0 var(--spacing-4) 0;color:var(--color-text-secondary);">Shadow DOM encapsulates styles. Configure via HTML attributes.</p>
           <brow-button variant="primary">Click me</brow-button>
         </brow-card>
-        <brow-card padding="space-6">
+        <brow-card padding="spacing-6">
           <h3 style="margin:0 0 var(--spacing-2) 0;">View Source</h3>
           <p style="margin:0;color:var(--color-text-secondary);">Everything is visible in the HTML. No hidden state, no virtual DOM.</p>
         </brow-card>
       </div>
     </brow-section>
 
-    <brow-section slot="footer" padding="space-4" divider="top">
+    <brow-section slot="footer" padding="spacing-4" divider="top">
       <p style="margin:0;color:var(--color-text-disabled);font-size:0.875rem;text-align:center;">
         Open this file directly in a browser — no server required
       </p>

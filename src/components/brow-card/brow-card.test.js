@@ -25,8 +25,8 @@ describe('brow-card', () => {
     expect(element.width).to.equal('auto');
   });
 
-  it('should have default padding space-4', () => {
-    expect(element.padding).to.equal('space-4');
+  it('should have default padding spacing-4', () => {
+    expect(element.padding).to.equal('spacing-4');
   });
 
   it('should reflect height attribute', () => {
@@ -40,8 +40,8 @@ describe('brow-card', () => {
   });
 
   it('should reflect padding attribute', () => {
-    element.padding = 'space-2';
-    expect(element.getAttribute('padding')).to.equal('space-2');
+    element.padding = 'spacing-2';
+    expect(element.getAttribute('padding')).to.equal('spacing-2');
   });
 
   it('should render a base part div', () => {
@@ -53,9 +53,9 @@ describe('brow-card', () => {
   });
 
   it('should parse multi-value padding sides', () => {
-    element.padding = 'space-1 space-2';
+    element.padding = 'spacing-1 spacing-2';
     const sides = element.getValuesForSides(element.padding);
-    expect(sides.top).to.equal('space-1');
-    expect(sides.end).to.equal('space-2');
+    expect(sides.top).to.equal('spacing-1');
+    expect(sides.end).to.equal('spacing-2');
   });
 });
