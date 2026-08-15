@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<!--
+  Side-by-side: Astryx's real React Button against a Brownie web component,
+  both reading the SAME unmodified Astryx theme file.
+
+  The theme is linked as-is and `data-astryx-theme` is set on <html>, so its
+  token layer lands on the document and inherits into the shadow roots. Its
+  component-override rules are @scope'd to that attribute, which does not
+  resolve inside a shadow tree, so those are unscoped and adopted separately —
+  see astryx-adopt.js.
+-->
+<html lang="en" data-astryx-theme="butter">
+<head>
+<meta charset="UTF-8">
+<title>Astryx theme reuse — React vs Brownie</title>
+
+<!-- Astryx, exactly as an Astryx app would load it. -->
+<link rel="stylesheet" href="https://unpkg.com/@astryxdesign/core@0.4.1/dist/astryx.css">
+<link rel="stylesheet" href="https://unpkg.com/@astryxdesign/theme-butter@0.4.1/dist/theme.css">
+
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@19",
+    "react-dom": "https://esm.sh/react-dom@19",
+    "react-dom/client": "https://esm.sh/react-dom@19/client",
+    "react/jsx-runtime": "https://esm.sh/react@19/jsx-runtime"
+  }
+}
+</script>
+
+<style>
+  body {
+    font-family: var(--font-family-body);
+    background: var(--color-background-body);
+    color: var(--color-text-primary);
+    margin: 0;
+    padding: 32px;
+  }
+  h1 { font-size: var(--font-size-xl); margin: 0 0 4px; }
+  h2 { font-size: var(--font-size-base); margin: 28px 0 10px; opacity: 0.7; font-weight: 500; }
+  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .note { opacity: 0.6; font-size: var(--font-size-sm); margin: 0 0 20px; }
+</style>
+</head>
+<body>
+
+<h1>One Astryx theme, two renderers</h1>
+<p class="note">butter — unmodified <code>theme.css</code> from <code>@astryxdesign/theme-butter</code></p>
+
+<h2>Astryx (React)</h2>
+<div class="row" id="react-root"></div>
+
+<h2>Brownie (web component)</h2>
+<div class="row">
+  <brow-astryx-button variant="primary">Primary</brow-astryx-button>
+  <brow-astryx-button variant="secondary">Secondary</brow-astryx-button>
+  <brow-astryx-button variant="ghost">Ghost</brow-astryx-button>
+  <brow-astryx-button variant="destructive">Destructive</brow-astryx-button>
+  <brow-astryx-button variant="secondary" disabled>Disabled</brow-astryx-button>
+</div>
+
+<h2>Brownie — sizes</h2>
+<div class="row">
+  <brow-astryx-button variant="primary" size="sm">Small</brow-astryx-button>
+  <brow-astryx-button variant="primary" size="md">Medium</brow-astryx-button>
+  <brow-astryx-button variant="primary" size="lg">Large</brow-astryx-button>
+</div>
+
+<script type="module">
+  import Brownie from '../../src/core.js';
+  import {loadAstryxComponentCSS} from './astryx-adopt.js';
+  import './brow-astryx-button.js';
+
+  await loadAstryxComponentCSS('https://unpkg.com/@astryxdesign/theme-butter@0.4.1/dist/theme.css');
+  Brownie.expect(['brow-astryx-button']);
+</script>
+
+<script type="module">
+  import React from 'https://esm.sh/react@19';
+  import {createRoot} from 'https://esm.sh/react-dom@19/client';
+  import {Button} from 'https://esm.sh/@astryxdesign/core@0.4.1?external=react,react-dom';
+
+  const h = React.createElement;
+  createRoot(document.getElementById('react-root')).render(
+    h(React.Fragment, null,
+      h(Button, {variant: 'primary'}, 'Primary'),
+      h(Button, {variant: 'secondary'}, 'Secondary'),
+      h(Button, {variant: 'ghost'}, 'Ghost'),
+      h(Button, {variant: 'destructive'}, 'Destructive'),
+      h(Button, {variant: 'secondary', isDisabled: true}, 'Disabled'),
+    ),
+  );
+</script>
+
+</body>
+</html>
