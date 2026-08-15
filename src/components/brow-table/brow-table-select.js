@@ -435,14 +435,14 @@ export class BrownieTableSelect extends HTMLElement {
       th.select-column,
       td.select-column {
         width: 1rem;
-        padding-left: var(--space-3);
-        padding-right: var(--space-1);
+        padding-left: var(--spacing-3);
+        padding-right: var(--spacing-1);
         text-align: center;
       }
 
       :host([bordered]) th.select-column,
       :host([bordered]) td.select-column {
-        padding-right: var(--space-3);
+        padding-right: var(--spacing-3);
       }
 
       td.select-column[data-interactive] {

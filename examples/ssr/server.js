@@ -58,7 +58,7 @@ function renderPage() {
   <brow-section slot="header" padding="space-4">
     <div style="display:flex;justify-content:space-between;align-items:center;">
       <strong style="font-size:1.25rem;">Brownie SSR</strong>
-      <div style="display:flex;gap:var(--space-2);align-items:center;">
+      <div style="display:flex;gap:var(--spacing-2);align-items:center;">
         <brow-select placeholder="Select theme..." id="theme-select">
           <brow-option value="sage">Sage</brow-option>
           <brow-option value="ocean">Ocean</brow-option>
@@ -70,26 +70,26 @@ function renderPage() {
   </brow-section>
 
   <brow-section slot="content" padding="space-6">
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-4);max-width:960px;margin:0 auto;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--spacing-4);max-width:960px;margin:0 auto;">
       <brow-card padding="space-6">
-        <h3 style="margin:0 0 var(--space-2) 0;">Declarative Shadow DOM</h3>
+        <h3 style="margin:0 0 var(--spacing-2) 0;">Declarative Shadow DOM</h3>
         <p style="margin:0;color:var(--color-text-secondary);">This card was rendered on the server with its shadow DOM included in the HTML. No flash of unstyled content.</p>
       </brow-card>
       <brow-card padding="space-6">
-        <h3 style="margin:0 0 var(--space-2) 0;">Hydration Ready</h3>
-        <p style="margin:0 0 var(--space-4) 0;color:var(--color-text-secondary);">When the component modules load, they adopt the existing shadow root — no re-render flicker.</p>
+        <h3 style="margin:0 0 var(--spacing-2) 0;">Hydration Ready</h3>
+        <p style="margin:0 0 var(--spacing-4) 0;color:var(--color-text-secondary);">When the component modules load, they adopt the existing shadow root — no re-render flicker.</p>
         <brow-button variant="primary" id="get-started">Get Started</brow-button>
       </brow-card>
       <brow-card padding="space-6">
-        <h3 style="margin:0 0 var(--space-2) 0;">No JavaScript Required</h3>
+        <h3 style="margin:0 0 var(--spacing-2) 0;">No JavaScript Required</h3>
         <p style="margin:0;color:var(--color-text-secondary);">View source — the shadow DOM is in the HTML. Disable JS and reload; it still looks right.</p>
       </brow-card>
     </div>
-    <div id="dynamic-content" style="max-width:960px;margin:var(--space-6) auto 0;"></div>
+    <div id="dynamic-content" style="max-width:960px;margin:var(--spacing-6) auto 0;"></div>
   </brow-section>
 
   <brow-section slot="footer" padding="space-4" divider="top">
-    <p style="margin:0;color:var(--color-text-muted);font-size:0.875rem;text-align:center;">
+    <p style="margin:0;color:var(--color-text-disabled);font-size:0.875rem;text-align:center;">
       Rendered at ${new Date().toISOString()} — Declarative Shadow DOM example
     </p>
   </brow-section>
@@ -120,8 +120,8 @@ const server = createServer(async (req, res) => {
   if (url.pathname === '/fragment/details') {
     const fragment = `
 <brow-card padding="space-6">
-  <h3 style="margin:0 0 var(--space-2) 0;">Server-Rendered Fragment</h3>
-  <p style="margin:0 0 var(--space-4) 0;color:var(--color-text-secondary);">
+  <h3 style="margin:0 0 var(--spacing-2) 0;">Server-Rendered Fragment</h3>
+  <p style="margin:0 0 var(--spacing-4) 0;color:var(--color-text-secondary);">
     This card was rendered on the server in response to clicking "Get Started".
     The HTML includes DSD templates — the shadow DOM is fully formed.
   </p>
@@ -130,14 +130,14 @@ const server = createServer(async (req, res) => {
   </p>
 </brow-card>
 <brow-card padding="space-6">
-  <h3 style="margin:0 0 var(--space-3) 0;">How This Works</h3>
-  <ol style="margin:0;padding-left:var(--space-5);color:var(--color-text-secondary);line-height:1.8;">
+  <h3 style="margin:0 0 var(--spacing-3) 0;">How This Works</h3>
+  <ol style="margin:0;padding-left:var(--spacing-5);color:var(--color-text-secondary);line-height:1.8;">
     <li>Click "Get Started" triggers a fetch to /fragment/details</li>
     <li>Server renders Brownie components with DSD templates</li>
     <li>Client injects the HTML — browser processes the DSD templates</li>
     <li>Components are already registered, so they upgrade immediately</li>
   </ol>
-  <div style="margin-top:var(--space-4);"><brow-button variant="ghost">Dismiss</brow-button></div>
+  <div style="margin-top:var(--spacing-4);"><brow-button variant="ghost">Dismiss</brow-button></div>
 </brow-card>`;
 
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });

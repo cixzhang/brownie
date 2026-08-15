@@ -371,7 +371,7 @@ export class BrownieTableTree extends HTMLElement {
       .tree-cell {
         display: flex;
         align-items: center;
-        gap: var(--space-1);
+        gap: var(--spacing-1);
       }
 
       .tree-indent {
@@ -388,14 +388,14 @@ export class BrownieTableTree extends HTMLElement {
         background: transparent;
         cursor: pointer;
         padding: 0;
-        color: var(--color-text-muted);
+        color: var(--color-text-disabled);
         border-radius: var(--radius-element, 0.25rem);
         flex-shrink: 0;
         font-size: 0.625rem;
       }
 
       .tree-toggle:hover {
-        background: var(--color-highlight);
+        background: var(--color-overlay-hover);
         color: var(--color-text-primary);
       }
 

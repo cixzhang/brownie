@@ -18,23 +18,23 @@ styles.replaceSync(/*css*/ `
     margin: 0;
     cursor: pointer;
     box-sizing: border-box;
-    background-color: var(--color-secondary);
+    background-color: var(--color-neutral);
     color: var(--color-text-primary);
     border: none;
     border-radius: var(--radius-element);
-    padding-inline: var(--space-3);
-    height: var(--space-9);
-    transition: box-shadow var(--transition-fast);
+    padding-inline: var(--spacing-3);
+    height: var(--spacing-9);
+    transition: box-shadow var(--duration-fast) var(--ease-standard);
     user-select: none;
     min-width: 100%;
   }
 
   [part="base"]:hover {
-    background-color: color-mix(in srgb, var(--color-secondary), light-dark(black, white) 5%);
+    background-color: color-mix(in srgb, var(--color-neutral), light-dark(black, white) 5%);
   }
 
   [part="base"]:active {
-    background-color: color-mix(in srgb, var(--color-secondary), light-dark(black, white) 10%);
+    background-color: color-mix(in srgb, var(--color-neutral), light-dark(black, white) 10%);
   }
 
   [part="base"]:disabled,
@@ -47,7 +47,7 @@ styles.replaceSync(/*css*/ `
 
   :host([variant="primary"]) [part="base"] {
     background-color: var(--color-accent);
-    color: var(--color-text-inverse);
+    color: var(--color-on-accent);
     box-shadow: inset 0 3px 0 var(--color-accent-highlight),
       inset 0 -3px 0 var(--color-accent-shadow);
   }
@@ -66,11 +66,11 @@ styles.replaceSync(/*css*/ `
   }
 
   :host([variant="ghost"]) [part="base"]:hover {
-    background-color: color-mix(in srgb, var(--color-secondary), transparent 50%);
+    background-color: color-mix(in srgb, var(--color-neutral), transparent 50%);
   }
 
   :host([variant="ghost"]) [part="base"]:active {
-    background-color: color-mix(in srgb, var(--color-secondary), transparent 20%);
+    background-color: color-mix(in srgb, var(--color-neutral), transparent 20%);
   }
 
   .iconOnly {
@@ -78,7 +78,7 @@ styles.replaceSync(/*css*/ `
   }
 
   :host([caret]) [part="base"] {
-    gap: var(--space-2);
+    gap: var(--spacing-2);
   }
 
   .caret {

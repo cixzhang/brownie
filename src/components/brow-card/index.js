@@ -10,10 +10,10 @@ styles.replaceSync(/*css*/ `
 
   [part="base"] {
     box-sizing: border-box;
-    background: var(--color-card);
+    background: var(--color-background-card);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-container);
-    box-shadow: var(--elevation-base);
+    box-shadow: var(--shadow-low);
     width: 100%;
     height: 100%;
     overflow: clip;
@@ -99,10 +99,10 @@ export class BrownieCard extends HTMLElement {
           width: ${this.width};
         }
         [part="base"] {
-          padding-block-start: var(--${paddingSides.top}, var(--space-3));
-          padding-block-end: var(--${paddingSides.bottom}, var(--space-3));
-          padding-inline-start: var(--${paddingSides.start}, var(--space-3));
-          padding-inline-end: var(--${paddingSides.end}, var(--space-3));
+          padding-block-start: var(--${paddingSides.top}, var(--spacing-3));
+          padding-block-end: var(--${paddingSides.bottom}, var(--spacing-3));
+          padding-inline-start: var(--${paddingSides.start}, var(--spacing-3));
+          padding-inline-end: var(--${paddingSides.end}, var(--spacing-3));
         }
         .inner {
           overflow: ${this.height === 'auto' ? 'clip' : 'auto'};

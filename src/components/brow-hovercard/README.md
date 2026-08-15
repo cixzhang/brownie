@@ -108,7 +108,7 @@ Hovercards stay open while you interact with their content, including when keybo
 /* Custom hovercard styling */
 brow-hovercard::part(card) {
   max-width: 400px;
-  background: var(--color-surface);
+  background: var(--color-background-surface);
 }
 ```
 

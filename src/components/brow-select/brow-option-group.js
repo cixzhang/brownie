@@ -10,15 +10,15 @@ styles.replaceSync(/*css*/ `
 
   :host(:not(:first-child)) {
     border-top: 1px solid var(--color-border-muted);
-    margin-top: var(--space-1);
-    padding-top: var(--space-1);
+    margin-top: var(--spacing-1);
+    padding-top: var(--spacing-1);
   }
 
   .label {
-    padding: var(--space-2) var(--space-3);
+    padding: var(--spacing-2) var(--spacing-3);
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--color-text-muted);
+    color: var(--color-text-disabled);
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }

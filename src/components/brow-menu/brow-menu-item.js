@@ -6,7 +6,7 @@ const styles = new CSSStyleSheet();
 styles.replaceSync(/*css*/ `
   :host {
     display: block;
-    padding: var(--menu-item-padding, var(--space-2) var(--space-3));
+    padding: var(--menu-item-padding, var(--spacing-2) var(--spacing-3));
     cursor: pointer;
     color: var(--color-text-primary);
     font-size: 0.875rem;
@@ -16,7 +16,7 @@ styles.replaceSync(/*css*/ `
 
   :host(:hover),
   :host(:focus) {
-    background: var(--color-highlight);
+    background: var(--color-overlay-hover);
   }
 
   :host([disabled]) {
@@ -30,12 +30,12 @@ styles.replaceSync(/*css*/ `
   }
 
   :host([variant="danger"]) {
-    color: var(--color-danger, #dc2626);
+    color: var(--color-error, #dc2626);
   }
 
   :host([variant="danger"]:hover),
   :host([variant="danger"]:focus) {
-    background: var(--color-danger-bg, #fef2f2);
+    background: var(--color-background-red, #fef2f2);
   }
 `);
 

@@ -63,7 +63,7 @@ Use the `caret` attribute to show a dropdown indicator. This is useful when usin
 ```css
 /* Custom button styling */
 brow-button::part(base) {
-  border-radius: var(--radius-round);
+  border-radius: var(--radius-full);
   text-transform: uppercase;
 }
 ```

@@ -74,10 +74,10 @@ function escapeHtml(str) {
 
 function taskCard(task) {
   const checkText = task.done ? '✓ Done' : 'Mark done';
-  return `<brow-card padding="space-4" id="task-${task.id}" style="margin-bottom:var(--space-3);">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);">
-      <span style="flex:1;${task.done ? 'text-decoration:line-through;color:var(--color-text-muted);' : ''}">${escapeHtml(task.title)}</span>
-      <div style="display:flex;gap:var(--space-1);flex-shrink:0;">
+  return `<brow-card padding="space-4" id="task-${task.id}" style="margin-bottom:var(--spacing-3);">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:var(--spacing-3);">
+      <span style="flex:1;${task.done ? 'text-decoration:line-through;color:var(--color-text-disabled);' : ''}">${escapeHtml(task.title)}</span>
+      <div style="display:flex;gap:var(--spacing-1);flex-shrink:0;">
         <brow-button variant="ghost" hx-post="/tasks/${task.id}/toggle" hx-target="closest brow-card" hx-swap="outerHTML" style="font-size:0.875rem;">${checkText}</brow-button>
         <brow-button variant="ghost" hx-delete="/tasks/${task.id}" hx-target="closest brow-card" hx-swap="outerHTML" style="font-size:0.875rem;color:var(--color-error-text);">Delete</brow-button>
       </div>
@@ -101,13 +101,13 @@ function renderPage() {
 
   <brow-section slot="content" padding="space-6">
     <div style="max-width:600px;margin:0 auto;">
-      <brow-card padding="space-4" style="margin-bottom:var(--space-6);">
+      <brow-card padding="space-4" style="margin-bottom:var(--spacing-6);">
         <form hx-post="/tasks" hx-target="#task-list" hx-swap="beforeend" hx-on::after-request="this.reset()">
-          <div style="display:flex;gap:var(--space-2);">
+          <div style="display:flex;gap:var(--spacing-2);">
             <input type="text" name="title" placeholder="Add a task..." required
-              style="flex:1;padding:var(--space-2) var(--space-3);border:1px solid var(--color-border);border-radius:var(--radius-element);font:inherit;background:var(--color-card);color:var(--color-text-primary);" />
+              style="flex:1;padding:var(--spacing-2) var(--spacing-3);border:1px solid var(--color-border);border-radius:var(--radius-element);font:inherit;background:var(--color-background-card);color:var(--color-text-primary);" />
             <button type="submit"
-              style="background:var(--color-accent);color:var(--color-text-inverse);border:none;border-radius:var(--radius-element);padding-inline:var(--space-3);height:var(--space-9);font:inherit;cursor:pointer;box-shadow:inset 0 3px 0 var(--color-accent-highlight),inset 0 -3px 0 var(--color-accent-shadow);">Add</button>
+              style="background:var(--color-accent);color:var(--color-on-accent);border:none;border-radius:var(--radius-element);padding-inline:var(--spacing-3);height:var(--spacing-9);font:inherit;cursor:pointer;box-shadow:inset 0 3px 0 var(--color-accent-highlight),inset 0 -3px 0 var(--color-accent-shadow);">Add</button>
           </div>
         </form>
       </brow-card>
@@ -118,7 +118,7 @@ function renderPage() {
   </brow-section>
 
   <brow-section slot="footer" padding="space-4" divider="top">
-    <p style="margin:0;color:var(--color-text-muted);font-size:0.875rem;text-align:center;">
+    <p style="margin:0;color:var(--color-text-disabled);font-size:0.875rem;text-align:center;">
       Brownie + htmx — server-rendered DSD with client-side htmx interactions
     </p>
   </brow-section>

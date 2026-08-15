@@ -30,7 +30,7 @@ styles.replaceSync(/*css*/ `
 
   [part="layer"] {
     position: fixed;
-    padding: var(--space-2);
+    padding: var(--spacing-2);
     background: transparent;
     border: none;
     overflow: clip;
@@ -41,22 +41,22 @@ styles.replaceSync(/*css*/ `
   [data-placement="top"] {
     position-area: top;
     position-try-fallbacks: flip-block;
-    padding-block: var(--space-1);
+    padding-block: var(--spacing-1);
   }
   [data-placement="bottom"] {
     position-area: bottom;
     position-try-fallbacks: flip-block;
-    padding-block: var(--space-1);
+    padding-block: var(--spacing-1);
   }
   [data-placement="left"] {
     position-area: left;
     position-try-fallbacks: flip-inline;
-    padding-inline: var(--space-1);
+    padding-inline: var(--spacing-1);
   }
   [data-placement="right"] {
     position-area: right;
     position-try-fallbacks: flip-inline;
-    padding-inline: var(--space-1);
+    padding-inline: var(--spacing-1);
   }
 
   [part="layer"]:popover-open {
@@ -72,9 +72,9 @@ styles.replaceSync(/*css*/ `
 
   [part="tooltip"] {
     max-width: 250px;
-    padding: var(--space-1) var(--space-2);
+    padding: var(--spacing-1) var(--spacing-2);
     background: var(--color-text-primary);
-    color: var(--color-page);
+    color: var(--color-background-body);
     font-size: 0.875rem;
     line-height: 1.4;
     border-radius: var(--radius-element);
