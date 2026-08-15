@@ -25,8 +25,8 @@ describe('brow-layout', () => {
     expect(element.width).to.equal('100%');
   });
 
-  it('should have default padding space-3', () => {
-    expect(element.padding).to.equal('space-3');
+  it('should have default padding spacing-3', () => {
+    expect(element.padding).to.equal('spacing-3');
   });
 
   it('should reflect height attribute', () => {
@@ -40,8 +40,8 @@ describe('brow-layout', () => {
   });
 
   it('should reflect padding attribute', () => {
-    element.padding = 'space-4';
-    expect(element.getAttribute('padding')).to.equal('space-4');
+    element.padding = 'spacing-4';
+    expect(element.getAttribute('padding')).to.equal('spacing-4');
   });
 
   it('should render named slots for header, content, footer, start, end', () => {

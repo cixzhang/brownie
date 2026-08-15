@@ -27,7 +27,7 @@ A composable layout with header, footer, start, end panels and content slots.
 ## Adjusted Padding
 
 ```html example
-<brow-layout height="20rem" padding="space-6">
+<brow-layout height="20rem" padding="spacing-6">
   <brow-section slot="header" divider="bottom">
     Header
   </brow-section>
@@ -49,7 +49,7 @@ A composable layout with header, footer, start, end panels and content slots.
 ## Nested layouts
 
 ```html example
-<brow-section padding="space-2" variant="muted" height="20rem">
+<brow-section padding="spacing-2" variant="muted" height="20rem">
   <brow-layout>
     <brow-section slot="header" height="auto">
       Header
@@ -57,7 +57,7 @@ A composable layout with header, footer, start, end panels and content slots.
     <brow-section slot="start" width="10rem">
       Left panel
     </brow-section>
-    <brow-card slot="content" height="100%" padding="space-0">
+    <brow-card slot="content" height="100%" padding="spacing-0">
       <brow-layout>
         <brow-section slot="header" divider="bottom">
           Header
@@ -80,7 +80,7 @@ A composable layout with header, footer, start, end panels and content slots.
 |-----------|------|---------|-------------|
 | `height` | `string` | `100%` | Set the height of the layout to either fill the container or size relative to its children. If a non-`auto` height is provided, the layout will automatically include overflow handling in the content and panel slots |
 | `width` | `string` | `100%` | Set the width of the layout |
-| `padding` | `'space-0'` `'space-0_5'` `'space-1'` ... `'space-12'` | `space-3` | Sets the `--layout-padding` CSS variable, which child `brow-section` elements use as their default padding |
+| `padding` | `'spacing-0'` `'spacing-0-5'` `'spacing-1'` ... `'spacing-12'` | `spacing-3` | Sets the `--layout-padding` CSS variable, which child `brow-section` elements use as their default padding |
 
 ## Slots
 

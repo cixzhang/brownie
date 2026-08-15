@@ -24,10 +24,10 @@ units over arbitrary values helps your app feel consistent and cohesive,
 maintaining a consistent rhythm.
 
 ```html example
-<brow-section variant="muted" padding="space-2">2 unit padding</brow-section>
-<brow-section variant="muted" padding="space-4">4 unit padding</brow-section>
-<brow-section variant="muted" padding="space-8">8 unit padding</brow-section>
-<brow-section variant="muted" padding="space-3 space-4">
+<brow-section variant="muted" padding="spacing-2">2 unit padding</brow-section>
+<brow-section variant="muted" padding="spacing-4">4 unit padding</brow-section>
+<brow-section variant="muted" padding="spacing-8">8 unit padding</brow-section>
+<brow-section variant="muted" padding="spacing-3 spacing-4">
   3 unit vertical, 4 unit horizontal
 </brow-section>
 ```
@@ -40,4 +40,4 @@ maintaining a consistent rhythm.
 | `divider` | `'all' 'top' 'bottom' 'start' 'end' 'inline' 'block'` | -- | Applies dividers to the section |
 | `height` | `string` | `100%` | Set the height of the section |
 | `width` | `string` | `100%` | Set the width of the section |
-| `padding` | `'space-0'` `'space-0_5'` `'space-1'` ... `'space-12'` | `layout-padding` | Sets padding on the section. Defaults to the parent `brow-layout`'s padding if present. Up to 4 values can be set for each side using CSS shorthand notation (`<vertical> <horizontal>` or `<top> <right> <bottom> <left>`) |
+| `padding` | `'spacing-0'` `'spacing-0-5'` `'spacing-1'` ... `'spacing-12'` | `layout-padding` | Sets padding on the section. Defaults to the parent `brow-layout`'s padding if present. Up to 4 values can be set for each side using CSS shorthand notation (`<vertical> <horizontal>` or `<top> <right> <bottom> <left>`) |

@@ -36,7 +36,7 @@ const Card = (await import('brownie/components/brow-card.js')).default;
 
 // 3. Render components with DSD
 const buttonHtml = ssr.dsd(Button, { variant: 'primary' }, 'Click me');
-const cardHtml = ssd(Card, { padding: 'space-6' }, buttonHtml);
+const cardHtml = ssd(Card, { padding: 'spacing-6' }, buttonHtml);
 
 // 4. Generate a complete HTML page
 //    page() scans body HTML for <brow-*> tags and auto-generates:

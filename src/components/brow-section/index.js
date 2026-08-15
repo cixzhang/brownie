@@ -21,7 +21,7 @@ styles.replaceSync(/*css*/ `
  * A section used with `brow-layout` providing spacing around content and optional background.
  * @element brow-section
  * @typedef {'muted' | 'surface'} BrownieSectionVariant
- * @typedef {'space-0' | 'space-0_5' | 'space-1' | 'space-1_5' | 'space-2' | 'space-2_5' | 'space-3' | 'space-4' | 'space-5' | 'space-6' | 'space-8' | 'space-10' | 'space-12'} BrownieSectionSpacing
+ * @typedef {'spacing-0' | 'spacing-0-5' | 'spacing-1' | 'spacing-1-5' | 'spacing-2' | 'spacing-2-5' | 'spacing-3' | 'spacing-4' | 'spacing-5' | 'spacing-6' | 'spacing-8' | 'spacing-10' | 'spacing-12'} BrownieSectionSpacing
  * @typedef {'all' | 'top' | 'bottom' | 'start' | 'end' | 'inline' | 'block'} BrownieSectionDivider
  */
 export class BrownieSection extends HTMLElement {

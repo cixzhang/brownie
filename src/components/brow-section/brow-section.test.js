@@ -44,8 +44,8 @@ describe('brow-section', () => {
   });
 
   it('should reflect padding attribute', () => {
-    element.padding = 'space-2';
-    expect(element.getAttribute('padding')).to.equal('space-2');
+    element.padding = 'spacing-2';
+    expect(element.getAttribute('padding')).to.equal('spacing-2');
   });
 
   it('should reflect variant attribute', () => {

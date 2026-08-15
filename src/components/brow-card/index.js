@@ -29,7 +29,7 @@ styles.replaceSync(/*css*/ `
  * Container used for segmenting general content into a visible block.
  * @element brow-card
  * @csspart base - The main container element
- * @typedef {'space-0' | 'space-0_5' | 'space-1' | 'space-1_5' | 'space-2' | 'space-2_5' | 'space-3' | 'space-4' | 'space-5' | 'space-6' | 'space-8' | 'space-10' | 'space-12'} BrownieCardSpacing
+ * @typedef {'spacing-0' | 'spacing-0-5' | 'spacing-1' | 'spacing-1-5' | 'spacing-2' | 'spacing-2-5' | 'spacing-3' | 'spacing-4' | 'spacing-5' | 'spacing-6' | 'spacing-8' | 'spacing-10' | 'spacing-12'} BrownieCardSpacing
  */
 export class BrownieCard extends HTMLElement {
   static get observedAttributes() {
@@ -78,7 +78,7 @@ export class BrownieCard extends HTMLElement {
   /** @returns {BrownieCardSpacing} */
   get padding() {
     return /** @type {BrownieCardSpacing} */ (
-      escapeHtml(this.getAttribute('padding') || 'space-4')
+      escapeHtml(this.getAttribute('padding') || 'spacing-4')
     );
   }
 
@@ -130,10 +130,10 @@ export class BrownieCard extends HTMLElement {
   getValuesForSides(value) {
     const valueList = value.split(' ');
     return {
-      top: valueList[0] ?? 'space-4',
-      end: valueList[1] ?? valueList[0] ?? 'space-4',
-      bottom: valueList[2] ?? valueList[0] ?? 'space-4',
-      start: valueList[3] ?? valueList[1] ?? valueList[0] ?? 'space-4',
+      top: valueList[0] ?? 'spacing-4',
+      end: valueList[1] ?? valueList[0] ?? 'spacing-4',
+      bottom: valueList[2] ?? valueList[0] ?? 'spacing-4',
+      start: valueList[3] ?? valueList[1] ?? valueList[0] ?? 'spacing-4',
     };
   }
 }

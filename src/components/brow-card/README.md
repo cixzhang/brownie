@@ -14,7 +14,7 @@ Container used for segmenting general content into a visible block.
 |-----------|------|---------|-------------|
 | `height` | `string` | `auto` | Set the height of the card |
 | `width` | `string` | `auto` | Set the width of the card |
-| `padding` | `'space-0'` `'space-0_5'` `'space-1'` ... `'space-12'` | `space-4` | Sets padding on the card. Up to 4 values can be set for each side using CSS shorthand notation (`<vertical> <horizontal>` or `<top> <right> <bottom> <left>`) |
+| `padding` | `'spacing-0'` `'spacing-0-5'` `'spacing-1'` ... `'spacing-12'` | `spacing-4` | Sets padding on the card. Up to 4 values can be set for each side using CSS shorthand notation (`<vertical> <horizontal>` or `<top> <right> <bottom> <left>`) |
 
 ## CSS Parts
 

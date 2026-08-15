@@ -249,9 +249,9 @@
       html = html.replace(/```html example\n([\s\S]*?)```/g, (_, code) => {
         const escaped = code.trim().replace(/</g, '&lt;').replace(/>/g, '&gt;');
         return /*html*/`
-          <brow-card padding="space-0">
-            <brow-section padding="space-4">${code.trim()}</brow-section>
-            <brow-section variant="muted" padding="space-4" class="example-code">
+          <brow-card padding="spacing-0">
+            <brow-section padding="spacing-4">${code.trim()}</brow-section>
+            <brow-section variant="muted" padding="spacing-4" class="example-code">
               <pre><code>${escaped}</code></pre>
             </brow-section>
           </brow-card>`;

@@ -74,7 +74,7 @@ function escapeHtml(str) {
 
 function taskCard(task) {
   const checkText = task.done ? '✓ Done' : 'Mark done';
-  return `<brow-card padding="space-4" id="task-${task.id}" style="margin-bottom:var(--spacing-3);">
+  return `<brow-card padding="spacing-4" id="task-${task.id}" style="margin-bottom:var(--spacing-3);">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:var(--spacing-3);">
       <span style="flex:1;${task.done ? 'text-decoration:line-through;color:var(--color-text-disabled);' : ''}">${escapeHtml(task.title)}</span>
       <div style="display:flex;gap:var(--spacing-1);flex-shrink:0;">
@@ -91,17 +91,17 @@ function renderPage() {
   const initialTasks = tasks.map((t) => taskCard(t)).join('\n');
 
   const body = `
-<brow-layout height="100vh" padding="space-6">
-  <brow-section slot="header" padding="space-4">
+<brow-layout height="100vh" padding="spacing-6">
+  <brow-section slot="header" padding="spacing-4">
     <div style="display:flex;justify-content:space-between;align-items:center;">
       <strong style="font-size:1.25rem;">Tasks</strong>
       <span style="color:var(--color-text-secondary);font-size:0.875rem;">${tasks.filter((t) => !t.done).length} remaining</span>
     </div>
   </brow-section>
 
-  <brow-section slot="content" padding="space-6">
+  <brow-section slot="content" padding="spacing-6">
     <div style="max-width:600px;margin:0 auto;">
-      <brow-card padding="space-4" style="margin-bottom:var(--spacing-6);">
+      <brow-card padding="spacing-4" style="margin-bottom:var(--spacing-6);">
         <form hx-post="/tasks" hx-target="#task-list" hx-swap="beforeend" hx-on::after-request="this.reset()">
           <div style="display:flex;gap:var(--spacing-2);">
             <input type="text" name="title" placeholder="Add a task..." required
@@ -117,7 +117,7 @@ function renderPage() {
     </div>
   </brow-section>
 
-  <brow-section slot="footer" padding="space-4" divider="top">
+  <brow-section slot="footer" padding="spacing-4" divider="top">
     <p style="margin:0;color:var(--color-text-disabled);font-size:0.875rem;text-align:center;">
       Brownie + htmx — server-rendered DSD with client-side htmx interactions
     </p>
